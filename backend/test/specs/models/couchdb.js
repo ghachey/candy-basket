@@ -1,7 +1,7 @@
 'use strict';
 
-var assert = require('assert');
-var db = require('../../../app/models/couchdb');
+//var assert = require('assert');
+//var db = require('../../../app/models/couchdb');
 
 // Write test to a fake couchdb backend?!
 

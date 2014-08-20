@@ -1,8 +1,10 @@
+'use strict';
+
 // Should I use the following middleware? TODO - Experiment to see benefits
 
 var apiErrors;
 
-if(app.get('env') === 'development'){
+if(process.env.NODE_ENV === 'development'){
   apiErrors = function (err, req, res) {
     res.status(err.status || 500);
     res.render('error', {

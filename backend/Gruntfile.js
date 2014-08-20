@@ -12,12 +12,15 @@ module.exports = function (grunt) {
   var reloadPort = conf.reloadPort, files;
 
   grunt.initConfig({
+    
     pkg: grunt.file.readJSON('package.json'),
+
     develop: {
       server: {
         file: 'app/app.js'
       }
     },
+
     watch: {
       options: {
         nospawn: true,
@@ -29,12 +32,12 @@ module.exports = function (grunt) {
           'app/**/*.js'
         ],
         tasks: ['develop', 'delayed-livereload']
-      },
-      jsTest: {
-        files: ['test/**/*.js',
-                '{!#*.js,!.#*.js,!**#.js,!**.#.js}'], // ignore emacs interlock files
-        tasks: ['newer:jshint:test', 'mochaTest']
       }
+      // jsTest: {
+      //   files: ['test/**/*.js',
+      //           '{!#*.js,!.#*.js,!**#.js,!**.#.js}'], // ignore emacs interlock files
+      //   tasks: ['newer:jshint:test', 'mochaTest']
+      // }
     },
 
     // Make sure code styles are up to par and there are no obvious mistakes
@@ -50,12 +53,16 @@ module.exports = function (grunt) {
         options: {
           jshintrc: 'test/.jshintrc'
         },
-        src: ['test/*.js']
+        src: ['test/**/*.js']
       }
     },
 
     // Run some tasks in parallel to speed up the build process
     concurrent: {
+      lint: [
+        'newer:jshint:all',
+        'newer:jshint:test'
+      ],
       server: [ // Not yet used
         'copy:styles'
       ],
@@ -109,6 +116,7 @@ module.exports = function (grunt) {
   ]);
 
   grunt.registerTask('test', [
+    'concurrent:lint',
     'mochaTest'
   ]);
 

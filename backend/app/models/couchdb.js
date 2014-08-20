@@ -1,35 +1,28 @@
 'use strict';
 
 /**
- * Extremely thin layer to talk with the CouchDB store
+ * NOTE - Not currently using this extra level of abstraction.
+ *
+ * Extremely thin layer to talk with the CouchDB store.
+ *
+ * At the moment, code here directly talks to the CouchDB RESTful 
+ * API. I may create a tiny abstraction layer in ./models/couchdb.js
+ * if I see the benefits.
  */
 
 var conf = require('../../config');
-var nano = require('nano')(conf.dbUrl);
-var utils = require('../utils');
+var nano = require('nano');
 
-var couchdbDb = conf.dbName;
-var couchdb = nano.db.use(couchdbDb);
+var dbName = conf.dbName;
+var couchServer = nano(conf.dbUrl);
+var couchdb;
 
-/**
- * @description
- *
- * Generic function to retrieve documents from CouchDB.
- *
- * @param {String} couchDoc The couch document to retrieve
- */
-var getFromCouch = function(couchDoc, callback){
 
-  couchdb.get(couchDoc, function(err, body) {
-    if (err) {
-      console.error('Error retrieving document from CouchDB: ', err);
-      callback(err, {});
-    } else {
-      console.log('Retrieving document from CouchDB: ', body);
-      callback(err, body);
-    }    
-  });
+//couchdb = couchServer.db.use(dbName);
 
-};
+// Maybe define a Javascript object for candies with CRUD methods over a CouchDB
+// backend...
 
-exports.getFromCouch = getFromCouch;
+exports.dbName = dbName;
+exports.couchServer = couchServer;
+exports.couchdb = couchdb;

@@ -9,6 +9,7 @@ var config = {
     app: {
       name: 'nasaraCandyBasketApi'
     },
+    url: 'http://localhost',
     port: 3003,
     reloadPort: 35733,
     dbUrl: 'http://localhost:5984/',
@@ -20,6 +21,7 @@ var config = {
     app: {
       name: 'nasaraCandyBasketApi'
     },
+    url: 'http://localhost',
     port: 3003,
     reloadPort: 35733,
     dbUrl: 'http://localhost:5984/',
@@ -31,10 +33,14 @@ var config = {
     app: {
       name: 'nasaraCandyBasketApi'
     },
+    url: 'http://localhost',
     port: 3003,
     dbUrl: 'http://localhost:5984/',
     dbName: 'candy_basket'
   }
 };
 
-module.exports = config[env];
+// Exports the config for the currently running environment. It defaults to 'development'
+// if NODE_ENV is not set in shell. To run grunt test you could export NODE_ENV=test
+// In production make sure NODE_ENV is set to production 
+module.exports = config[env]; 
