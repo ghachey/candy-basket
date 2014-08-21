@@ -10,15 +10,14 @@
  */
 
 var nano = require('nano');
-var check = require('validator').check;
-//var sanitize = require('validator').sanitize;
-var iz = require('iz'); 
+var validator = require('validator');
+//var iz = require('iz'); 
 
 var conf = require('../../config');
 
 var dbName = conf.dbName;
-var couchServer = nano(conf.dbUrl);
-var couchdb;
+var couchServer = nano(conf.dbUrl); //nano
+var couchdb = couchServer.db.use(dbName);
 
 /**
  * @description
@@ -29,12 +28,15 @@ var couchdb;
  * validator with more sophisticated string check and validations and
  * iz with stronger support for other data type checks
  *
+ * TODO - Push this functionality as a middleware passed as additional callback
+ * to routes?!?!
+ *
  * @param {Object} candy A candy Javascript object
  * @return {Boolean} returns true only if all properties validate
  */
 var validateCandy = function(candy) {
-
-  var urlOptions;
+ 
+ var urlOptions;
   /* jshint ignore:start */
   // Forced to not comply with my Lint conventions due to third party, so ignore it.
   urlOptions = { 
@@ -45,19 +47,24 @@ var validateCandy = function(candy) {
   };
   /* jshint ignore:end */
 
-  if (!check.isURL(candy.source, urlOptions)) {return false;}
-  if (candy.title === undefined) {return false;}
-  if (candy.description === undefined) {return false;}
-
-  if (candy.attachmentFilename && !check.isBase64(candy.attachment)) {
-    return false;
+  if (!validator.isURL(candy.source, urlOptions)) {return {'status': false, 
+                                                           'err': 'Bad source'};}
+  if (candy.title === undefined) {return {'status': false, 'err': 'No title'};}
+  if (candy.description === undefined) {return {'status': false, 
+                                                'err': 'No description'};}
+  if ((candy.attachmentFilename && candy.attachment && 
+      validator.isBase64(candy.attachment)) ||
+     (!candy.attachmentFilename && !candy.attachment)) {
+    // We've got both the filename and the file itself and the file is properly encoded
+    // in base64, we're good
+    // or
+    // We don't have any filename or attachment at all, we're still good
+  } else {
+    return {'status': false, 'err': 'Bad attachment'};
   }
+  if (!Array.isArray(candy.tags)) {return {'status': false, 'err': 'Tags not an array'};}
 
-  if (candy.tags && !iz.ofType(candy.tags, 'array')) {
-    return false;
-  }
-  
-  return true; // Eventually could return an error of why it did not validate
+  return {'status': true, 'err': 'Data Valid'}; 
 };
 
 var getMeta = function(req, res) {
@@ -65,12 +72,20 @@ var getMeta = function(req, res) {
 };
 
 var createCandy = function(req, res) {
-  console.log('TEST: ', req);
-  if (validateCandy(req)) {
-    // Try creating
-    res.send(200);
+  console.log('Body: ', req.body);
+  if (validateCandy(req.body).status) {
+    couchdb.insert(req.body, function(err, body) {
+      if (!err) {
+        res.send(201);
+        console.log('Insert success response: ', body);
+      } else {
+        console.log('Error inserting document: ', err);
+        res.send(500, err);
+      }
+    });
   } else {
-    res.send(400);
+    console.error('Validation error: ', validateCandy(req.body).err);
+    res.send(400, validateCandy(req.body).err);
   }
 };
 

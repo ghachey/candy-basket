@@ -7,6 +7,7 @@ var should = require('should');
 /* jshint ignore:end */
 
 var request = require('supertest');
+var nano = require('nano');
 
 var conf = require('../../../config');
 var controller = require('../../../app/controllers/api');
@@ -14,7 +15,7 @@ var controller = require('../../../app/controllers/api');
 request = request(conf.url+':'+conf.port);
 
 describe('The whole controller API', function(){
-
+  
   before(function (next) {
     // The app needs to be started manually at the moment, I currently find
     // it easier to see logging in separate console from tests
@@ -23,7 +24,6 @@ describe('The whole controller API', function(){
     controller.couchServer.db.create(controller.dbName, function(err, body) {
       if (!err) {
         console.log('Database ' + controller.dbName + ' created: ' + body);
-        controller.couchdb = controller.couchServer.db.use(controller.dbName);
         next();
       } else {
         console.error('Error creating ' + controller.dbName + err);
@@ -56,7 +56,7 @@ describe('The whole controller API', function(){
                    'tags': ['Website', 'Personal']};
       request
         .post('/basket/candies')
-        .set('Accept', 'application/json')
+        .set('Content-Type', 'application/json')
         .send(candy)
         .expect(400)
         .end(function(err, res){
@@ -66,13 +66,13 @@ describe('The whole controller API', function(){
     });
 
     it('should respond with 400 Bad Request for missing title input', function(done){
-      // var candy = {'source': 'htp://ghachey.info',
-      //              'description': 'Ghislain Hachey website personal stuff and all',
-      //              'tags': ['Website', 'Personal']};
+      var candy = {'source': 'http://ghachey.info',
+                   'description': 'Ghislain Hachey website personal stuff and all',
+                   'tags': ['Website', 'Personal']};
       request
         .post('/basket/candies')
-        .set('Accept', 'application/json')
-        .expect('Content-Type', /json/)
+        .set('Content-Type', 'application/json')
+        .send(candy)
         .expect(400)
         .end(function(err, res){
           if (err) {return done(err);}
@@ -80,13 +80,13 @@ describe('The whole controller API', function(){
         });
     });
 
-    it('should respond with 400 Bad Request for missing description input', function(done){
-      // var candy = {'source': 'htp://ghachey.info', 'title': 'Ghislain Hachey Website', 
-      //              'tags': ['Website', 'Personal']};
+    it('should respond with 400 Bad Request if missing description input', function(done){
+      var candy = {'source': 'http://ghachey.info', 'title': 'Ghislain Hachey Website', 
+                   'tags': ['Website', 'Personal']};
       request
         .post('/basket/candies')
-        .set('Accept', 'application/json')
-        .expect('Content-Type', /json/)
+        .set('Content-Type', 'application/json')
+        .send(candy)
         .expect(400)
         .end(function(err, res){
           if (err) {return done(err);}
@@ -94,38 +94,100 @@ describe('The whole controller API', function(){
         });
     });
 
-    it('should respond with 500 when problem connecting to CouchDB', function(done){
-      // Simulate a connection problem with CouchDB
+    it('should respond with 400 Bad Request if tags not array', function(done){
+      var candy = {'source': 'http://ghachey.info', 'title': 'Ghislain Hachey Website', 
+                   'tags': 'Website Personal'};
       request
         .post('/basket/candies')
-        .set('Accept', 'application/json')
-        .expect('Content-Type', /json/)
-        .expect(500)
+        .set('Content-Type', 'application/json')
+        .send(candy)
+        .expect(400)
         .end(function(err, res){
           if (err) {return done(err);}
           return done();
         });
     });
 
-    it('should respond with 500 when problem connecting to ownCloud', function(done){
-      // Simulate a connection problem with ownCloud
+    it('should respond with 400 when containing a attachmentFilename with no attachment', function(done){
+      var candy = {'source': 'http://ghachey.info', 'title': 'Ghislain Hachey Website', 
+                   'description': 'Ghislain Hachey website personal stuff and all',
+                   'tags': ['Website', 'Personal'],
+                   'attachmentFilename': 'temp1.txt'
+                  };
       request
         .post('/basket/candies')
         .set('Accept', 'application/json')
-        .expect('Content-Type', /json/)
-        .expect(500)
+        .send(candy)
+        .expect(400)
         .end(function(err, res){
           if (err) {return done(err);}
           return done();
         });
     });
+
+    it('should respond with 400 when containing an attachment with no attachmentFilename', function(done){
+      var candy = {'source': 'http://ghachey.info', 'title': 'Ghislain Hachey Website', 
+                   'description': 'Ghislain Hachey website personal stuff and all',
+                   'tags': ['Website', 'Personal'],
+                   'attachment': 'YQo='
+                  };
+      request
+        .post('/basket/candies')
+        .set('Accept', 'application/json')
+        .send(candy)
+        .expect(400)
+        .end(function(err, res){
+          if (err) {return done(err);}
+          return done();
+        });
+    });
+
+    // it('should respond with 500 when problem connecting to CouchDB', function(done){
+    //   // Valid data
+    //   var candy = {'source': 'http://ghachey.info', 'title': 'Ghislain Hachey Website', 
+    //                'description': 'Ghislain Hachey website personal stuff and all',
+    //                'tags': ['Website', 'Personal']};
+    //   // Simulate a connection problem with CouchDB by setting the reference
+    //   // of couchdb to a different non-listening server
+    //   request
+    //     .post('/basket/candies')
+    //     .set('Content-Type', 'application/json')
+    //     .send(candy)
+    //     .expect(500)
+    //     .end(function(err, res){
+    //       if (err) {
+    //         // This test is essentially done, get back our functional couch server
+    //         // instance before we move on...
+    //         //controller.couchdb = controller.couchServer.db.use(controller.dbName);
+    //         controller.couchdb = couchdbUp;
+    //         console.log('Reset working CouchDB: ', controller.couchdb);
+    //         return done(err);
+    //       }
+    //       return done();
+    //     });
+    // });
+
+    // it('should respond with 500 when problem connecting to ownCloud', function(done){
+    //   // Simulate a connection problem with ownCloud
+    //   request
+    //     .post('/basket/candies')
+    //     .set('Accept', 'application/json')
+    //     .expect('Content-Type', /json/)
+    //     .expect(500)
+    //     .end(function(err, res){
+    //       if (err) {return done(err);}
+    //       return done();
+    //     });
+    // });
 
     it('should respond with 201 when successfully creating candy (no attachment)', function(done){
+      var candy = {'source': 'http://ghachey.info', 'title': 'Ghislain Hachey Website', 
+                   'description': 'Ghislain Hachey website personal stuff and all',
+                   'tags': ['Website', 'Personal']};
       request
         .post('/basket/candies')
         .set('Accept', 'application/json')
-        .expect('Content-Type', /json/)
-      //.expect('Location', /json/)
+        .send(candy)
         .expect(201)
         .end(function(err, res){
           if (err) {return done(err);}
@@ -134,11 +196,16 @@ describe('The whole controller API', function(){
     });
 
     it('should respond with 201 when successfully creating candy (with attachment)', function(done){
+      var candy = {'source': 'http://ghachey.info', 'title': 'Ghislain Hachey Website', 
+                   'description': 'Ghislain Hachey website personal stuff and all',
+                   'tags': ['Website', 'Personal'],
+                   'attachmentFilename': 'temp1.txt',
+                   'attachment': 'YQo='
+                  };
       request
         .post('/basket/candies')
         .set('Accept', 'application/json')
-        .expect('Content-Type', /json/)
-      //.expect('Location', /json/)
+        .send(candy)
         .expect(201)
         .end(function(err, res){
           if (err) {return done(err);}
