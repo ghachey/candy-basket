@@ -13,7 +13,7 @@ var nano = require('nano');
 var validator = require('validator');
 var sanitizeHtml = require('sanitize-html');
 
-var conf = require('../../config');
+var conf = require('../config');
 
 var dbName = conf.dbName;
 var couchServer = nano(conf.dbUrl); //nano

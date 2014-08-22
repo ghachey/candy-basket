@@ -1,1 +1,0 @@
-Normally, views would be HTML templates in the context of a more traditional web application, each being generated on the server with round trip request/response from and to the client browser. This backend application stricly serves JSON as an API which is entirely consume by a Angular Javascript frontend. This directory and README is kept here for clarity for the time being. 

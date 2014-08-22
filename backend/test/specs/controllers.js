@@ -11,8 +11,8 @@ var should = require('chai').should();
 var nano = require('nano');
 var _ = require('underscore');
 
-var conf = require('../../../config');
-var controller = require('../../../app/controllers/api');
+var conf = require('../../config');
+var controllers = require('../../app/controllers');
 
 request = request(conf.url+':'+conf.port);
 
@@ -27,12 +27,12 @@ describe('The whole controller API', function(){
     // it easier to see logging in separate console from tests
 
     // Create test DB to execute tests against
-    controller.couchServer.db.create(controller.dbName, function(err, body) {
+    controllers.couchServer.db.create(controllers.dbName, function(err, body) {
       if (!err) {
-        console.log('Database ' + controller.dbName + ' created: ' + body);
+        console.log('Database ' + controllers.dbName + ' created: ' + body);
         next();
       } else {
-        console.error('Error creating ' + controller.dbName + err);
+        console.error('Error creating ' + controllers.dbName + err);
         throw err; // and stop testing
       }
     });
@@ -164,9 +164,9 @@ describe('The whole controller API', function(){
     //       if (err) {
     //         // This test is essentially done, get back our functional couch server
     //         // instance before we move on...
-    //         //controller.couchdb = controller.couchServer.db.use(controller.dbName);
-    //         controller.couchdb = couchdbUp;
-    //         console.log('Reset working CouchDB: ', controller.couchdb);
+    //         //controllers.couchdb = controllers.couchServer.db.use(controllers.dbName);
+    //         controllers.couchdb = couchdbUp;
+    //         console.log('Reset working CouchDB: ', controllers.couchdb);
     //         return done(err);
     //       }
     //       return done();
@@ -582,11 +582,11 @@ describe('The whole controller API', function(){
   after(function () {
     // Destroy test DB
     // to be extra careful make sure we are destroying the test DB
-    if (controller.dbName === 'candy_basket_test') {
-      controller.couchServer.db.destroy(controller.dbName);
-      console.log('Database ' + controller.dbName + ' destroyed');
+    if (controllers.dbName === 'candy_basket_test') {
+      controllers.couchServer.db.destroy(controllers.dbName);
+      console.log('Database ' + controllers.dbName + ' destroyed');
     } else {
-      throw Error('controller.dbName is an unexpected DB, did not destroy');
+      throw Error('controllers.dbName is an unexpected DB, did not destroy');
     }
   });
 

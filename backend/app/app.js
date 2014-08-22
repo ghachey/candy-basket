@@ -7,8 +7,8 @@ var bodyParser = require('body-parser');
 var errorHandler = require('errorhandler');
 
 var conf = require('../config');
-var security = require('./middleware/security');
-var controllerApi = require('./controllers/api');
+var middlewares = require('./middlewares');
+var controllers = require('./controllers');
 
 
 /********************************************/
@@ -17,7 +17,7 @@ var controllerApi = require('./controllers/api');
 var api = express();
 
 // Additional Middleware
-api.use(security.headers);
+api.use(middlewares.securityHeaders);
 api.use(favicon(path.join(__dirname, '/public/icons/favicon.ico')));
 api.use(logger('dev'));
 api.use(bodyParser.json());
@@ -26,15 +26,15 @@ if (process.env.NODE_ENV === 'development') {
 }
 
 // Routes
-api.get('/', controllerApi.getMeta);
-api.post('/basket/candies', controllerApi.createCandy);
-api.get('/basket/candies/:uuid', controllerApi.getCandy);
-api.put('/basket/candies/:uuid', controllerApi.updateCandy);
-api.delete('/basket/candies/:uuid', controllerApi.deleteCandy);
-api.get('/basket/candies', controllerApi.getCandies);
-api.get('/basket/candies/tags', controllerApi.getTags);
-api.get('/basket/candies/tags-by-candies', controllerApi.getTagsByCandies);
-api.use(controllerApi.serve404);
+api.get('/', controllers.getMeta);
+api.post('/basket/candies', controllers.createCandy);
+api.get('/basket/candies/:uuid', controllers.getCandy);
+api.put('/basket/candies/:uuid', controllers.updateCandy);
+api.delete('/basket/candies/:uuid', controllers.deleteCandy);
+api.get('/basket/candies', controllers.getCandies);
+api.get('/basket/candies/tags', controllers.getTags);
+api.get('/basket/candies/tags-by-candies', controllers.getTagsByCandies);
+api.use(controllers.serve404);
 
 // Server
 http.createServer(api).listen(conf.port);
