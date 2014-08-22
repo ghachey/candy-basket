@@ -3,11 +3,13 @@
 /* jshint ignore:start */
 // Since should extends Object.prototype JSHint thinks should is not used
 // herein but it is. So I (well the linter) ignore this line
-var should = require('should');
+//var should = require('should');
 /* jshint ignore:end */
 
 var request = require('supertest');
+var should = require('chai').should();
 var nano = require('nano');
+var _ = require('underscore');
 
 var conf = require('../../../config');
 var controller = require('../../../app/controllers/api');
@@ -15,12 +17,16 @@ var controller = require('../../../app/controllers/api');
 request = request(conf.url+':'+conf.port);
 
 describe('The whole controller API', function(){
+
+  // Candy data needed across various test scopes
+  var candy1, candy2, candy3, candy4, candy5;
+  var candyId1, candyId2, candyId3, candyId4, candyId5;
   
   before(function (next) {
     // The app needs to be started manually at the moment, I currently find
     // it easier to see logging in separate console from tests
-    // This sets up only the couchdb test db
-    // Create test DB to execute tests against and then use it
+
+    // Create test DB to execute tests against
     controller.couchServer.db.create(controller.dbName, function(err, body) {
       if (!err) {
         console.log('Database ' + controller.dbName + ' created: ' + body);
@@ -181,22 +187,24 @@ describe('The whole controller API', function(){
     // });
 
     it('should respond with 201 when successfully creating candy (no attachment)', function(done){
-      var candy = {'source': 'http://ghachey.info', 'title': 'Ghislain Hachey Website', 
+      candy1 = {'source': 'http://ghachey.info', 'title': 'Ghislain Hachey Website', 
                    'description': 'Ghislain Hachey website personal stuff and all',
                    'tags': ['Website', 'Personal']};
       request
         .post('/basket/candies')
         .set('Accept', 'application/json')
-        .send(candy)
+        .send(candy1)
+        .expect('Location', /[a-f0-9]{12}/)
         .expect(201)
         .end(function(err, res){
           if (err) {return done(err);}
+          candyId1 = res.header.location;
           return done();
         });
     });
 
     it('should respond with 201 when successfully creating candy (with attachment)', function(done){
-      var candy = {'source': 'http://ghachey.info', 'title': 'Ghislain Hachey Website', 
+      candy2 = {'source': 'http://ghachey.info', 'title': 'Ghislain Hachey Website', 
                    'description': 'Ghislain Hachey website personal stuff and all',
                    'tags': ['Website', 'Personal'],
                    'attachmentFilename': 'temp1.txt',
@@ -205,24 +213,41 @@ describe('The whole controller API', function(){
       request
         .post('/basket/candies')
         .set('Accept', 'application/json')
-        .send(candy)
+        .send(candy2)
+        .expect('Location', /[a-f0-9]{12}/)
         .expect(201)
         .end(function(err, res){
           if (err) {return done(err);}
+          candyId2 = res.header.location;
           return done();
         });
     });
 
     it('should sanitize content before creating and returning 201', function(done){
+      candy3 = {'source': 'http://ghachey.info', 'title': 'Ghislain Hachey Website', 
+                   'description': 'Ghislain Hachey website personal stuff and all' + 
+                   '<script>Hacked!</script>',
+                   'tags': ['Website', 'Personal'],
+                   'attachmentFilename': 'temp1.txt',
+                   'attachment': 'YQo='
+                  };
       request
         .post('/basket/candies')
-        .set('Accept', 'application/json')
-        .expect('Content-Type', /json/)
-      //.expect('Location', /json/)
+        .set('Content-Type', 'application/json')
+        .send(candy3)
+        .expect('Location', /[a-f0-9]{12}/)
         .expect(201)
         .end(function(err, res){
           if (err) {return done(err);}
-          return done();
+          candyId3 = res.header.location;
+          // Retrieve this candy and check to see if description was sanitized
+          request
+          .get('/basket/candies/'+candyId3)
+          .end(function(err, res) {
+            console.log('TEST: ', res.body, candyId3);
+            res.body.description.should.not.equal(candy3.description);
+            return done();
+          });
         });
     });
 
@@ -231,37 +256,36 @@ describe('The whole controller API', function(){
 
   describe('GET /basket/candies/:uuid', function() {
     
-    it('should respond 500 when problem retrieving CouchDB', function(done){
-      // Simulate a connection problem with CouchDB
-      request
-        .get('/basket/candies/USEIDFROMCANDYCREATEABOVE')
-        .set('Accept', 'application/json')
-        .expect('Content-Type', /json/)
-        .expect(500)
-        .end(function(err, res){
-          if (err) {return done(err);}
-          return done();
-        });
-    });
+    // it('should respond 500 when problem retrieving CouchDB', function(done){
+    //   // Simulate a connection problem with CouchDB
+    //   request
+    //     .get('/basket/candies/USEIDFROMCANDYCREATEABOVE')
+    //     .set('Accept', 'application/json')
+    //     .expect('Content-Type', /json/)
+    //     .expect(500)
+    //     .end(function(err, res){
+    //       if (err) {return done(err);}
+    //       return done();
+    //     });
+    // });
 
-    it('should respond 500 when problem retrieving attachment from ownCloud', function(done){
-      // Simulate a connection problem with ownCloud
-      request
-        .get('/basket/candies/USEIDFROMCANDYCREATEABOVE')
-        .set('Accept', 'application/json')
-        .expect('Content-Type', /json/)
-        .expect(500)
-        .end(function(err, res){
-          if (err) {return done(err);}
-          return done();
-        });
-    });
+    // it('should respond 500 when problem retrieving attachment from ownCloud', function(done){
+    //   // Simulate a connection problem with ownCloud
+    //   request
+    //     .get('/basket/candies/USEIDFROMCANDYCREATEABOVE')
+    //     .set('Accept', 'application/json')
+    //     .expect('Content-Type', /json/)
+    //     .expect(500)
+    //     .end(function(err, res){
+    //       if (err) {return done(err);}
+    //       return done();
+    //     });
+    // });
 
     it('should respond 404 if resource does not exists', function(done){
+      var nonExistantCandy = '8fd818a4f18e49d6abbc2dfa064bbd22';
       request
-        .get('/basket/candies/PUTSOMEUUIDHERE')
-        .set('Accept', 'application/json')
-        .expect('Content-Type', /json/)
+        .get('/basket/candies/'+nonExistantCandy)
         .expect(404)
         .end(function(err, res){
           if (err) {return done(err);}
@@ -270,27 +294,43 @@ describe('The whole controller API', function(){
     });
 
     it('should respond 200 and the candy as JSON (no attachment)', function(done){
-      
       request
-        .get('/basket/candies/USEIDFROMCANDYCREATEABOVE')
+        .get('/basket/candies/'+candyId1)
         .set('Accept', 'application/json')
         .expect('Content-Type', /json/)
         .expect(200)
         .end(function(err, res){
           if (err) {return done(err);}
+          res.body._id.should.equal(candyId1);
+          res.body.source.should.equal(candy1.source);
+          res.body.title.should.equal(candy1.title);
+          should.exist(res.body.description);
+          res.body.tags.should.be.instanceOf(Array);
+          _.zip(res.body.tags, candy1.tags).every(function(tagPair) {
+            tagPair[0].should.equal(tagPair[1]);
+          });
           return done();
         });
     });
 
     it('should respond 200 and the candy as JSON (with attachment)', function(done){
-      
       request
-        .get('/basket/candies/USEIDFROMCANDYCREATEABOVE')
+        .get('/basket/candies/'+candyId2)
         .set('Accept', 'application/json')
         .expect('Content-Type', /json/)
         .expect(200)
         .end(function(err, res){
           if (err) {return done(err);}
+          res.body._id.should.equal(candyId2);
+          res.body.source.should.equal(candy2.source);
+          res.body.title.should.equal(candy2.title);
+          should.exist(res.body.description);
+          res.body.attachmentFilename.should.equal(candy2.attachmentFilename);
+          res.body.attachment.should.equal(candy2.attachment);
+          res.body.tags.should.be.instanceOf(Array);
+          _.zip(res.body.tags, candy2.tags).every(function(tagPair) {
+            tagPair[0].should.equal(tagPair[1]);
+          });
           return done();
         });
     });

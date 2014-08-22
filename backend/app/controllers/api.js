@@ -11,7 +11,7 @@
 
 var nano = require('nano');
 var validator = require('validator');
-//var iz = require('iz'); 
+var sanitizeHtml = require('sanitize-html');
 
 var conf = require('../../config');
 
@@ -24,15 +24,16 @@ var couchdb = couchServer.db.use(dbName);
  * 
  * Private function to validate candies before attempting to save them
  * to CouchDB.  Further validation on a Candy should be added
- * here. Make use of a combination of two validation libraries:
+ * here. Make use of a combination of validation and sanitization libraries:
  * validator with more sophisticated string check and validations and
- * iz with stronger support for other data type checks
+ * sanitize-html as flexible user submitted HTML cleanup
  *
  * TODO - Push this functionality as a middleware passed as additional callback
  * to routes?!?!
  *
  * @param {Object} candy A candy Javascript object
- * @return {Boolean} returns true only if all properties validate
+ * @return {Object} an Object with keys for valid status, message,
+ * cleaned up description field
  */
 var validateCandy = function(candy) {
  
@@ -48,10 +49,10 @@ var validateCandy = function(candy) {
   /* jshint ignore:end */
 
   if (!validator.isURL(candy.source, urlOptions)) {return {'status': false, 
-                                                           'err': 'Bad source'};}
-  if (candy.title === undefined) {return {'status': false, 'err': 'No title'};}
+                                                           'msg': 'Bad source'};}
+  if (candy.title === undefined) {return {'status': false, 'msg': 'No title'};}
   if (candy.description === undefined) {return {'status': false, 
-                                                'err': 'No description'};}
+                                                'msg': 'No description'};}
   if ((candy.attachmentFilename && candy.attachment && 
       validator.isBase64(candy.attachment)) ||
      (!candy.attachmentFilename && !candy.attachment)) {
@@ -60,11 +61,15 @@ var validateCandy = function(candy) {
     // or
     // We don't have any filename or attachment at all, we're still good
   } else {
-    return {'status': false, 'err': 'Bad attachment'};
+    return {'status': false, 'msg': 'Bad attachment'};
   }
-  if (!Array.isArray(candy.tags)) {return {'status': false, 'err': 'Tags not an array'};}
+  if (!Array.isArray(candy.tags)) {return {'status': false, 'msg': 'Tags not an array'};}
 
-  return {'status': true, 'err': 'Data Valid'}; 
+  // Sanitize user submitted HTML to your taste here, 
+  // see https://github.com/punkave/sanitize-html for other then default cleanup  
+  var cleaned = sanitizeHtml(candy.description);
+
+  return {'status': true, 'msg': 'Data Valid', 'description': cleaned}; 
 };
 
 var getMeta = function(req, res) {
@@ -74,8 +79,10 @@ var getMeta = function(req, res) {
 var createCandy = function(req, res) {
   console.log('Body: ', req.body);
   if (validateCandy(req.body).status) {
+    req.body.description = validateCandy(req.body).description;
     couchdb.insert(req.body, function(err, body) {
       if (!err) {
+        res.set('Location', body.id); // Set Location header to resource ID (couch ID)
         res.send(201);
         console.log('Insert success response: ', body);
       } else {
@@ -84,13 +91,23 @@ var createCandy = function(req, res) {
       }
     });
   } else {
-    console.error('Validation error: ', validateCandy(req.body).err);
-    res.send(400, validateCandy(req.body).err);
+    console.error('Validation error: ', validateCandy(req.body).msg);
+    res.send(400, validateCandy(req.body).msg);
   }
 };
 
 var getCandy = function(req, res) {
-  res.send({'name': 'Candy Basket', 'version': 0.3});
+  var uuid = req.params.uuid;
+
+  couchdb.get(uuid, function(err, body) {
+    if (!err) {
+      console.log('TEST GETCANDY: ', body);
+      res.send(body);
+    } else {
+      res.send(404, err);
+    }
+  });
+  
 };
 
 var updateCandy = function(req, res) {

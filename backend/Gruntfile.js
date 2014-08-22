@@ -81,7 +81,7 @@ module.exports = function (grunt) {
       test: {
         options: {
           reporter: 'spec',
-          require: 'should',
+          require: 'chai',
           ui: 'bdd'
           //timeout: 20000
         },
