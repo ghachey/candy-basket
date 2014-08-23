@@ -5,10 +5,12 @@
  * The API is consumed *only* by the website application frontend.
  * 
  * At the moment, code here directly talks to the CouchDB RESTful 
- * API. I may create a tiny abstraction layer in ./models/couchdb.js
- * if I see the benefits.
+ * API.
+ * 
+ * @see ./models.js for more details
  */
 
+var async = require('async');
 var nano = require('nano');
 var validator = require('validator');
 var sanitizeHtml = require('sanitize-html');
@@ -29,7 +31,7 @@ var couchdb = couchServer.db.use(dbName);
  * sanitize-html as flexible user submitted HTML cleanup
  *
  * TODO - Push this functionality as a middleware passed as additional callback
- * to routes?!?!
+ * to routes?!?! I don't see the benefit in further developing this now though
  *
  * @param {Object} candy A candy Javascript object
  * @return {Object} an Object with keys for valid status, message,
@@ -47,6 +49,10 @@ var validateCandy = function(candy) {
     allow_underscores: false 
   };
   /* jshint ignore:end */
+
+  if (candy._id && !validator.matches(candy._id, /[0-9a-f]{32}/)) {
+    return {'status': false, 'msg': 'Bad uuid'};
+  }
 
   if (!validator.isURL(candy.source, urlOptions)) {return {'status': false, 
                                                            'msg': 'Bad source'};}
@@ -101,17 +107,79 @@ var getCandy = function(req, res) {
 
   couchdb.get(uuid, function(err, body) {
     if (!err) {
-      console.log('TEST GETCANDY: ', body);
       res.send(body);
     } else {
-      res.send(404, err);
+      /* jshint ignore:start */
+      // CouchDB response not inline with my JS conventions
+      res.send(err.status_code, err);
+      /* jshint ignore:end */
     }
   });
   
 };
 
+/**
+ * Updating CouchDB document correctly should following the following algortihm:
+ *
+ *   (1) Get document
+ *   (2) Save the _rev
+ *   (3) Apply changes
+ *   (4) Try to send updated document with saved _rev
+ *   (5) Go to step (1) in case of a 409
+ */
 var updateCandy = function(req, res) {
-  res.send({'name': 'Candy Basket', 'version': 0.3});
+  var uuid = req.params.uuid;
+  var rev;
+  // No point going further if data to update do not validate
+  if (validateCandy(req.body).status) { 
+
+    async.series([
+      function(callback){
+        // Get document (rev)
+        couchdb.get(uuid, function(err, body) {
+          if (!err) {
+            // Save rev
+            rev = body._rev;
+            callback(null);
+          } else {
+            // Do I need to run callback(err) or does res.send the err sufficient?
+            // Any memory implications?
+            /* jshint ignore:start */
+            // CouchDB response not inline with my JS conventions
+            res.send(err.status_code, err);
+            /* jshint ignore:end */
+            callback(err);
+          }
+        });
+      },
+      function(callback){
+        // Apply changes
+        req.body.description = validateCandy(req.body).description;
+        req.body._rev = rev;
+        // Try sending updates
+        couchdb.insert(req.body, function(err, body) {
+          if (!err) {
+            // Do I need to call callback(null);
+            res.set('Location', body.id); // Set Location header to resource ID (couch ID)
+            res.send(200);
+            console.log('Insert success response: ', body);
+            callback(null);
+          } else if (err.status === 409) { // Update conflict, try again
+            // Try again, not yet implemented, will be important when many users
+            // using service in higher latency context
+          } else  {
+            console.log('Error inserting document: ', err);
+            res.send(500, err);
+            callback(err);
+          }
+        });
+      }
+    ]);
+
+  } else {
+    console.error('Validation error: ', validateCandy(req.body).msg);
+    res.send(400, validateCandy(req.body).msg);
+  }
 };
 
 var deleteCandy = function(req, res) {

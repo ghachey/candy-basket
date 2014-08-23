@@ -1,11 +1,5 @@
 'use strict';
 
-/* jshint ignore:start */
-// Since should extends Object.prototype JSHint thinks should is not used
-// herein but it is. So I (well the linter) ignore this line
-//var should = require('should');
-/* jshint ignore:end */
-
 var request = require('supertest');
 var should = require('chai').should();
 var nano = require('nano');
@@ -188,8 +182,8 @@ describe('The whole controller API', function(){
 
     it('should respond with 201 when successfully creating candy (no attachment)', function(done){
       candy1 = {'source': 'http://ghachey.info', 'title': 'Ghislain Hachey Website', 
-                   'description': 'Ghislain Hachey website personal stuff and all',
-                   'tags': ['Website', 'Personal']};
+                'description': 'Ghislain Hachey website personal stuff and all',
+                'tags': ['Website', 'Personal']};
       request
         .post('/basket/candies')
         .set('Accept', 'application/json')
@@ -205,11 +199,11 @@ describe('The whole controller API', function(){
 
     it('should respond with 201 when successfully creating candy (with attachment)', function(done){
       candy2 = {'source': 'http://ghachey.info', 'title': 'Ghislain Hachey Website', 
-                   'description': 'Ghislain Hachey website personal stuff and all',
-                   'tags': ['Website', 'Personal'],
-                   'attachmentFilename': 'temp1.txt',
-                   'attachment': 'YQo='
-                  };
+                'description': 'Ghislain Hachey website personal stuff and all',
+                'tags': ['Website', 'Personal'],
+                'attachmentFilename': 'temp1.txt',
+                'attachment': 'YQo='
+               };
       request
         .post('/basket/candies')
         .set('Accept', 'application/json')
@@ -225,12 +219,12 @@ describe('The whole controller API', function(){
 
     it('should sanitize content before creating and returning 201', function(done){
       candy3 = {'source': 'http://ghachey.info', 'title': 'Ghislain Hachey Website', 
-                   'description': 'Ghislain Hachey website personal stuff and all' + 
-                   '<script>Hacked!</script>',
-                   'tags': ['Website', 'Personal'],
-                   'attachmentFilename': 'temp1.txt',
-                   'attachment': 'YQo='
-                  };
+                'description': 'Ghislain Hachey website personal stuff and all' + 
+                '<script>Hacked!</script>',
+                'tags': ['Website', 'Personal'],
+                'attachmentFilename': 'temp1.txt',
+                'attachment': 'YQo='
+               };
       request
         .post('/basket/candies')
         .set('Content-Type', 'application/json')
@@ -242,12 +236,11 @@ describe('The whole controller API', function(){
           candyId3 = res.header.location;
           // Retrieve this candy and check to see if description was sanitized
           request
-          .get('/basket/candies/'+candyId3)
-          .end(function(err, res) {
-            console.log('TEST: ', res.body, candyId3);
-            res.body.description.should.not.equal(candy3.description);
-            return done();
-          });
+            .get('/basket/candies/'+candyId3)
+            .end(function(err, res) {
+              res.body.description.should.not.equal(candy3.description);
+              return done();
+            });
         });
     });
 
@@ -340,14 +333,14 @@ describe('The whole controller API', function(){
   describe('PUT /basket/candies/:uuid', function() {
 
     it('should respond with 400 Bad Request for invalid source input', function(done){
-      // var candy = {'source': 'htp://ghachey.info', 
-      //              'title': 'Ghislain Hachey Website Updated', 
-      //              'description': 'Updated Ghislain Hachey website personal stuff and all',
-      //              'tags': ['Website', 'Personal', 'Updated']};
+      var candy = {'source': 'htp://ghachey.info', 
+                   'title': 'Ghislain Hachey Website Updated', 
+                   'description': 'Updated Ghislain Hachey website personal stuff ...',
+                   'tags': ['Website', 'Personal', 'Updated']};
       request
-        .post('/basket/candies')
+        .put('/basket/candies/'+candyId1)
         .set('Accept', 'application/json')
-        .expect('Content-Type', /json/)
+        .send(candy)
         .expect(400)
         .end(function(err, res){
           if (err) {return done(err);}
@@ -356,13 +349,13 @@ describe('The whole controller API', function(){
     });
 
     it('should respond with 400 Bad Request for missing title input', function(done){
-      // var candy = {'source': 'htp://ghachey.info',
-      //              'description': 'Updated Ghislain Hachey website personal stuff and all',
-      //              'tags': ['Website', 'Personal', 'Updated']};
+      var candy = {'source': 'htp://ghachey.info',
+                   'description': 'Updated Ghislain Hachey website personal stuff ...',
+                   'tags': ['Website', 'Personal', 'Updated']};
       request
-        .post('/basket/candies')
+        .put('/basket/candies/'+candyId1)
         .set('Accept', 'application/json')
-        .expect('Content-Type', /json/)
+        .send(candy)
         .expect(400)
         .end(function(err, res){
           if (err) {return done(err);}
@@ -371,13 +364,13 @@ describe('The whole controller API', function(){
     });
 
     it('should respond with 400 Bad Request for missing description input', function(done){
-      // var candy = {'source': 'htp://ghachey.info', 
-      //              'title': 'Ghislain Hachey Website Updated', 
-      //              'tags': ['Website', 'Personal']};
+      var candy = {'source': 'htp://ghachey.info', 
+                   'title': 'Ghislain Hachey Website Updated', 
+                   'tags': ['Website', 'Personal']};
       request
         .post('/basket/candies')
         .set('Accept', 'application/json')
-        .expect('Content-Type', /json/)
+        .send(candy)
         .expect(400)
         .end(function(err, res){
           if (err) {return done(err);}
@@ -385,55 +378,115 @@ describe('The whole controller API', function(){
         });
     });
 
-    it('should respond 500 when problem retrieving CouchDB', function(done){
-      // Simulate a connection problem with CouchDB
+    it('should respond 400 Bad Request for bad UUID in data for updates', function(done){
+      var candy1Updated = {
+        '_id': '8fd818a4f18e49d6abbc2dfa064bbd2', // invalid UUID
+        'source': 'http://ghachey.info', 'title': 'Ghislain Hachey Website Updated', 
+        'description': 'Updated Ghislain Hachey website personal stuff and all',
+        'tags': ['Website', 'Personal', 'Updated']
+      };
       request
-        .get('/basket/candies/USEIDFROMCANDYCREATEABOVE')
+        .put('/basket/candies/'+candyId1)
         .set('Accept', 'application/json')
-        .expect('Content-Type', /json/)
-        .expect(500)
+        .send(candy1Updated)
+        .expect(400)
         .end(function(err, res){
           if (err) {return done(err);}
           return done();
         });
     });
 
-    it('should respond 500 when problem uploading attachment to ownCloud', function(done){
-      // Simulate a connection problem with ownCloud
-      request
-        .get('/basket/candies/USEIDFROMCANDYCREATEABOVE')
-        .set('Accept', 'application/json')
-        .expect('Content-Type', /json/)
-        .expect(500)
-        .end(function(err, res){
-          if (err) {return done(err);}
-          return done();
-        });
-    });
+    // it('should respond 500 when problem retrieving CouchDB', function(done){
+    //   // Simulate a connection problem with CouchDB
+    //   request
+    //     .get('/basket/candies/USEIDFROMCANDYCREATEABOVE')
+    //     .set('Accept', 'application/json')
+    //     .expect('Content-Type', /json/)
+    //     .expect(500)
+    //     .end(function(err, res){
+    //       if (err) {return done(err);}
+    //       return done();
+    //     });
+    // });
 
-    it('should respond 200 Candy Updated Successfully', function(done){
-      
+    // it('should respond 500 when problem uploading attachment to ownCloud', function(done){
+    //   // Simulate a connection problem with ownCloud
+    //   request
+    //     .get('/basket/candies/USEIDFROMCANDYCREATEABOVE')
+    //     .set('Accept', 'application/json')
+    //     .expect('Content-Type', /json/)
+    //     .expect(500)
+    //     .end(function(err, res){
+    //       if (err) {return done(err);}
+    //       return done();
+    //     });
+    // });
+
+    it('should respond 200 Candy Updated Successfully (no attachment)', function(done){
+      var candy1Updated = {
+        '_id': candyId1,
+        'source': 'http://ghachey.info', 'title': 'Ghislain Hachey Website Updated', 
+        'description': 'Updated Ghislain Hachey website personal stuff and all',
+        'tags': ['Website', 'Personal', 'Updated']
+      };
       request
-        .get('/basket/candies/USEIDFROMCANDYCREATEABOVE')
+        .put('/basket/candies/'+candyId1)
         .set('Accept', 'application/json')
-        .expect('Content-Type', /json/)
+        .send(candy1Updated)
+        .expect('Location', /[a-f0-9]{12}/)
         .expect(200)
         .end(function(err, res){
           if (err) {return done(err);}
-          return done();
+          // Retrieve updated candy and verify updation :)
+          request
+            .get('/basket/candies/'+candyId1)
+            .end(function(err, res) {
+              res.body._id.should.equal(candyId1);
+              res.body.source.should.equal(candy1Updated.source);
+              res.body.title.should.equal(candy1Updated.title);
+              should.exist(res.body.description);
+              res.body.tags.should.be.instanceOf(Array);
+              _.zip(res.body.tags, candy1Updated.tags).every(function(tagPair) {
+                tagPair[0].should.equal(tagPair[1]);
+              });              
+              return done();
+            });
         });
     });
 
-    it('should respond 200 Candy Updated Successfully', function(done){
-      
+    it('should respond 200 Candy Updated Successfully (with attachment)', function(done){
+      var candy2Updated = {
+        '_id': candyId2,
+        'source': 'http://ghachey.info', 'title': 'Updated Ghislain Hachey Website', 
+        'description': 'Updated Ghislain Hachey website personal stuff and all',
+        'tags': ['Website', 'Personal', 'Updated'],
+        'attachmentFilename': 'temp3.txt',
+        'attachment': 'Ygo='
+      };
       request
-        .get('/basket/candies/USEIDFROMCANDYCREATEABOVE')
+        .put('/basket/candies/'+candyId2)
         .set('Accept', 'application/json')
-        .expect('Content-Type', /json/)
+        .expect('Location', /[a-f0-9]{12}/)
+        .send(candy2Updated)
         .expect(200)
         .end(function(err, res){
           if (err) {return done(err);}
-          return done();
+          // Retrieve updated candy and verify updation :)
+          request
+            .get('/basket/candies/'+candyId2)
+            .end(function(err, res) {
+              res.body._id.should.equal(candyId2);
+              res.body.source.should.equal(candy2Updated.source);
+              res.body.title.should.equal(candy2Updated.title);
+              should.exist(res.body.description);
+              res.body.attachmentFilename.should.equal(candy2Updated.attachmentFilename);
+              res.body.attachment.should.equal(candy2Updated.attachment);
+              res.body.tags.should.be.instanceOf(Array);
+              _.zip(res.body.tags, candy2Updated.tags).every(function(tagPair) {
+                tagPair[0].should.equal(tagPair[1]);
+              });              
+              return done();
+            });
         });
     });
 
