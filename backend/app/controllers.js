@@ -161,6 +161,8 @@ var updateCandy = function(req, res) {
         // Apply changes
         req.body.description = validateCandy(req.body).description;
         req.body._rev = rev;
+        req.body.date = new Date().toJSON(); // Date will become last update date
+        req.body.private = false;
         // Try sending updates
         couchdb.insert(req.body, function(err, body) {
           if (!err) {
@@ -277,14 +279,15 @@ var getCandies = function(req, res) {
 /**
  * Gets a list of tags (with their counts) for use in the frontend
  * autocomplete and tag cloud features. Returns it in a convenient way
- * for use in Angular.
+ * for use in Angular. This is a reduced version of getTagsByCandies
+ * and I don't think it is used anymore though it does not hurt to leave it here.
  */
 var getTags = function(req, res) {
   var tags = [];
   var tagsCounts = [];
   var viewData;
 
-  couchdb.view('docs', 'tags_with_counts', function(err, body) {
+  couchdb.view('docs', 'tags_with_counts?group=True', function(err, body) {
     if (!err) {
       body.rows.forEach(function(doc) {
         tags.push(doc.key);
@@ -293,7 +296,6 @@ var getTags = function(req, res) {
       /* jshint ignore:start */
       viewData = {'tags' : {'tags': tags, 'tags_counts': tagsCounts}};
       /* jshint ignore:end */
-      console.log('TEST TAGS: ', viewData);
       res.send(200, viewData);
     } else {
       console.error('Error getting view: ', err);
@@ -302,14 +304,45 @@ var getTags = function(req, res) {
       /* jshint ignore:end */
     }
   });
+
 };
 
+/** 
+ * Gets a list of candies and their tags for use in the frontend
+ * autocomplete and tag cloud features. Getting an unreduce version will
+ * make it easier to have dynamic computation on the frontend
+ * (e.g. dynamic tags cloud) Returns it in a convenient way for use in
+ * Angular.  
+ */
 var getTagsByCandies = function(req, res) {
-  res.send({'name': 'Candy Basket', 'version': 0.3});
+  var tags = [];
+  var viewData;
+
+  couchdb.view('docs', 'tags_by_candy_id', function(err, body) {
+    if (!err) {
+      body.rows.forEach(function(doc) {
+        tags.push({
+          'candy_id': doc.key[0],
+          'date': doc.key[1],
+          'tag': doc.value.map(function(tag) {return tag.toLowerCase();})
+        });
+      });
+      /* jshint ignore:start */
+      viewData = {'tags_by_candies' : {'tags_by_candies': tags}};
+      /* jshint ignore:end */
+      res.send(200, viewData);
+    } else {
+      console.error('Error getting view: ', err);
+      /* jshint ignore:start */
+      res.send(err.status_code, err);
+      /* jshint ignore:end */
+    }
+  });
+ 
 };
 
 var serve404 = function(req, res) {
-  res.send({'name': 'Candy Basket', 'version': 0.3});
+  res.send(404);
 };
 
 

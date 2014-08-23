@@ -58,7 +58,7 @@ describe('The whole controller API', function(){
           }
         }, '_design/docs', function (error, response) {
           if (error) {
-            throw new ('Error creating views' + error);
+            throw new Error('Error creating views' + error);
           } else {
             console.log('Created views: ', response);
             next();
@@ -666,6 +666,17 @@ describe('The whole controller API', function(){
     // });
 
     it('should respond 200 and the list of tags with counts', function(done){
+      /* jshint ignore:start */
+      var viewResult = {
+        'tags': {
+          'tags': ['Personal','Updated','Website'],
+          'tags_counts': [
+            {'word':'Personal','count':2},
+            {'word':'Updated','count':1},
+            {'word':'Website','count':2}
+          ]
+        }
+      };
       request
         .get('/basket/candies/tags')
         .set('Accept', 'application/json')
@@ -674,27 +685,43 @@ describe('The whole controller API', function(){
         .end(function(err, res){
           if (err) {return done(err);}
           return done();
+          res.body.should.deep.equal(viewResult);
         });
+      /* jshint ignore:end */
     });
-
+      
   });
 
   describe('GET /basket/candies/tags-by-candies', function() {
 
-    it('should respond 500 when problem retrieving tags by candy ids from CouchDB', function(done){
-      // Simulate a connection problem with CouchDB
-      request
-        .get('/basket/candies/tags-by-candies')
-        .set('Accept', 'application/json')
-        .expect('Content-Type', /json/)
-        .expect(500)
-        .end(function(err, res){
-          if (err) {return done(err);}
-          return done();
-        });
-    });
+    // it('should respond 500 when problem retrieving tags by candy ids from CouchDB', function(done){
+    //   // Simulate a connection problem with CouchDB
+    //   request
+    //     .get('/basket/candies/tags-by-candies')
+    //     .set('Accept', 'application/json')
+    //     .expect('Content-Type', /json/)
+    //     .expect(500)
+    //     .end(function(err, res){
+    //       if (err) {return done(err);}
+    //       return done();
+    //     });
+    // });
 
     it('should respond 200 and the list of candies by id', function(done){
+      /* jshint ignore:start */
+      var viewResult = {
+        'tags_by_candies': {
+          'tags_by_candies':
+          [
+            {
+              'candy_id': candyId2,
+              'tag': ['website','personal','updated']},
+            {
+              'candy_id': candyId3,
+              'tag': ['website','personal']}
+          ]
+        }
+      };
       request
         .get('/basket/candies/tags-by-candies')
         .set('Accept', 'application/json')
@@ -702,8 +729,15 @@ describe('The whole controller API', function(){
         .expect(200)
         .end(function(err, res){
           if (err) {return done(err);}
+          res.body.tags_by_candies.tags_by_candies[0].candy_id.should.equal(candyId2);
+          res.body.tags_by_candies.tags_by_candies[0].tag.should.deep.equal(
+            viewResult.tags_by_candies.tags_by_candies[0].tag);
+          res.body.tags_by_candies.tags_by_candies[1].candy_id.should.equal(candyId3);
+          res.body.tags_by_candies.tags_by_candies[1].tag.should.deep.equal(
+            viewResult.tags_by_candies.tags_by_candies[1].tag);
           return done();
         });
+      /* jshint ignore:end */
     });
 
   });

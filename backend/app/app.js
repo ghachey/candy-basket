@@ -27,13 +27,13 @@ if (process.env.NODE_ENV === 'development') {
 
 // Routes
 api.get('/', controllers.getMeta);
+api.get('/basket/candies', controllers.getCandies);
+api.get('/basket/candies/tags', controllers.getTags);
+api.get('/basket/candies/tags-by-candies', controllers.getTagsByCandies);
 api.post('/basket/candies', controllers.createCandy);
 api.get('/basket/candies/:uuid', controllers.getCandy);
 api.put('/basket/candies/:uuid', controllers.updateCandy);
 api.delete('/basket/candies/:uuid', controllers.deleteCandy);
-api.get('/basket/candies', controllers.getCandies);
-api.get('/basket/candies/tags', controllers.getTags);
-api.get('/basket/candies/tags-by-candies', controllers.getTagsByCandies);
 api.use(controllers.serve404);
 
 // Server
