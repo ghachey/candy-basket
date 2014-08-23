@@ -183,7 +183,45 @@ var updateCandy = function(req, res) {
 };
 
 var deleteCandy = function(req, res) {
-  res.send({'name': 'Candy Basket', 'version': 0.3});
+  var uuid = req.params.uuid;
+  var rev;
+
+  async.series([
+    function(callback){
+      // Get document (rev)
+      couchdb.get(uuid, function(err, body) {
+        if (!err) {
+          // Save rev
+          rev = body._rev;
+          callback(null);
+        } else {
+          // Do I need to run callback(err) or does res.send the err sufficient?
+          // Any memory implications?
+          /* jshint ignore:start */
+          // CouchDB response not inline with my JS conventions
+          res.send(err.status_code, err);
+          /* jshint ignore:end */
+          callback(err);
+        }
+      });
+    },
+    function(callback){
+      // Destroy
+      couchdb.destroy(uuid, rev, function(err, body) {
+        if (!err) {
+          // Do I need to call callback(null);
+          res.send(200);
+          console.log('Delete success response: ', body);
+          callback(null);
+        } else  {
+          console.log('Error deleting document: ', err);
+          res.send(500, err);
+          callback(err);
+        }
+      });
+    }
+  ]);
+
 };
 
 var getCandies = function(req, res) {

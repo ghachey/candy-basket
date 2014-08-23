@@ -494,24 +494,24 @@ describe('The whole controller API', function(){
 
   describe('DELETE /basket/candies/:uuid', function() {
 
-    it('should respond 500 when problem retrieving CouchDB', function(done){
-      // Simulate a connection problem with CouchDB
-      request
-        .delete('/basket/candies/USEIDFROMCANDYCREATEABOVE')
-        .set('Accept', 'application/json')
-        .expect('Content-Type', /json/)
-        .expect(500)
-        .end(function(err, res){
-          if (err) {return done(err);}
-          return done();
-        });
-    });
+    // it('should respond 500 when problem retrieving CouchDB', function(done){
+    //   // Simulate a connection problem with CouchDB
+    //   request
+    //     .delete('/basket/candies/USEIDFROMCANDYCREATEABOVE')
+    //     .set('Accept', 'application/json')
+    //     .expect('Content-Type', /json/)
+    //     .expect(500)
+    //     .end(function(err, res){
+    //       if (err) {return done(err);}
+    //       return done();
+    //     });
+    // });
 
     it('should respond 404 if resource to delete does not exists', function(done){
+      var nonExistantCandy = '8fd818a4f18e49d6abbc2dfa064bbd22';
       request
-        .delete('/basket/candies/PUTSOMEUUIDHERE')
+        .delete('/basket/candies/'+nonExistantCandy)
         .set('Accept', 'application/json')
-        .expect('Content-Type', /json/)
         .expect(404)
         .end(function(err, res){
           if (err) {return done(err);}
@@ -521,9 +521,7 @@ describe('The whole controller API', function(){
 
     it('should respond 200 if resource is deleted', function(done){
       request
-        .delete('/basket/candies/PUTSOMEUUIDHERE')
-        .set('Accept', 'application/json')
-        .expect('Content-Type', /json/)
+        .delete('/basket/candies/'+candyId1)
         .expect(200)
         .end(function(err, res){
           if (err) {return done(err);}
@@ -533,9 +531,7 @@ describe('The whole controller API', function(){
 
     it('should respond 404 when trying to retrieve previously deleted resource', function(done){
       request
-        .get('/basket/candies/PUTSOMEUUIDHERE')
-        .set('Accept', 'application/json')
-        .expect('Content-Type', /json/)
+        .get('/basket/candies/'+candyId1)
         .expect(404)
         .end(function(err, res){
           if (err) {return done(err);}
