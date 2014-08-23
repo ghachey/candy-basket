@@ -1,5 +1,6 @@
 'use strict';
 
+var async = require('async');
 var request = require('supertest');
 var should = require('chai').should();
 var nano = require('nano');
@@ -24,10 +25,49 @@ describe('The whole controller API', function(){
     controllers.couchServer.db.create(controllers.dbName, function(err, body) {
       if (!err) {
         console.log('Database ' + controllers.dbName + ' created: ' + body);
-        next();
+        // Create views in test DB
+        /* jshint ignore:start */
+        controllers.couchdb.insert({
+          'views': {
+            'candies_by_id': {
+              'map': function(doc) {
+                if (doc._id){
+                  emit(doc._id, doc);
+                }
+              }
+            },
+            'tags_by_candy_id': {
+              'map': function(doc) {
+                if (doc.tags){
+                  emit([doc._id,doc.date], doc.tags);
+                }  
+              }
+            },
+            'tags_with_counts': {
+              'map': function(doc) {
+                if(doc.tags) {
+                  doc.tags.forEach(function(tag) {
+                    emit(tag, 1);
+                  });
+                }
+              },
+              'reduce': function(keys, values) {
+                return sum(values);
+              }
+            }
+          }
+        }, '_design/docs', function (error, response) {
+          if (error) {
+            throw new ('Error creating views' + error);
+          } else {
+            console.log('Created views: ', response);
+            next();
+          }
+        });
+        /* jshint ignore:end */
       } else {
         console.error('Error creating ' + controllers.dbName + err);
-        throw err; // and stop testing
+        throw new Error('Error creating ' + controllers.dbName + err); // and stop testing
       }
     });
   });
@@ -543,47 +583,87 @@ describe('The whole controller API', function(){
 
   describe('GET /basket/candies', function() {
 
-    it('should respond 500 when problem retrieving candies from CouchDB', function(done){
-      // Simulate a connection problem with CouchDB
-      request
-        .get('/basket/candies/USEIDFROMCANDYCREATEABOVE')
-        .set('Accept', 'application/json')
-        .expect('Content-Type', /json/)
-        .expect(500)
-        .end(function(err, res){
-          if (err) {return done(err);}
-          return done();
-        });
-    });
+    // it('should respond 500 when problem retrieving candies from CouchDB', function(done){
+    //   // Simulate a connection problem with CouchDB
+    //   request
+    //     .get('/basket/candies/USEIDFROMCANDYCREATEABOVE')
+    //     .set('Accept', 'application/json')
+    //     .expect('Content-Type', /json/)
+    //     .expect(500)
+    //     .end(function(err, res){
+    //       if (err) {return done(err);}
+    //       return done();
+    //     });
+    // });
 
     it('should respond 200 and the list of candies by id', function(done){
+      /* jshint ignore:start */
+      var viewResult = {
+        'candies_by_id': 
+        [ { _id: candyId2,
+            source: 'http://ghachey.info',
+            title: 'Updated Ghislain Hachey Website',
+            description: 'Updated Ghislain Hachey website personal stuff and all',
+            tags: [ 'website', 'personal', 'updated' ] },
+          { _id: candyId3,
+            source: 'http://ghachey.info',
+            title: 'Ghislain Hachey Website',
+            description: 'Ghislain Hachey website personal stuff and all',
+            tags: [ 'website', 'personal' ] } 
+        ]
+      };
       request
-        .get('/basket/candies/PUTSOMEUUIDHERE')
+        .get('/basket/candies')
         .set('Accept', 'application/json')
         .expect('Content-Type', /json/)
-        .expect(404)
+        .expect(200)
         .end(function(err, res){
           if (err) {return done(err);}
+          res.body.candies_by_id[0]._id.should.equal(
+            viewResult.candies_by_id[0]._id);
+          res.body.candies_by_id[0].source.should.equal(
+            viewResult.candies_by_id[0].source);
+          res.body.candies_by_id[0].description.should.equal(
+            viewResult.candies_by_id[0].description);
+          res.body.candies_by_id[0].title.should.equal(
+            viewResult.candies_by_id[0].title);
+          res.body.candies_by_id[0].description.should.equal(
+            viewResult.candies_by_id[0].description);
+          res.body.candies_by_id[0].tags.should.deep.equal(
+            viewResult.candies_by_id[0].tags);
+          res.body.candies_by_id[1]._id.should.equal(
+            viewResult.candies_by_id[1]._id);
+          res.body.candies_by_id[1].source.should.equal(
+            viewResult.candies_by_id[1].source);
+          res.body.candies_by_id[1].description.should.equal(
+            viewResult.candies_by_id[1].description);
+          res.body.candies_by_id[1].title.should.equal(
+            viewResult.candies_by_id[1].title);
+          res.body.candies_by_id[1].description.should.equal(
+            viewResult.candies_by_id[1].description);
+          res.body.candies_by_id[1].tags.should.deep.equal(
+            viewResult.candies_by_id[1].tags);
           return done();
         });
+      /* jshint ignore:end */
     });
 
   });
 
   describe('GET /basket/candies/tags', function() {
 
-    it('should respond 500 when problem retrieving tags from CouchDB', function(done){
-      // Simulate a connection problem with CouchDB
-      request
-        .get('/basket/candies')
-        .set('Accept', 'application/json')
-        .expect('Content-Type', /json/)
-        .expect(500)
-        .end(function(err, res){
-          if (err) {return done(err);}
-          return done();
-        });
-    });
+    // it('should respond 500 when problem retrieving tags from CouchDB', function(done){
+    //   // Simulate a connection problem with CouchDB
+    //   request
+    //     .get('/basket/candies')
+    //     .set('Accept', 'application/json')
+    //     .expect('Content-Type', /json/)
+    //     .expect(500)
+    //     .end(function(err, res){
+    //       if (err) {return done(err);}
+    //       return done();
+    //     });
+    // });
 
     it('should respond 200 and the list of tags with counts', function(done){
       request

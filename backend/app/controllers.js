@@ -84,8 +84,12 @@ var getMeta = function(req, res) {
 
 var createCandy = function(req, res) {
   console.log('Body: ', req.body);
+
   if (validateCandy(req.body).status) {
     req.body.description = validateCandy(req.body).description;
+    req.body.date = new Date().toJSON();
+    req.body.private = false;
+
     couchdb.insert(req.body, function(err, body) {
       if (!err) {
         res.set('Location', body.id); // Set Location header to resource ID (couch ID)
@@ -96,6 +100,7 @@ var createCandy = function(req, res) {
         res.send(500, err);
       }
     });
+
   } else {
     console.error('Validation error: ', validateCandy(req.body).msg);
     res.send(400, validateCandy(req.body).msg);
@@ -224,12 +229,79 @@ var deleteCandy = function(req, res) {
 
 };
 
+/**
+ * @description
+ * 
+ * Gets JSON view from CouchDB, mash it up and return it as
+ * desired. Here, the list of candies is not returned as a direct
+ * JSON array for security reasons. Flask's jsonify handles this
+ * automatically by forcing a hash structure in the response. This
+ * security risk is explained in detail at
+ * http://flask.pocoo.org/docs/security/#json-security.
+ *
+ * There is one issue with this: typical RESTful service consumers
+ * (angularjs in this case) expect a straight array on queries
+ * (i.e. GETs). However, AngularJS provides a tranformsResponse hook
+ * to deal with this easily.
+ */
 var getCandies = function(req, res) {
-  res.send({'name': 'Candy Basket', 'version': 0.3});
+  var docs = [];
+  var tags;
+
+  couchdb.view('docs', 'candies_by_id', function(err, body) {
+    if (!err) {
+      body.rows.forEach(function(doc) {
+        tags = doc.value.tags ? doc.value.tags : [];
+        var docData = {
+          '_id': doc.value._id,
+          'source': doc.value.source,
+          'title': doc.value.title,
+          'description': doc.value.description,
+          'tags': tags.map(function(tag) {return tag.toLowerCase();}),
+          'date': doc.date,
+          'private': doc.private
+        };
+        docs.push(docData);
+      });
+      res.send(200, {'candies_by_id' : docs});
+    } else {
+      console.error('Error getting view: ', err);
+      /* jshint ignore:start */
+      res.send(err.status_code, err);
+      /* jshint ignore:end */
+    }
+  });
+
 };
 
+/**
+ * Gets a list of tags (with their counts) for use in the frontend
+ * autocomplete and tag cloud features. Returns it in a convenient way
+ * for use in Angular.
+ */
 var getTags = function(req, res) {
-  res.send({'name': 'Candy Basket', 'version': 0.3});
+  var tags = [];
+  var tagsCounts = [];
+  var viewData;
+
+  couchdb.view('docs', 'tags_with_counts', function(err, body) {
+    if (!err) {
+      body.rows.forEach(function(doc) {
+        tags.push(doc.key);
+        tagsCounts.push({'word': doc.key, 'count': doc.value});
+      });
+      /* jshint ignore:start */
+      viewData = {'tags' : {'tags': tags, 'tags_counts': tagsCounts}};
+      /* jshint ignore:end */
+      console.log('TEST TAGS: ', viewData);
+      res.send(200, viewData);
+    } else {
+      console.error('Error getting view: ', err);
+      /* jshint ignore:start */
+      res.send(err.status_code, err);
+      /* jshint ignore:end */
+    }
+  });
 };
 
 var getTagsByCandies = function(req, res) {
@@ -239,6 +311,7 @@ var getTagsByCandies = function(req, res) {
 var serve404 = function(req, res) {
   res.send({'name': 'Candy Basket', 'version': 0.3});
 };
+
 
 exports.dbName = dbName;
 exports.couchServer = couchServer;
