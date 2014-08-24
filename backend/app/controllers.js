@@ -260,8 +260,8 @@ var getCandies = function(req, res) {
           'title': doc.value.title,
           'description': doc.value.description,
           'tags': tags.map(function(tag) {return tag.toLowerCase();}),
-          'date': doc.date,
-          'private': doc.private
+          'date': doc.value.date,
+          'private': doc.value.private
         };
         docs.push(docData);
       });

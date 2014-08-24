@@ -337,6 +337,7 @@ describe('The whole controller API', function(){
           res.body._id.should.equal(candyId1);
           res.body.source.should.equal(candy1.source);
           res.body.title.should.equal(candy1.title);
+          new Date(Date.parse(res.body.date)).should.be.a('date');
           should.exist(res.body.description);
           res.body.tags.should.be.instanceOf(Array);
           _.zip(res.body.tags, candy1.tags).every(function(tagPair) {
@@ -357,6 +358,7 @@ describe('The whole controller API', function(){
           res.body._id.should.equal(candyId2);
           res.body.source.should.equal(candy2.source);
           res.body.title.should.equal(candy2.title);
+          new Date(Date.parse(res.body.date)).should.be.a('date');
           should.exist(res.body.description);
           res.body.attachmentFilename.should.equal(candy2.attachmentFilename);
           res.body.attachment.should.equal(candy2.attachment);
@@ -629,8 +631,10 @@ describe('The whole controller API', function(){
             viewResult.candies_by_id[0].title);
           res.body.candies_by_id[0].description.should.equal(
             viewResult.candies_by_id[0].description);
+          new Date(Date.parse(res.body.candies_by_id[0].date)).should.be.a('date');
           res.body.candies_by_id[0].tags.should.deep.equal(
             viewResult.candies_by_id[0].tags);
+
           res.body.candies_by_id[1]._id.should.equal(
             viewResult.candies_by_id[1]._id);
           res.body.candies_by_id[1].source.should.equal(
@@ -641,6 +645,7 @@ describe('The whole controller API', function(){
             viewResult.candies_by_id[1].title);
           res.body.candies_by_id[1].description.should.equal(
             viewResult.candies_by_id[1].description);
+          new Date(Date.parse(res.body.candies_by_id[1].date)).should.be.a('date');
           res.body.candies_by_id[1].tags.should.deep.equal(
             viewResult.candies_by_id[1].tags);
           return done();
