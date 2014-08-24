@@ -6,6 +6,7 @@ body {
     background: #fff;
     box-shadow: 0 2px 2px -2px #888;
     z-index: 243;
+    margin: 0px 0px 0px 0px;
 }
 #candy-list{
     z-index: -20;
@@ -98,18 +99,23 @@ span.confirm, span.challenge, span.surprise {
     margin-right: 2em;
 }
 
-div.ops {
-    position: relative;
-    top: 0px;
-    float: right;
+.ops {
+  background-color: #f8f8f8;
+  margin: 0px 0px 0px 0px;
 }
 
-div.ops-edit, div.ops-delete {
-    display: inline;
-}
-div.ops-edit div {
-    display: inline;
-}
+/* div.ops { */
+/*     position: relative; */
+/*     top: 0px; */
+/*     float: right; */
+/* } */
+
+/* div.ops-edit, div.ops-delete { */
+/*     display: inline; */
+/* } */
+/* div.ops-edit div { */
+/*     display: inline; */
+/* } */
 
 table {
     border: 3px solid #888;
@@ -256,21 +262,18 @@ input.ng-valid.ng-dirty {
 		opacity: 0.5;
 }
 
-div.tag-cloud {
-/*
-		opacity: 0;
-		background-color: rgba(250,250,250,0.3);
-		border: 1px solid rgba(250,250,250,0.6);
-		border-radius: 8px;
-		box-shadow: 3px 3px 7px rgba(240,240,240,0.6) inset;
-*/
-		margin-bottom: 1em;
+/* div.tag-cloud { */
+/* 		opacity: 0; */
+/* 		background-color: rgba(250,250,250,0.3); */
+/* 		border: 1px solid rgba(250,250,250,0.6); */
+/* 		border-radius: 8px; */
+/* 		box-shadow: 3px 3px 7px rgba(240,240,240,0.6) inset; */
+/* 		margin-bottom: 1em; */
+/* } */
 
-}
-
-div.tag-cloud svg {
-		margin-top: 1em;
-}
+/* div.tag-cloud svg { */
+/* 		margin-top: 1em; */
+/* } */
 
 .tooltip.top .tooltip-arrow {
   bottom: 0;

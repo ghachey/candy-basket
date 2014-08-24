@@ -2,7 +2,7 @@
   <div class="col-md-3">
     <h1>Candy Basket</h1>
 
-    <p style="color: #888;">Enter tags to filter results. Use commas to separate tags</p>
+    <p class="text-muted">Enter tags to filter results. Use commas to separate tags</p>
 
     <taglist tag-data="tags">
       <input id="tagsinput" ng-model="tags1"
@@ -19,7 +19,7 @@
     </tagcloud>
   </div>
 </div>
-<div style="background-color: #f8f8f8;" class="row ops" ng-controller="CreateCandyModalCtrl">
+<div class="row ops" ng-controller="CreateCandyModalCtrl">
   <span tooltip="Edit..." tooltip-placement="bottom" style="display:inline-table;" class="ops-edit" ng-include="'views/candy-detail-modal.html'"></span>
   <span tooltip="Delete..." tooltip-placement="bottom" style="display:inline-table;" class="ops-delete" ng-include="'views/candy-delete-modal.html'"></span>
   <span tooltip="New..." tooltip-placement="bottom" style="display:inline-table;" class="ops-new" ng-include="'views/candy-creation-modal.html'"></span>
