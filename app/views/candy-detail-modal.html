@@ -1,0 +1,81 @@
+<div style="display: inline;" ng-controller="DetailCandyModalCtrl">
+  <script type="text/ng-template" id="candy-detail-modal.html">
+    <div class="modal-header">
+      <h3>Update Existing Source</h3>
+    </div>
+    <div class="modal-body">
+      <form name="candyform" novalidate="novalidate" class="form-horizontal">
+	<div class="form-group">
+	  <label class="control-label" for="inputSource">Source:</label>
+	  <div class="controls">
+	    <input type="text" id="inputSource" 
+		   ng-model="candy.source" name="source" required />
+	    <div class="pull-right" ng-show="candyform.source.$invalid">
+              <span class="required" ng-show="candyform.source.$error.required">✗</span>
+            </div>
+	    <div class="pull-right" ng-show="candyform.source.$dirty && candyform.source.$invalid">
+              <span class="error" ng-show="candyform.source.$error.url">Not a valid url</span>
+            </div>
+	    <div class="pull-right ok" ng-show="candyform.source.$valid">
+              ✔
+            </div>
+	  </div>
+	</div>
+	<div class="form-group">
+	  <label class="control-label" for="inputTitle">Title:</label>
+	  <div class="controls">
+	    <input type="text" id="inputTitle" name="title"
+		   ng-model="candy.title" required/>
+	    <div class="pull-right" ng-show="candyform.title.$invalid">
+              <span class="required" ng-show="candyform.title.$error.required">✗</span>
+	    </div>
+	    <div class="pull-right ok" ng-show="candyform.title.$valid">
+              ✔
+            </div>
+	  </div>
+	</div>
+	<div class="form-group">
+	  <label class="control-label" for="inputDescription">Description:</label>
+	  <div class="controls">
+	    <textarea ui-tinymce="tinymceOptions" name="description" rows="8" style="width: 80%;" id="inputDescription"
+		   ng-model="candy.description" required></textarea>
+	    <div>{{tinymce}}</div>
+	    <div class="pull-right" ng-show="candyform.description.$invalid">
+              <span class="required" ng-show="candyform.description.$error.required">✗</span>
+	    </div>
+	    <div class="pull-right ok" ng-show="candyform.description.$valid">
+              ✔
+            </div>
+	  </div>
+	</div>
+	<div class="form-group">
+	  <label class="control-label" for="inputTags">Tags:</label>
+	  <div class="controls">
+	    <taglist tag-data="candy.tags" taglist-blur-timeout="250">
+       	      <input ng-model="selected1" typeahead="tag for tag in tags_data.tags | filter:$viewValue"/>
+	    </taglist>
+	  </div>
+	</div>
+    </div>
+
+    <div class="modal-footer">
+
+      <div ng-show="candyform.$invalid" class="text-left alert alert-error">
+	Form <strong>is not</strong> ready for sumission.
+      </div>
+      <div ng-show="candyform.$valid" class="text-left alert alert-success">
+	Form <strong>is ready</strong> for submission.
+      </div>
+
+      <button class="btn btn-primary" title="Update this candy"
+	      ng-click="updateCandy()">Update</button>
+      <button class="btn btn-warning"
+	      ng-click="cancel()">Cancel</button>
+    </div>
+    </form>
+    <div>{{tinymce}}</div>
+  </script>
+
+  <button ng-click="open(candy._id)"class="operations"><span class="glyphicon glyphicon-edit icon icon-edit"></span></button>
+
+</div>
