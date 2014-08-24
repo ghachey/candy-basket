@@ -5,6 +5,7 @@ var favicon = require('serve-favicon');
 var logger = require('morgan');
 var bodyParser = require('body-parser');
 var errorHandler = require('errorhandler');
+var cors = require('cors');
 
 var conf = require('../config');
 var middlewares = require('./middlewares');
@@ -18,6 +19,7 @@ var api = express();
 
 // Additional Middleware
 api.use(middlewares.securityHeaders);
+api.use(cors(conf.corsOptions));
 api.use(favicon(path.join(__dirname, '/public/icons/favicon.ico')));
 api.use(logger('dev'));
 api.use(bodyParser.json());

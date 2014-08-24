@@ -14,6 +14,12 @@ var config = {
     reloadPort: 35733,
     dbUrl: 'http://localhost:5984/',
     dbName: 'candy_basket_development',
+    // Configure which host is allowed cross origin access to the backend
+    // Can take exact strings and regexes
+    // DO NOT INCLUDE TRAILING SLASH
+    corsOptions: {
+      origin: 'http://localhost:9003' // frontend
+    },
     webdavServer : { // ownCloud test instance
         'host' : 'arc.ghachey.info',
         'username' : 'candy',
@@ -55,6 +61,12 @@ var config = {
     port: 3003,
     dbUrl: 'http://localhost:5984/',
     dbName: 'candy_basket',
+    // Configure which host is allowed cross origin access to the backend
+    // Can take exact strings and regexes
+    // DO NOT INCLUDE TRAILING SLASH
+    corsOptions: {
+      'origin': 'https://candy.pacificpolicy.org' // production frontend
+    },
     webdavServer : { // ownCloud test instance
         'host' : 'arc.ghachey.info',
         'username' : 'candy',
