@@ -1,0 +1,29 @@
+<div style="display: inline;" ng-controller="DeleteCandyModalCtrl">
+  <script type="text/ng-template" id="candy-delete-modal.html">
+    <div class="modal-header">
+      <h3>Delete Source</h3>
+    </div>
+
+    <div class="modal-body">
+      <form novalidate="novalidate" class="form-horizontal">
+
+	<p>Are you sure you want to delete source titled:
+	  &ldquo;{{candy.title}}&rdquo;</p>
+    </div>
+
+    <div class="modal-footer">
+      <div class="control-group">
+	<div class="controls">
+	  <a ng-click="cancel()" class="btn btn-small btn-danger">Cancel</a>
+	  <a ng-click="deleteCandy()" class="btn btn-small
+					     btn-primary">Yes, delete it</a>
+	</div>
+      </div>
+    </div>
+    </form>
+
+  </script>
+
+  <button ng-click="open(candy._id)" class="operations"><span class="glyphicon glyphicon-minus icon icon-minus-sign"></span></button>
+
+</div>
