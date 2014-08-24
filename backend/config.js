@@ -18,7 +18,7 @@ var config = {
     // Can take exact strings and regexes
     // DO NOT INCLUDE TRAILING SLASH
     corsOptions: {
-      origin: 'http://localhost:9003' // frontend
+      origin: '*' //'http://localhost:9003' // frontend
     },
     webdavServer : { // ownCloud test instance
         'host' : 'arc.ghachey.info',

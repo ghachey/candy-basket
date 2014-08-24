@@ -13,7 +13,7 @@
 var async = require('async');
 var nano = require('nano');
 var validator = require('validator');
-var sanitizeHtml = require('sanitize-html');
+var sanitizer = require('sanitizer');
 
 var conf = require('../config');
 
@@ -72,8 +72,8 @@ var validateCandy = function(candy) {
   if (!Array.isArray(candy.tags)) {return {'status': false, 'msg': 'Tags not an array'};}
 
   // Sanitize user submitted HTML to your taste here, 
-  // see https://github.com/punkave/sanitize-html for other then default cleanup  
-  var cleaned = sanitizeHtml(candy.description);
+  // see https://www.npmjs.org/package/sanitizer
+  var cleaned = sanitizer.sanitize(candy.description);
 
   return {'status': true, 'msg': 'Data Valid', 'description': cleaned}; 
 };
