@@ -20,11 +20,6 @@ body {
     margin: 0;
 }
 */
-.modal-body {
-/*
-    max-height: 1000px;
-*/
-}
 
 #welcome-cloud {
 		width: 100% !important;
@@ -99,23 +94,25 @@ span.confirm, span.challenge, span.surprise {
     margin-right: 2em;
 }
 
-.ops {
+.combined-ops {
   background-color: #f8f8f8;
   margin: 0px 0px 0px 0px;
 }
 
-/* div.ops { */
-/*     position: relative; */
-/*     top: 0px; */
-/*     float: right; */
-/* } */
+.ops {
+  background-color: #f8f8f8;
+  margin: 0px 0px 0px 0px;
+  position: relative;
+  top: 0px;
+  float: right;
+}
 
-/* div.ops-edit, div.ops-delete { */
-/*     display: inline; */
-/* } */
-/* div.ops-edit div { */
-/*     display: inline; */
-/* } */
+div.ops-edit, div.ops-delete {
+    display: inline;
+}
+div.ops-edit div {
+    display: inline;
+}
 
 table {
     border: 3px solid #888;
