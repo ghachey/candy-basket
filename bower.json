@@ -20,7 +20,7 @@
     "d3": "~3.4.11",
     "d3-cloud": "~1.0.5",
     "angular-ui-slider": "~0.0.2",
-    "angular-timelinejs": "git@github.com:ghachey/angular-timelinejs.git#d3b62d63a0c5cec3f38c628c3893ff7aee11bbd5",
+    "angular-timelinejs": "git@github.com:ghachey/angular-timelinejs.git#master",
     "angular-ui-tinymce": "~0.0.5"
   },
   "devDependencies": {

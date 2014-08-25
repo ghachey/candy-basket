@@ -399,38 +399,6 @@ app.controller('ResultsTimelineCtrl', ['$scope', '$location', '$filter', 'CandyR
 
 	};
 
-  var super_tag = function(tags){
-    if (!tags){return;}
-    for (var i = 0; i < tags.length; i++){
-      if (tags[i] === 'confirm' || tags[i] === 'challenge' || tags[i] === 'surprise'){
-        return tags[i];
-      }
-    }
-    return "";
-  };
-
-  var format_tags = function(tagset){
-
-    if (!tagset){return '';}
-
-    var prefix         = '<ul ng-controller="resultsTimelineCtl" class="tag_collection">';
-    var formatted_tags = '';
-    var suffix         = '</ul>';
-
-    tagset.forEach(function(this_tag){
-      if (this_tag !== 'confirm' && this_tag !== 'surprise' && this_tag !== 'challenge'){
-        formatted_tags = formatted_tags + '<li class="tag" ng-click="addTag(\'' + this_tag + '\')">' + this_tag + '</li>';
-      }
-    });
-
-    if (formatted_tags !== ''){
-      return prefix + formatted_tags + suffix;
-    }
-    else {
-      return '';
-    }
-  };
-
   $scope.get_candies = CandyResourceFactory.query().$promise.then(function(data) {
     $scope.candies = data;
     // When the timelineData is processed (anytime it mutates) there is no need to
@@ -483,8 +451,10 @@ app.controller('ResultsTimelineCtrl', ['$scope', '$location', '$filter', 'CandyR
 
     candies.forEach(function(this_candy){
       var comp_date  = new Date(Date.parse(this_candy['date']));
-      var tag        = super_tag(this_candy['tags']);
-      var candy_tags = format_tags(this_candy['tags']);
+      var tag        = _.find(this_candy['tags'], function(i) {return i == 'confirm' ||
+                                                                      i == 'challenge' ||
+                                                                      i == 'surprise'});
+      var candy_tags = this_candy['tags'];
 
       min_date       = min_date < comp_date ? min_date : comp_date;
       max_date       = max_date < comp_date ? comp_date : max_date;
@@ -494,7 +464,7 @@ app.controller('ResultsTimelineCtrl', ['$scope', '$location', '$filter', 'CandyR
           "_id"      : this_candy['_id'],
           "startDate": this_candy['date'],
           "headline" : this_candy['title'],
-          "text"     : candy_tags + this_candy['description'],
+          "text"     : candy_tags + '|ENDTAGS|' + this_candy['description'],
           "tag"      : tag,
           "asset"    : {"media": this_candy['source']}
         }
@@ -575,7 +545,7 @@ app.controller('ResultsTimelineCtrl', ['$scope', '$location', '$filter', 'CandyR
 
   // Add tags to search from candy list tags
   $scope.addTag = function(tag) {
-    cosnole.debug("CLICK");
+    console.log("Click timeline tag: ", tag);
     if (!_.contains($scope.tags,tag)) {
       $scope.tags.push(tag);
     }
