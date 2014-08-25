@@ -1,6 +1,6 @@
 'use strict';
 
-angular.module('candybasket')
+angular.module('nasaraCandyBasketApp')
   .controller('MainCtrl', function ($scope) {
     $scope.awesomeThings = [
       'HTML5 Boilerplate',

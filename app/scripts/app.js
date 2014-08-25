@@ -11,11 +11,15 @@
  * Main module of the application.
  */
 angular
-  .module('candybasket', [
-    'candybasket.services', 'candybasket.controllers',
-    'candybasket.filters', 'candybasket.directives',
-    'ngRoute', 'ui.bootstrap', 'ui.tinymce', 'ngSanitize',
-    'ngAnimate', 'ui.slider', 'pippTimelineDirectives'
+  .module('nasaraCandyBasketApp', [
+    'ngAnimate', 
+    'ngRoute', 
+    'ngResource', 
+    'ngSanitize',
+    'ui.bootstrap', 
+    'ui.tinymce', 
+    'ui.slider', 
+    'pippTimelineDirectives'
   ])
   .config(['$routeProvider', '$httpProvider', function ($routeProvider, $httpProvider) {
     $routeProvider

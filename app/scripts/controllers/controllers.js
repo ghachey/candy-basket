@@ -2,7 +2,7 @@
 
 /* Controllers */
 
-var app = angular.module('candybasket.controllers', []);
+var app = angular.module('nasaraCandyBasketApp');
 
 app.controller('MetaController', ['$scope', '$location', 'MetaFactory', function ($scope, $location, MetaFactory) {
 
@@ -406,6 +406,7 @@ app.controller('ResultsTimelineCtrl', ['$scope', '$location', '$filter', 'CandyR
   };
 
   $scope.get_candies = CandyResourceFactory.query().$promise.then(function(data) {
+    console.log('TEST: ', data);
     $scope.candies = data;
     // When the timelineData is processed (anytime it mutates) there is no need to
     // explicitly change the current_index it will default to the current state

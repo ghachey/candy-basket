@@ -2,7 +2,7 @@
 
 /* Filters */
 
-var filters = angular.module('candybasket.filters', []);
+var filters = angular.module('nasaraCandyBasketApp');
 
 /**
  * Custom angular filter that takes a string of comma separated list

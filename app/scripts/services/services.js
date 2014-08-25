@@ -2,7 +2,7 @@
 
 /* Services via the Module API */
 
-var services = angular.module('candybasket.services', ['ngResource']);
+var services = angular.module('nasaraCandyBasketApp');
 
 //var wsUrl = 'https://candy.pacificpolicy.org';
 var wsUrl = 'http://localhost\\:3003'; // for dev, don't commit
@@ -30,7 +30,6 @@ services.factory('CandyResourceFactory', function ($resource) {
 	// had to override default behavior in some places.
 	'query': { method: "GET", isArray: true,
 						 transformResponse: function (data) {
-                   console.log('Candies: ', data);
                  return angular.fromJson(data).candies_by_id;
 						 }
 					 },
@@ -57,7 +56,6 @@ services.factory('TagsByCandiesResourceFactory', function ($resource) {
     return $resource(wsUrl + '/basket/candies/tags-by-candies', {}, {
         query: { method: 'GET',
                  transformResponse: function (data) {
-                   console.log('Tags by Candies: ', data);
                      return angular.fromJson(data).tags_by_candies;
                  },
                  isArray: false }
