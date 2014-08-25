@@ -14,7 +14,7 @@ var filters = angular.module('nasaraCandyBasketApp');
  * Also, this filter does not work with spaces between tags, but it is
  * good enough to test and get started on the real tags filter.
  **/
-filters.filter("filterTagsString", function() {
+filters.filter("filterTagsString", function(utilities) {
   return function(input, tagsSearchedString, cutoff) {
 
     var tags = null; // entered tags used to filter
@@ -23,13 +23,13 @@ filters.filter("filterTagsString", function() {
 
     // no search or search started without a full tag yet...
     // return unfiltered input
-    if (!tagsSearchedString || !tagsSearchedString.contains(",")) {
+    if (!tagsSearchedString || !utilities.contains(tagsSearchedString, ",")) {
       return input;
     } else {
       // at least one search tag provided
       // Strip off trailing chars and only keep completed tags
-      if (tagsSearchedString.endsWith(",")) {
-	tags = removeTrailingEmpty(tagsSearchedString.split(','));
+      if (utilities.endsWith(tagsSearchedString, ",")) {
+	tags = utilities.removeTrailingEmpty(tagsSearchedString.split(','));
       } else {
 	tags = tagsSearchedString.split(',');
 	tags.pop();
@@ -82,7 +82,7 @@ filters.filter("filterCandiesByDate", function(){
  * This is used with the custom taglist element used for searching
  * tags with nice auto-completion and tag formatting.
  **/
-filters.filter("filterTagsArray", function() {
+filters.filter("filterTagsArray", function(utilities) {
   return function(input, tags, cutoff) {
 
     var sort_tags = function(a,b){
@@ -110,7 +110,7 @@ filters.filter("filterTagsArray", function() {
       tags = [];
     }
 
-    if (input && isArray(input)){ // Not an array causes errors (no tags)
+    if (input && utilities.isArray(input)){ // Not an array causes errors (no tags)
       input.forEach(
 	function(elem) {
 	  // Filter by date first - it's less expensive
