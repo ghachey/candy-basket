@@ -199,7 +199,8 @@ app.controller('DetailCandyModalCtrl', ['$scope', '$rootScope', '$modal', '$log'
     if (typeof _id === 'undefined'){
       var index = StateTracker.state.timelineValues['index'];
       var candy_index = index >= 1 ? index - 1 : 0;
-      candies = $filter('filterTagsArray')($scope.candies, $scope.tags, $scope.cutoff);
+      //candies = $filter('filterTagsArray')($scope.candies, $scope.tags, $scope.cutoff);
+      candies = $filter('filterTagsArray')($scope.candies, $scope.tags);
       candies = $filter('orderBy')(candies, 'date', false);
       _id = candies[candy_index]['_id'];
     }
@@ -260,7 +261,8 @@ app.controller('DeleteCandyModalCtrl', ['$scope', '$rootScope', '$modal', '$rout
 
       var index = StateTracker.state.timelineValues['index'];
       var candy_index = index >= 1 ? index - 1 : 0;
-      candies = $filter('filterTagsArray')($scope.candies, $scope.tags, $scope.cutoff);
+      //candies = $filter('filterTagsArray')($scope.candies, $scope.tags, $scope.cutoff);
+      candies = $filter('filterTagsArray')($scope.candies, $scope.tags);
       candies = $filter('orderBy')(candies, 'date', false);
       _id = candies[candy_index]['_id'];
     }
@@ -356,14 +358,18 @@ app.controller('ResultsTimelineCtrl', ['$scope', '$location', '$filter', 'CandyR
     });
 
     if (new_map.length){
-      $scope.tags_data = getTagsData(new_map, $scope.cutoff); // reduce cloud
-      $scope.ccs_tag_status = update_status_count(getTagsData(new_map, $scope.cutoff));
+      //$scope.tags_data = getTagsData(new_map, $scope.cutoff); // reduce cloud
+      //$scope.ccs_tag_status = update_status_count(getTagsData(new_map, $scope.cutoff));
+      $scope.tags_data = getTagsData(new_map); // reduce cloud
+      $scope.ccs_tag_status = update_status_count(getTagsData(new_map));
       $scope.changeSlide(0);
       $scope.timelineData = processTimeline($scope.candies);
     }
     else {
-      $scope.tags_data = getTagsData(tags_map, $scope.cutoff); // restore cloud
-      $scope.ccs_tag_status = update_status_count(getTagsData(tags_map, $scope.cutoff));
+      // $scope.tags_data = getTagsData(tags_map, $scope.cutoff); // restore cloud
+      // $scope.ccs_tag_status = update_status_count(getTagsData(tags_map, $scope.cutoff));
+      $scope.tags_data = getTagsData(tags_map); // restore cloud
+      $scope.ccs_tag_status = update_status_count(getTagsData(tags_map));
     }
 
   };
@@ -374,30 +380,30 @@ app.controller('ResultsTimelineCtrl', ['$scope', '$location', '$filter', 'CandyR
     $scope.cutoff = ui.value;
   };
 
-	$scope.displayPercentages = function(){
-			var confirm = '', challenge = '', surprise = '';
+  $scope.displayPercentages = function(){
+    var confirm = '', challenge = '', surprise = '';
 
-			if (typeof $scope.ccs_tag_status === 'undefined' || $scope.ccs_tag_status.length === 0){
-					return 'Calculating...';
-			}
+    if (typeof $scope.ccs_tag_status === 'undefined' || $scope.ccs_tag_status.length === 0){
+      return 'Calculating...';
+    }
 
-			$scope.ccs_tag_status.forEach(function(this_status){
-					switch (this_status.type){
-						case 'success':
-							confirm = '<span class="confirm ccs">Confirm</span>&nbsp;' + this_status.value + '%';
-								break;
-						case 'danger':
-								challenge = '<span class="challenge ccs">Challenge</span>&nbsp;' + this_status.value + '%';
-								break;
-						case 'warning':
-								surprise = '<span class="surprise ccs">Surprise</span>&nbsp;' + this_status.value + '%';
-								break;
-						}
-			});
+    $scope.ccs_tag_status.forEach(function(this_status){
+      switch (this_status.type){
+      case 'success':
+	confirm = '<span class="confirm ccs">Confirm</span>&nbsp;' + this_status.value + '%';
+	break;
+      case 'danger':
+	challenge = '<span class="challenge ccs">Challenge</span>&nbsp;' + this_status.value + '%';
+	break;
+      case 'warning':
+	surprise = '<span class="surprise ccs">Surprise</span>&nbsp;' + this_status.value + '%';
+	break;
+      }
+    });
 
-			return [confirm,challenge,surprise].join("<br />");
+    return [confirm,challenge,surprise].join("<br />");
 
-	};
+  };
 
   $scope.get_candies = CandyResourceFactory.query().$promise.then(function(data) {
     $scope.candies = data;
@@ -446,7 +452,8 @@ app.controller('ResultsTimelineCtrl', ['$scope', '$location', '$filter', 'CandyR
     var min_date   = new Date();
     var max_date   = new Date(1990); // need to ensure we get a real maximum from the set
 
-    candies = $filter('filterTagsArray')($scope.candies, $scope.tags, $scope.cutoff);
+    //candies = $filter('filterTagsArray')($scope.candies, $scope.tags, $scope.cutoff);
+    candies = $filter('filterTagsArray')($scope.candies, $scope.tags);
     console.log("Candies after filter: ", candies);
 
     candies.forEach(function(this_candy){
@@ -503,8 +510,10 @@ app.controller('ResultsTimelineCtrl', ['$scope', '$location', '$filter', 'CandyR
       }
     });
     if (new_map.length){
-      $scope.tags_data = getTagsData(new_map, $scope.cutoff); // reduce cloud
-      $scope.ccs_tag_status = update_status_count(getTagsData(new_map, $scope.cutoff));
+      // $scope.tags_data = getTagsData(new_map, $scope.cutoff); // reduce cloud
+      // $scope.ccs_tag_status = update_status_count(getTagsData(new_map, $scope.cutoff));
+      $scope.tags_data = getTagsData(new_map); // restore cloud
+      $scope.ccs_tag_status = update_status_count(getTagsData(new_map));
 
       // Explicit reset to 0 when searching. otherwise, reload of new timelineData
       // will be with the current slide index
@@ -512,8 +521,10 @@ app.controller('ResultsTimelineCtrl', ['$scope', '$location', '$filter', 'CandyR
       $scope.timelineData = processTimeline($scope.candies);
     }
     else {
-      $scope.tags_data = getTagsData(tags_map, $scope.cutoff); // restore cloud
-      $scope.ccs_tag_status = update_status_count(getTagsData(tags_map, $scope.cutoff));
+      // $scope.tags_data = getTagsData(tags_map, $scope.cutoff); // restore cloud
+      // $scope.ccs_tag_status = update_status_count(getTagsData(tags_map, $scope.cutoff));
+      $scope.tags_data = getTagsData(tags_map); // restore cloud
+      $scope.ccs_tag_status = update_status_count(getTagsData(tags_map));
     }
   });
 
@@ -534,8 +545,10 @@ app.controller('ResultsTimelineCtrl', ['$scope', '$location', '$filter', 'CandyR
     tags_map = data.tags_by_candies;
     // Initialise tags_data (i.e. tag mapping reduced to unique
     // tags and tag counts) attached to scope for two-way binding
-    $scope.tags_data = getTagsData(tags_map, $scope.cutoff);
-    $scope.ccs_tag_status = update_status_count(getTagsData(tags_map, $scope.cutoff));
+    // $scope.tags_data = getTagsData(tags_map, $scope.cutoff);
+    // $scope.ccs_tag_status = update_status_count(getTagsData(tags_map, $scope.cutoff));
+      $scope.tags_data = getTagsData(tags_map); // restore cloud
+      $scope.ccs_tag_status = update_status_count(getTagsData(tags_map));
     console.log("Tags initial data: ", tags_map);
   }, function(errorMessage){
     $scope.error=errorMessage;
