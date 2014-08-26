@@ -45,7 +45,6 @@ services.factory('TagsResourceFactory', function ($resource) {
     return $resource(wsUrl + '/basket/candies/tags', {}, {
         query: { method: 'GET',
                  transformResponse: function (data) {
-                   console.log('Tags: ', data);
                      return angular.fromJson(data).tags;
                  },
                  isArray: false }
