@@ -135,6 +135,8 @@ var getCandy = function(req, res) {
 var updateCandy = function(req, res) {
   var uuid = req.params.uuid;
   var rev;
+  var createdDate;
+
   // No point going further if data to update do not validate
   if (validateCandy(req.body).status) { 
 
@@ -145,6 +147,7 @@ var updateCandy = function(req, res) {
           if (!err) {
             // Save rev
             rev = body._rev;
+            createdDate = body.date;
             callback(null);
           } else {
             // Do I need to run callback(err) or does res.send the err sufficient?
@@ -161,7 +164,7 @@ var updateCandy = function(req, res) {
         // Apply changes
         req.body.description = validateCandy(req.body).description;
         req.body._rev = rev;
-        req.body.date = new Date().toJSON(); // Date will become last update date
+        req.body.date = createdDate; // Date created remains unchanged for now
         req.body.private = false;
         // Try sending updates
         couchdb.insert(req.body, function(err, body) {
