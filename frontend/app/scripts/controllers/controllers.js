@@ -142,32 +142,40 @@ app.controller('CandyListController', ['$scope', 'CandyResourceFactory', 'TagsRe
 
 }]);
 
-app.controller('SaveCandyModalCtrl', ['$scope', '$rootScope', '$modal', '$log', '$route', 'CandyResourceFactory', 'StateTracker', function ($scope, $rootScope, $modal, $log, $route, CandyResourceFactory, StateTracker) {
+app.controller('CandyModalCtrl', ['$scope', '$rootScope', '$modal', '$log', '$route', 'CandyResourceFactory', 'StateTracker', '$filter', function ($scope, $rootScope, $modal, $log, $route, CandyResourceFactory, StateTracker, $filter) {
 
   // The save modal can do three things: create new candy, update new
   // candy by passing it an id in the open callback (in table
   // view mode) and update a candy by using the timeline slide index
   // (in timeline view mode)
 
-   // or 'Update existing'
-  $scope.open = function (mode, _id) {
+  $scope.open = function (operation, _id) {
 
-    // TODO - Should be able to use same template
-    var template = null;
-    var candies = []; // Rewrite this shit
+    // Following code needed in timeline mode to know what candy we're dealing with
+    if (_id === undefined && operation !== 'create') {
+      var candies = [];
+      var index = StateTracker.state.timelineValues['index'];
+      var candy_index = index >= 1 ? index - 1 : 0;
+      //candies = $filter('filterTagsArray')($scope.candies, $scope.tags, $scope.cutoff);
+      candies = $filter('filterTagsArray')($scope.candies, $scope.tags);
+      candies = $filter('orderBy')(candies, 'date', false);
+      _id = candies[candy_index]['_id'];
+    }
 
-    StateTracker.state.timelineValues['modal_open'] = true;
-
+    var modalOptions;
     var modalInstance;
-    var modalOptions = {
-      template: 'candy-save-modal.html',
-      controller: SaveCandyInstanceModalCtrl
-    };
 
-    if (mode === undefined && _id === undefined) {
-      $scope.operation = 'Create new';
+    // TODO -  remove some more code duplication below
 
-      // TODO -  remove code duplication
+    if (operation === 'create') {
+
+      modalOptions = {
+        templateUrl: 'candy-save-modal.html',
+        controller: SaveCandyInstanceModalCtrl,
+        resolve: {
+          operation: function() {return 'Create new';}
+        }
+      };
       modalInstance = $modal.open(modalOptions);
       modalInstance.result.then(function (newcandy) {
         var candy = new CandyResourceFactory(newcandy);
@@ -181,33 +189,20 @@ app.controller('SaveCandyModalCtrl', ['$scope', '$rootScope', '$modal', '$log', 
         $log.info('Modal dismissed at: ' + new Date());
       });
 
-    } else {
-      $scope.operation = 'Update existing'; 
+    } else if (operation === 'edit') {
 
-      if (mode === 'table' && _id) {
-        // in table view mode
-
-      } else if (mode === 'timeline' && _id === undefined){
-        // in timeline view mode
-        
-        var index = StateTracker.state.timelineValues['index'];
-        var candy_index = index >= 1 ? index - 1 : 0;
-        //candies = $filter('filterTagsArray')($scope.candies, $scope.tags, $scope.cutoff);
-        candies = $filter('filterTagsArray')($scope.candies, $scope.tags);
-        candies = $filter('orderBy')(candies, 'date', false);
-        _id = candies[candy_index]['_id'];
-      }
-
-      modalOptions.resolve = {
-        candy: function () {
-          return CandyResourceFactory.read({_id: _id});
+      modalOptions = {
+        templateUrl: 'candy-save-modal.html',
+        controller: SaveCandyInstanceModalCtrl,
+        resolve: {
+          operation: function() {return 'Update existing';},
+          candy: function () {
+            return CandyResourceFactory.read({_id: _id});
+          }
         }
       };
-
-      // TODO -  remove code duplication
       modalInstance = $modal.open(modalOptions);
       modalInstance.result.then(function (newcandy) {
-        console.log('TEST UPDATE CANDY: ', newcandy);
         newcandy.$update(function() {
           $log.info('Candy updated: ' + new Date());
           StateTracker.state.timelineValues['modal_open'] = false;
@@ -218,134 +213,48 @@ app.controller('SaveCandyModalCtrl', ['$scope', '$rootScope', '$modal', '$log', 
         $log.info('Modal dismissed at: ' + new Date());
       });
 
-    } 
+    } else if (operation === 'delete') {
 
-  };
-
-}]);
-
-var SaveCandyInstanceModalCtrl = function ($scope, $modalInstance,
-                                             TagsResourceFactory, $location) {
-
-  $scope.tinymceOptions = {
-    menubar : false,
-    toolbar: "undo redo | styleselect | bold italic | link image"
-  };
-
-  $scope.candy = {};
-  $scope.tags_data = TagsResourceFactory.query();
-
-  $scope.saveNewCandy = function () {
-    $modalInstance.close($scope.candy);
-  };
-
-  $scope.cancel = function () {
-    $modalInstance.dismiss('cancel');
-  };
-};
-
-app.controller('CreateCandyModalCtrl', ['$scope', '$rootScope', '$modal', '$log', '$route', 'CandyResourceFactory', 'StateTracker', function ($scope, $rootScope, $modal, $log, $route, CandyResourceFactory, StateTracker) {
-
-  $scope.open = function () {
-
-    StateTracker.state.timelineValues['modal_open'] = true;
-
-    var modalInstance = $modal.open({
-      templateUrl: 'candy-creation-modal.html',
-      controller: CreateCandyInstanceModalCtrl
-    });
-
-    modalInstance.result.then(function (newcandy) {
-      console.log('TEST NEW CANDY: ', newcandy);
-      var candy = new CandyResourceFactory(newcandy);
-      candy.$create(function () {
-        StateTracker.state.timelineValues['modal_open'] = false;
-        $log.info('New candy created: ' + new Date());
-        $rootScope.$broadcast('model-update');
+      modalInstance = $modal.open({
+        templateUrl: 'candy-delete-modal.html',
+        controller: DeleteCandyInstanceModalCtrl,
+        resolve: {
+          operation: function() {return 'Delete';},
+          candy: function () {
+            return CandyResourceFactory.read({_id: _id});
+          }
+        }
       });
-    }, function () {
-      StateTracker.state.timelineValues['modal_open'] = false;
-      $log.info('Modal dismissed at: ' + new Date());
-    });
+      modalInstance.result.then(function (newcandy) {
+        newcandy.$remove(function() {
+          $log.info('Candy deleted: ' + new Date());
+          $rootScope.$broadcast('model-update');
+        });
+      }, function () {
+        $log.info('Modal dismissed at: ' + new Date());
+      });
 
-  };
-
-}]);
-
-var CreateCandyInstanceModalCtrl = function ($scope, $modalInstance,
-                                             TagsResourceFactory, $location) {
-
-  $scope.tinymceOptions = {
-    menubar : false,
-    toolbar: "undo redo | styleselect | bold italic | link image"
-  };
-
-  $scope.candy = {};
-  $scope.tags_data = TagsResourceFactory.query();
-
-  $scope.createNewCandy = function () {
-    $modalInstance.close($scope.candy);
-  };
-
-  $scope.cancel = function () {
-    $modalInstance.dismiss('cancel');
-  };
-};
-
-app.controller('DetailCandyModalCtrl', ['$scope', '$rootScope', '$modal', '$log', '$filter', 'CandyResourceFactory', 'StateTracker', function ($scope, $rootScope, $modal, $log, $filter, CandyResourceFactory, StateTracker) {
-
-  $scope.open = function (_id) {
-
-    var candies = [];
-
-    if (typeof _id === 'undefined'){
-      var index = StateTracker.state.timelineValues['index'];
-      var candy_index = index >= 1 ? index - 1 : 0;
-      //candies = $filter('filterTagsArray')($scope.candies, $scope.tags, $scope.cutoff);
-      candies = $filter('filterTagsArray')($scope.candies, $scope.tags);
-      candies = $filter('orderBy')(candies, 'date', false);
-      _id = candies[candy_index]['_id'];
     }
 
-    StateTracker.state.timelineValues['modal_open'] = true;
-
-    var modalInstance = $modal.open({
-      templateUrl: 'candy-detail-modal.html',
-      controller: DetailCandyInstanceModalCtrl,
-      resolve: {
-        candy: function () {
-          return CandyResourceFactory.read({_id: _id});
-        }
-      }
-    });
-
-    modalInstance.result.then(function (newcandy) {
-      console.log('TEST NEW CANDY: ', newcandy);
-      newcandy.$update(function() {
-        $log.info('Candy updated: ' + new Date());
-        StateTracker.state.timelineValues['modal_open'] = false;
-        $rootScope.$broadcast('model-update');
-      });
-    }, function () {
-      StateTracker.state.timelineValues['modal_open'] = false;
-      $log.info('Modal dismissed at: ' + new Date());
-    });
   };
 
 }]);
 
-var DetailCandyInstanceModalCtrl = function ($scope, $modalInstance,
-                                             candy, TagsResourceFactory) {
+// TODO - Could probably consolidate the two instance modal below into one
+
+var SaveCandyInstanceModalCtrl = function ($scope, $modalInstance, 
+                                           candy, operation, TagsResourceFactory) {
 
   $scope.tinymceOptions = {
     menubar : false,
     toolbar: "undo redo | styleselect | bold italic | link image"
   };
 
-  $scope.candy = candy;
+  $scope.candy = candy ? candy : {};
   $scope.tags_data = TagsResourceFactory.query();
+  $scope.operation = operation;
 
-  $scope.updateCandy = function () {
+  $scope.saveCandy = function () {
     $modalInstance.close($scope.candy);
   };
 
@@ -354,48 +263,11 @@ var DetailCandyInstanceModalCtrl = function ($scope, $modalInstance,
   };
 };
 
-app.controller('DeleteCandyModalCtrl', ['$scope', '$rootScope', '$modal', '$route', '$log', '$filter', 'CandyResourceFactory', 'StateTracker', function ($scope, $rootScope, $modal, $route, $log, $filter, CandyResourceFactory, StateTracker) {
 
-  $scope.open = function (_id) {
-
-    var candies = [];
-
-    if (typeof _id === 'undefined'){
-
-      var index = StateTracker.state.timelineValues['index'];
-      var candy_index = index >= 1 ? index - 1 : 0;
-      //candies = $filter('filterTagsArray')($scope.candies, $scope.tags, $scope.cutoff);
-      candies = $filter('filterTagsArray')($scope.candies, $scope.tags);
-      candies = $filter('orderBy')(candies, 'date', false);
-      _id = candies[candy_index]['_id'];
-    }
-
-    var modalInstance = $modal.open({
-      templateUrl: 'candy-delete-modal.html',
-      controller: DeleteCandyInstanceModalCtrl,
-      resolve: {
-        candy: function () {
-          return CandyResourceFactory.read({_id: _id});
-        }
-      }
-    });
-
-    modalInstance.result.then(function (newcandy) {
-      newcandy.$remove(function() {
-        $log.info('Candy deleted: ' + new Date());
-        $rootScope.$broadcast('model-update');
-      });
-    }, function () {
-      $log.info('Modal dismissed at: ' + new Date());
-    });
-
-  };
-
-}]);
-
-var DeleteCandyInstanceModalCtrl = function ($scope, $modalInstance, candy) {
+var DeleteCandyInstanceModalCtrl = function ($scope, $modalInstance, candy, operation) {
 
   $scope.candy = candy;
+  $scope.operation = operation;
 
   $scope.deleteCandy = function () {
     $modalInstance.close($scope.candy);
@@ -566,8 +438,8 @@ app.controller('ResultsTimelineCtrl', ['$scope', '$location', '$filter', 'CandyR
     candies.forEach(function(this_candy){
       var comp_date  = new Date(Date.parse(this_candy['date']));
       var tag        = _.find(this_candy['tags'], function(i) {return i == 'confirm' ||
-                                                                      i == 'challenge' ||
-                                                                      i == 'surprise'});
+                                                               i == 'challenge' ||
+                                                               i == 'surprise'});
       var candy_tags = this_candy['tags'];
 
       min_date       = min_date < comp_date ? min_date : comp_date;
@@ -654,8 +526,8 @@ app.controller('ResultsTimelineCtrl', ['$scope', '$location', '$filter', 'CandyR
     // tags and tag counts) attached to scope for two-way binding
     // $scope.tags_data = utilities.getTagsData(tags_map, $scope.cutoff);
     // $scope.ccs_tag_status = utilities.update_status_count(utilities.getTagsData(tags_map, $scope.cutoff));
-      $scope.tags_data = utilities.getTagsData(tags_map); // restore cloud
-      $scope.ccs_tag_status = utilities.update_status_count(utilities.getTagsData(tags_map));
+    $scope.tags_data = utilities.getTagsData(tags_map); // restore cloud
+    $scope.ccs_tag_status = utilities.update_status_count(utilities.getTagsData(tags_map));
     console.log("Tags initial data: ", tags_map);
   }, function(errorMessage){
     $scope.error=errorMessage;
@@ -675,11 +547,12 @@ app.controller('ResultsTimelineCtrl', ['$scope', '$location', '$filter', 'CandyR
   // with new code. NOT TESTED.
   $scope.first = function(){
     return $scope.timelineValues['index'] == 0;
-  }
+  };
 
   $scope.last = function(){
-    return $scope.timelineValues['index'] == $scope.timelineData['timeline']['date'].length;
-  }
+    return $scope.timelineValues['index'] == 
+      $scope.timelineData['timeline']['date'].length;
+  };
 
 }]);
 

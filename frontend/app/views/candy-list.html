@@ -29,7 +29,14 @@
   </div>
 </div>
 
-<div id="candy-list" class="row">
+<div id="candy-list" class="row" ng-controller="CandyModalCtrl">
+  <div class="col-md-12">
+    <p class="text-right">
+              <button class="operations ops-new" ng-click="open('create', candy._id)">
+                <span class="glyphicon glyphicon-plus ops-add" tooltip="New..." tooltip-placement="bottom" ng-include="'views/candy-save-modal.html'"></span>
+              </button>
+    </p>
+  </div>
   <div id="display-table" class="col-md-12">
     <table id="links-table" style="margin: 0 auto;float: none;" class="table table-striped">
       <thead>
@@ -51,8 +58,12 @@
 	  </td>
 	  <td class="ctitle">
 	    <div class="ops">
-	      <div class="ops-edit" ng-include="'views/candy-detail-modal.html'"></div>
-	      <div class="ops-delete" ng-include="'views/candy-delete-modal.html'"></div>
+              <button class="operations ops-edit" ng-click="open('edit', candy._id)">
+                <span class="glyphicon glyphicon-edit ops-edit" tooltip="Edit..." tooltip-placement="bottom" ng-include="'views/candy-save-modal.html'"></span>
+              </button>
+              <button class="operations ops-delete" ng-click="open('delete', candy._id)">
+                <span class="glyphicon glyphicon-minus ops-delete" tooltip="Delete..." tooltip-placement="bottom" ng-include="'views/candy-delete-modal.html'"></span>
+              </button>
 	    </div>
 	    <h2><a href="{{candy.source}}" target="_new">{{candy.title}}</a></h2>
 	    <p class="candy-description" ng-bind-html="candy.description">{{candy.description}}</p>
