@@ -18,7 +18,7 @@ app.controller('MetaController', ['$scope', '$location', 'metaFactory', function
 
 }]);
 
-app.controller('CandyListController', ['$scope', 'CandyResourceFactory', 'TagsResourceFactory', 'TagsByCandiesResourceFactory', '$location', 'utilities', function ($scope, CandyResourceFactory, TagsResourceFactory, TagsByCandiesResourceFactory, $location, utilities) {
+app.controller('CandyListController', ['$scope', 'CandyResourceFactory', 'tagsView', '$location', 'utilities', function ($scope, CandyResourceFactory, tagsViews, $location, utilities) {
 
   // Used to maintain a client-side mapping of candy IDs with their
   // list of tags
@@ -50,13 +50,14 @@ app.controller('CandyListController', ['$scope', 'CandyResourceFactory', 'TagsRe
       $scope.candies = data;
       console.log("Broadcast received", $scope.candies);
     });
-    TagsByCandiesResourceFactory.query(function(data) {
+    tagsViews.getTagsByCandies.then(function(response) {
       // Reset mapping of candy IDs and their tags on
       // broadcasted created and update events
-      tags_map = data.tags_by_candies;
+      tags_map = response.data.tags_by_candies;
       // Perform reduce with new mapping
       $scope.tags_data = utilities.getTagsData(tags_map);
-      $scope.ccs_tag_status = utilities.update_status_count(utilities.getTagsData(tags_map));
+      $scope.ccs_tag_status = utilities.update_status_count(
+        utilities.getTagsData(tags_map));
     }, function(errorMessage){
       $scope.error=errorMessage;
     });
@@ -68,10 +69,10 @@ app.controller('CandyListController', ['$scope', 'CandyResourceFactory', 'TagsRe
   // this evolves: will we ever take advantage of a full REST point
   // for tags or do we simply just pull all and process right here.
 
-  TagsByCandiesResourceFactory.query().$promise.then(function(data) {
+  tagsViews.getTagsByCandies().then(function(response) {
     // Initial mapping of candy IDs and their tags as they come
     // out of the REST service.
-    tags_map = data.tags_by_candies;
+    tags_map = response.data.tags_by_candies;
     // Initialise tags_data (i.e. tag mapping reduced to unique
     // tags and tag counts) attached to scope for two-way binding
     $scope.tags_data = utilities.getTagsData(tags_map);
@@ -215,7 +216,7 @@ app.controller('CandyModalCtrl', ['$scope', '$rootScope', '$modal', '$log', '$ro
 // TODO - Could probably consolidate the two instance modal below into one
 
 var SaveCandyInstanceModalCtrl = function ($scope, $modalInstance, operation, candyId,
-                                           CandyResourceFactory, TagsResourceFactory) {
+                                           CandyResourceFactory, tagsViews) {
 
   $scope.tinymceOptions = {
     menubar : false,
@@ -225,7 +226,7 @@ var SaveCandyInstanceModalCtrl = function ($scope, $modalInstance, operation, ca
   if (candyId) { // We updating?
     $scope.candy.$read({_id: candyId});
   }
-  $scope.tags_data = TagsResourceFactory.query();
+  $scope.tags_data = tagsViews.getTags(); 
   $scope.operation = operation;
 
   $scope.saveCandy = function () {
@@ -239,7 +240,7 @@ var SaveCandyInstanceModalCtrl = function ($scope, $modalInstance, operation, ca
 
 
 var DeleteCandyInstanceModalCtrl = function ($scope, $modalInstance, operation, candyId,
-                                            CandyResourceFactory) {
+                                             CandyResourceFactory) {
 
   $scope.candy = new CandyResourceFactory();
   $scope.candy.$read({_id: candyId});
@@ -255,7 +256,7 @@ var DeleteCandyInstanceModalCtrl = function ($scope, $modalInstance, operation, 
 
 };
 
-app.controller('ResultsTimelineCtrl', ['$scope', '$location', '$filter', 'CandyResourceFactory', 'TagsByCandiesResourceFactory', 'StateTracker', 'utilities', 'filterTagsArrayFilter', function ($scope, $location, $filter, CandyResourceFactory, TagsByCandiesResourceFactory, StateTracker, utilities, filterTagsArrayFilter) {
+app.controller('ResultsTimelineCtrl', ['$scope', '$location', '$filter', 'CandyResourceFactory', 'tagsViews', 'StateTracker', 'utilities', 'filterTagsArrayFilter', function ($scope, $location, $filter, CandyResourceFactory, tagsViews, StateTracker, utilities, filterTagsArrayFilter) {
 
   var tags_map          = [];
   var timeline_items    = [];
@@ -384,10 +385,10 @@ app.controller('ResultsTimelineCtrl', ['$scope', '$location', '$filter', 'CandyR
       $scope.candies = data;
       $scope.timelineData = processTimeline(data);
     });
-    TagsByCandiesResourceFactory.query(function(data) {
+    tagsViews.getTagsByCandies(function(response) {
       // Reset mapping of candy IDs and their tags on
       // broadcasted created and update events
-      tags_map = data.tags_by_candies;
+      tags_map = response.data.tags_by_candies;
       // Perform reduce with new mapping
       $scope.tags_data = utilities.getTagsData(tags_map);
       $scope.ccs_tag_status = utilities.update_status_count(utilities.getTagsData(tags_map));
@@ -490,16 +491,17 @@ app.controller('ResultsTimelineCtrl', ['$scope', '$location', '$filter', 'CandyR
     }
   };
 
-  TagsByCandiesResourceFactory.query().$promise.then(function(data) {
+  tagsViews.getTagsByCandies().then(function(response) {
     // Initial mapping of candy IDs and their tags as they come
     // out of the REST service.
-    tags_map = data.tags_by_candies;
+    tags_map = response.data.tags_by_candies;
     // Initialise tags_data (i.e. tag mapping reduced to unique
     // tags and tag counts) attached to scope for two-way binding
     // $scope.tags_data = utilities.getTagsData(tags_map, $scope.cutoff);
     // $scope.ccs_tag_status = utilities.update_status_count(utilities.getTagsData(tags_map, $scope.cutoff));
     $scope.tags_data = utilities.getTagsData(tags_map); // restore cloud
-    $scope.ccs_tag_status = utilities.update_status_count(utilities.getTagsData(tags_map));
+    $scope.ccs_tag_status = utilities.update_status_count(
+      utilities.getTagsData(tags_map));
   }, function(errorMessage){
     $scope.error=errorMessage;
   });
@@ -528,7 +530,7 @@ app.controller('ResultsTimelineCtrl', ['$scope', '$location', '$filter', 'CandyR
 }]);
 
 
-app.controller('tagCloudModalCtl', ['$scope', '$rootScope', '$modal', '$log', '$route', 'TagsResourceFactory', function ($scope, $rootScope, $modal, $log, $route, TagsResourceFactory) {
+app.controller('tagCloudModalCtl', ['$scope', '$rootScope', '$modal', '$log', '$route', function ($scope, $rootScope, $modal, $log, $route) {
 
   // Add tags to search from cloud
   $scope.tagOnClickFunction = function(element){
@@ -562,9 +564,9 @@ app.controller('tagCloudModalCtl', ['$scope', '$rootScope', '$modal', '$log', '$
 }]);
 
 var tagCloudInstanceModalCtl = function ($scope, $modalInstance,
-                                         TagsResourceFactory, $location) {
+                                         tagsViews, $location) {
 
-  $scope.tags_data = TagsResourceFactory.query();
+  $scope.tags_data = tagsViews.getTags();
 
   $scope.createNewCandy = function () {
     $modalInstance.close($scope.candy);

@@ -26,26 +26,6 @@ services.factory('CandyResourceFactory', function ($resource, config) {
 
 });
 
-services.factory('TagsResourceFactory', function ($resource, config) {
-  return $resource(config.backendUrl + '/basket/candies/tags', {}, {
-    query: { method: 'GET',
-             transformResponse: function (data) {
-               return angular.fromJson(data).tags;
-             },
-             isArray: false }
-  });
-});
-
-services.factory('TagsByCandiesResourceFactory', function ($resource, config) {
-  return $resource(config.backendUrl + '/basket/candies/tags-by-candies', {}, {
-    query: { method: 'GET',
-             transformResponse: function (data) {
-               return angular.fromJson(data).tags_by_candies;
-             },
-             isArray: false }
-  });
-});
-
 services.factory('StateTracker', function ($resource) {
   // This service can be used to share state across various controllers
   // variables that need to be changes can simply be added to state.
