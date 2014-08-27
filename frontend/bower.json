@@ -21,7 +21,7 @@
     "d3-cloud": "~1.0.5",
     "angular-ui-slider": "~0.0.2",
     "angular-timelinejs": "git@github.com:ghachey/angular-timelinejs.git#master",
-    "angular-ui-tinymce": "~0.0.5"
+    "angular-ui-tinymce": "git@github.com:angular-ui/ui-tinymce.git#master"
   },
   "devDependencies": {
     "angular-mocks": "1.2.16",
@@ -30,6 +30,7 @@
   "appPath": "app",
   "resolutions": {
     "angular": "1.2.16",
-    "jquery-ui": "~1.11.1"
+    "jquery-ui": "~1.11.1",
+    "tinymce": "4.0.22"
   }
 }
