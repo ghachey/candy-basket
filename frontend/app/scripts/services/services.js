@@ -13,7 +13,7 @@ services.factory('MetaFactory', function ($resource) {
     query: { method: 'GET',
              transformResponse: function (data) {
                console.log('META: ', data);
-               return angular.fromJson(data).meta;
+               return angular.fromJson(data);
              },
              isArray: false }
   });
@@ -72,6 +72,6 @@ services.factory('StateTracker', function ($resource) {
     }
   };
   return {
-    state: state,
+    state: state
   };
 });
