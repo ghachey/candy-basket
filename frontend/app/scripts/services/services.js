@@ -4,23 +4,8 @@
 
 var services = angular.module('nasaraCandyBasketApp');
 
-//var wsUrl = 'https://candy.pacificpolicy.org';
-var wsUrl = 'http://localhost\\:3003'; // for dev, don't commit
-//var wsUrl = 'https://candy-restapi-v1.pacificpolicy.org.vu';
-
-services.factory('MetaFactory', function ($resource) {
-  return $resource(wsUrl, {}, {
-    query: { method: 'GET',
-             transformResponse: function (data) {
-               console.log('META: ', data);
-               return angular.fromJson(data);
-             },
-             isArray: false }
-  });
-});
-
-services.factory('CandyResourceFactory', function ($resource) {
-  var candyResource = wsUrl + '/basket/candies/:_id';
+services.factory('CandyResourceFactory', function ($resource, config) {
+  var candyResource = config.backendUrl + '/basket/candies/:_id';
 
   /* Return a resource ready for CRUD ops */
   return $resource(candyResource, {}, {
@@ -41,8 +26,8 @@ services.factory('CandyResourceFactory', function ($resource) {
 
 });
 
-services.factory('TagsResourceFactory', function ($resource) {
-  return $resource(wsUrl + '/basket/candies/tags', {}, {
+services.factory('TagsResourceFactory', function ($resource, config) {
+  return $resource(config.backendUrl + '/basket/candies/tags', {}, {
     query: { method: 'GET',
              transformResponse: function (data) {
                return angular.fromJson(data).tags;
@@ -51,8 +36,8 @@ services.factory('TagsResourceFactory', function ($resource) {
   });
 });
 
-services.factory('TagsByCandiesResourceFactory', function ($resource) {
-  return $resource(wsUrl + '/basket/candies/tags-by-candies', {}, {
+services.factory('TagsByCandiesResourceFactory', function ($resource, config) {
+  return $resource(config.backendUrl + '/basket/candies/tags-by-candies', {}, {
     query: { method: 'GET',
              transformResponse: function (data) {
                return angular.fromJson(data).tags_by_candies;

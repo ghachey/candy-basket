@@ -4,9 +4,14 @@
 
 var app = angular.module('nasaraCandyBasketApp');
 
-app.controller('MetaController', ['$scope', '$location', 'MetaFactory', function ($scope, $location, MetaFactory) {
+app.controller('MetaController', ['$scope', '$location', 'metaFactory', function ($scope, $location, metaFactory) {
 
-  $scope.info = MetaFactory.query();
+  metaFactory.getMeta().then(function(response){
+    $scope.info = response.data;
+  }, function(reason) {
+    console.error('Error getting service meta data: ', reason);
+  });
+
   $scope.getStarted = function () {
     $location.path('/candy-list-timeline');
   };
@@ -352,10 +357,7 @@ app.controller('ResultsTimelineCtrl', ['$scope', '$location', '$filter', 'CandyR
   };
 
   $scope.get_candies = CandyResourceFactory.query().$promise.then(function(data) {
-    console.log('TEST BEFORE: ', data);
-    console.log('TEST UTIL: ', utilities);
     //data.sort(compareByDates);
-    console.log('TEST BEFORE: ', data);
     $scope.candies = data;
     // When the timelineData is processed (anytime it mutates) there is no need to
     // explicitly change the current_index it will default to the current state
@@ -404,7 +406,6 @@ app.controller('ResultsTimelineCtrl', ['$scope', '$location', '$filter', 'CandyR
 
     //candies = $filter('filterTagsArray')($scope.candies, $scope.tags, $scope.cutoff);
     candies = $filter('filterTagsArray')($scope.candies, $scope.tags);
-    console.log("Candies after filter: ", candies);
 
     candies.forEach(function(this_candy){
       var comp_date  = new Date(Date.parse(this_candy['date']));
@@ -499,7 +500,6 @@ app.controller('ResultsTimelineCtrl', ['$scope', '$location', '$filter', 'CandyR
     // $scope.ccs_tag_status = utilities.update_status_count(utilities.getTagsData(tags_map, $scope.cutoff));
     $scope.tags_data = utilities.getTagsData(tags_map); // restore cloud
     $scope.ccs_tag_status = utilities.update_status_count(utilities.getTagsData(tags_map));
-    console.log("Tags initial data: ", tags_map);
   }, function(errorMessage){
     $scope.error=errorMessage;
   });
