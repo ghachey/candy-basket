@@ -2,13 +2,13 @@
 
 /**
  * @ngdoc service
- * @name nasaraCandyBasketApp.candyResource
+ * @name nasaraCandyBasketApp.CandyResource
  * @description
- * # candyResource
+ * # CandyResource
  * Factory in the nasaraCandyBasketApp.
  */
 angular.module('nasaraCandyBasketApp')
-  .factory('candyResource', function ($resource, config) {
+  .factory('CandyResource', function ($resource, config) {
     var candyResourceWs = config.backendUrl + '/basket/candies/:_id';
 
     /* Return a resource ready for RESTful CRUD operations */

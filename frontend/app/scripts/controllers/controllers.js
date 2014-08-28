@@ -18,13 +18,13 @@ app.controller('MetaController', ['$scope', '$location', 'metaFactory', function
 
 }]);
 
-app.controller('CandyListController', ['$scope', 'CandyResourceFactory', 'tagsView', '$location', 'utilities', function ($scope, CandyResourceFactory, tagsViews, $location, utilities) {
+app.controller('CandyListController', ['$scope', 'CandyResource', 'tagsView', '$location', 'utilities', function ($scope, CandyResource, tagsViews, $location, utilities) {
 
   // Used to maintain a client-side mapping of candy IDs with their
   // list of tags
   var tags_map = [];
 
-  $scope.candies = CandyResourceFactory.query().$promise.then(function(data) {
+  $scope.candies = CandyResource.query().$promise.then(function(data) {
     $scope.candies = data;
   }, function(errorMessage){
     $scope.error=errorMessage;
@@ -46,7 +46,7 @@ app.controller('CandyListController', ['$scope', 'CandyResourceFactory', 'tagsVi
   // user.
 
   $scope.$on('model-update', function(){
-    CandyResourceFactory.query(function(data){
+    CandyResource.query(function(data){
       $scope.candies = data;
       console.log("Broadcast received", $scope.candies);
     });
@@ -126,7 +126,7 @@ app.controller('CandyListController', ['$scope', 'CandyResourceFactory', 'tagsVi
 
 }]);
 
-app.controller('CandyModalCtrl', ['$scope', '$rootScope', '$modal', '$log', '$route', 'CandyResourceFactory', 'StateTracker', '$filter', function ($scope, $rootScope, $modal, $log, $route, CandyResourceFactory, StateTracker, $filter) {
+app.controller('CandyModalCtrl', ['$scope', '$rootScope', '$modal', '$log', '$route', 'StateTracker', '$filter', function ($scope, $rootScope, $modal, $log, $route, StateTracker, $filter) {
 
   // Handles all Candy CRUD operations, both in timeline view and table list view
 
@@ -214,14 +214,14 @@ app.controller('CandyModalCtrl', ['$scope', '$rootScope', '$modal', '$log', '$ro
 }]);
 
 var SaveCandyInstanceModalCtrl = function ($scope, $modalInstance, operation, candyId,
-                                           CandyResourceFactory, tagsViews) {
+                                           CandyResource, tagsViews) {
   $scope.operation = operation;
   $scope.tinymceOptions = {
     menubar : false,
     toolbar: "undo redo | styleselect | bold italic | link image"
   };
 
-  $scope.candy = new CandyResourceFactory();
+  $scope.candy = new CandyResource();
 
   if (candyId) { // We updating?
     $scope.candy.$read({_id: candyId});
@@ -247,9 +247,9 @@ var SaveCandyInstanceModalCtrl = function ($scope, $modalInstance, operation, ca
 
 
 var DeleteCandyInstanceModalCtrl = function ($scope, $modalInstance, operation, candyId,
-                                             CandyResourceFactory) {
+                                             CandyResource) {
 
-  $scope.candy = CandyResourceFactory.read({_id: candyId});
+  $scope.candy = CandyResource.read({_id: candyId});
   $scope.operation = operation;
 
   $scope.deleteCandy = function () {
@@ -262,7 +262,7 @@ var DeleteCandyInstanceModalCtrl = function ($scope, $modalInstance, operation, 
 
 };
 
-app.controller('ResultsTimelineCtrl', ['$scope', '$location', '$filter', 'CandyResourceFactory', 'tagsViews', 'StateTracker', 'utilities', 'filterTagsArrayFilter', function ($scope, $location, $filter, CandyResourceFactory, tagsViews, StateTracker, utilities, filterTagsArrayFilter) {
+app.controller('ResultsTimelineCtrl', ['$scope', '$location', '$filter', 'CandyResource', 'tagsViews', 'StateTracker', 'utilities', 'filterTagsArrayFilter', function ($scope, $location, $filter, CandyResource, tagsViews, StateTracker, utilities, filterTagsArrayFilter) {
 
   var tags_map          = [];
   var timeline_items    = [];
@@ -363,7 +363,7 @@ app.controller('ResultsTimelineCtrl', ['$scope', '$location', '$filter', 'CandyR
 
   };
 
-  $scope.get_candies = CandyResourceFactory.query().$promise.then(function(data) {
+  $scope.get_candies = CandyResource.query().$promise.then(function(data) {
     //data.sort(compareByDates);
     $scope.candies = data;
     // When the timelineData is processed (anytime it mutates) there is no need to
@@ -387,7 +387,7 @@ app.controller('ResultsTimelineCtrl', ['$scope', '$location', '$filter', 'CandyR
   });
 
   $scope.$on('model-update', function(){
-    CandyResourceFactory.query(function(data){
+    CandyResource.query(function(data){
       $scope.candies = data;
       $scope.timelineData = processTimeline(data);
     });

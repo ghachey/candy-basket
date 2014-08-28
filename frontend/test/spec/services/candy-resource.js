@@ -6,9 +6,9 @@ describe('Service: candyResource', function () {
   beforeEach(module('nasaraCandyBasketApp'));
 
   // instantiate service with mocked http backend
-  var candyResource, candyResourceWs, mockedBackend;
-  beforeEach(inject(function (_candyResource_, $httpBackend, config) {
-    candyResource = _candyResource_;
+  var CandyResource, candyResourceWs, mockedBackend;
+  beforeEach(inject(function (_CandyResource_, $httpBackend, config) {
+    CandyResource = _CandyResource_;
     mockedBackend = $httpBackend;
     candyResourceWs = config.backendUrl;
   }));
@@ -123,7 +123,7 @@ describe('Service: candyResource', function () {
       .respond(mockedCandiesData);
 
     // Call the actual service API
-    var candyResourceList = candyResource.query();
+    var candyResourceList = CandyResource.query();
 
     // Retrieve result from embedded promise
     var candies;
@@ -171,7 +171,7 @@ describe('Service: candyResource', function () {
 
 
     // Call the actual service API
-    var candyResourceObj = candyResource.read({'_id': '03c0b670e5c56bfb461a76dcf70091c7'});
+    var candyResourceObj = CandyResource.read({'_id': '03c0b670e5c56bfb461a76dcf70091c7'});
  
     // Retrieve result from embedded promise
     var candy;
@@ -203,10 +203,10 @@ describe('Service: candyResource', function () {
     // Expected (fake) backend response
     mockedBackend
       .expectPOST(candyResourceWs+'/basket/candies', mockedNewCandyData)
-      .respond(mockedNewCandyData);
+      .respond(201, mockedNewCandyData);
 
     // Call the actual service API
-    var candyResourceObj = new candyResource();
+    var candyResourceObj = new CandyResource();
 
     // Manually feed candy data into the new Resource object
     candyResourceObj.source = mockedNewCandyData.source;
@@ -236,67 +236,88 @@ describe('Service: candyResource', function () {
     expect(response.tags).toEqual(mockedNewCandyData.tags);
   });
 
-  // it('should update an existing candy', function () {
-  //   var mockedExistingCandy = {
-  //     '_id':'03c0b670e5c56bfb461a76dcf70091c7',
-  //     '_rev':'2-feb4c62a78cf16e4e320775fa1edbee4',
-  //     'description':'<p>Kind of like Policy Circles, and soon to be open-sourced.',
-  //     'title':'SYME - encrypted social network',
-  //     'private':false,
-  //     'source':'https://getsyme.com/#',
-  //     'date':'2013-11-30T22:51:41Z',
-  //     'tags':['social media','internet','surveillance','security','ict','dan','surprise']
-  //   };
+  it('should update an existing candy', function () {
+    var mockedExistingCandy = {
+      '_id':'03c0b670e5c56bfb461a76dcf70091c7',
+      '_rev':'2-feb4c62a78cf16e4e320775fa1edbee4',
+      'description':'<p>Kind of like Policy Circles, and soon to be open-sourced.',
+      'title':'SYME - encrypted social network',
+      'private':false,
+      'source':'https://getsyme.com/#',
+      'date':'2013-11-30T22:51:41Z',
+      'tags':['social media','internet','surveillance','security','ict','dan','surprise']
+    };
 
-  //   var updatedCandy = {
-  //     'description':'<p>Updated Kind of like Policy Circles, and soon to be open.',
-  //     'title':'Updated - SYME - encrypted social network',
-  //     'private':false,
-  //     'source':'https://getsyme.com/updated',
-  //     'date':'2013-11-30T22:51:41Z',
-  //     'tags':['social media','internet','surveillance','security','ict','dan','surprise']
-  //   };
+    var updatedCandy = {
+      '_id':'03c0b670e5c56bfb461a76dcf70091c7',
+      '_rev':'2-feb4c62a78cf16e4e320775fa1edbee4',
+      'description':'<p>Updated Kind of like Policy Circles, and soon to be open.',
+      'title':'Updated - SYME - encrypted social network',
+      'private':false,
+      'source':'https://getsyme.com/updated',
+      'date':'2013-11-30T22:51:41Z',
+      'tags':['social media','internet','surveillance','security','ict','dan','surprise']
+    };
 
-  //   // Expected (fake) backend response
-  //   mockedBackend
-  //     .expectGET(candyResourceWs+'/basket/candies/03c0b670e5c56bfb461a76dcf70091c7')
-  //     .respond(mockedExistingCandy);
+    // Expected (fake) backend response
+    mockedBackend
+      .expectGET(candyResourceWs+'/basket/candies/03c0b670e5c56bfb461a76dcf70091c7')
+      .respond(mockedExistingCandy);
 
-  //   // Call the actual service API
-  //   var candyToUpdate = candyResource.read({'_id': '03c0b670e5c56bfb461a76dcf70091c7'});
+    // Call the actual service API
+    var candyToUpdate = CandyResource.read({'_id': '03c0b670e5c56bfb461a76dcf70091c7'});
+    mockedBackend.flush();
 
-  //   // Flush pending request
-  //   mockedBackend.flush();
+    mockedBackend
+      .expectPUT(candyResourceWs+'/basket/candies/03c0b670e5c56bfb461a76dcf70091c7', 
+                 updatedCandy)
+      .respond(200, updatedCandy);
 
-  //   mockedBackend
-  //     .expectPUT(candyResourceWs+'/basket/candies/03c0b670e5c56bfb461a76dcf70091c7', 
-  //                updatedCandy)
-  //     .respond(updatedCandy);
 
-  //   candyToUpdate.description = '<p>Updated Kind of like Policy Circles, and soon to be open.';
-  //   candyToUpdate.title = 'Updated - SYME - encrypted social network';
-  //   candyToUpdate.source = 'https://getsyme.com/updated';
+    candyToUpdate.description = '<p>Updated Kind of like Policy Circles, and soon to be open.';
+    candyToUpdate.title = 'Updated - SYME - encrypted social network';
+    candyToUpdate.source = 'https://getsyme.com/updated';
 
-  //   expect(candyToUpdate).toBeDefined();
+    expect(candyToUpdate).toBeDefined();
 
-  //   var updatedPromise = candyResource.update(
-  //     {'_id': '03c0b670e5c56bfb461a76dcf70091c7'},
-  //     updatedCandy);
+    candyToUpdate.$update({'_id': '03c0b670e5c56bfb461a76dcf70091c7'});
 
-  //   // Get data from resolved promise
-  //   var response = updatedPromise.then(function(data){
-  //     response = data;
-  //   });
+    // Flush pending request
+    mockedBackend.flush();
+  });
 
-  //   // Flush pending request
-  //   mockedBackend.flush();
+  it('should delete an existing candy', function () {
+    var mockedExistingCandy = {
+      '_id':'03c0b670e5c56bfb461a76dcf70091c7',
+      '_rev':'2-feb4c62a78cf16e4e320775fa1edbee4',
+      'description':'<p>Kind of like Policy Circles, and soon to be open-sourced.',
+      'title':'SYME - encrypted social network',
+      'private':false,
+      'source':'https://getsyme.com/#',
+      'date':'2013-11-30T22:51:41Z',
+      'tags':['social media','internet','surveillance','security','ict','dan','surprise']
+    };
 
-  //   expect(response._id).toEqual(updatedCandy._id);
-  //   expect(response.source).toEqual(updatedCandy.source);
-  //   expect(response.description).toEqual(updatedCandy.description);
-  //   expect(response.title).toEqual(updatedCandy.title);
-  //   expect(response.date).toEqual(updatedCandy.date);
-  //   expect(response.tags).toEqual(updatedCandy.tags);
-  // });
+    // Expected (fake) backend response
+    mockedBackend
+      .expectGET(candyResourceWs+'/basket/candies/03c0b670e5c56bfb461a76dcf70091c7')
+      .respond(mockedExistingCandy);
+
+    // Call the actual service API
+    var candyToDelete = CandyResource.read({'_id': '03c0b670e5c56bfb461a76dcf70091c7'});
+
+    mockedBackend.flush();
+
+    mockedBackend
+      .expectDELETE(candyResourceWs+'/basket/candies/03c0b670e5c56bfb461a76dcf70091c7')
+      .respond(200);
+
+    expect(candyToDelete).toBeDefined();
+
+    candyToDelete.$delete({'_id': '03c0b670e5c56bfb461a76dcf70091c7'});
+
+    // Flush pending request
+    mockedBackend.flush();
+  });
 
 });
