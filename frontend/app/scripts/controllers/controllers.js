@@ -213,21 +213,28 @@ app.controller('CandyModalCtrl', ['$scope', '$rootScope', '$modal', '$log', '$ro
 
 }]);
 
-// TODO - Could probably consolidate the two instance modal below into one
-
 var SaveCandyInstanceModalCtrl = function ($scope, $modalInstance, operation, candyId,
                                            CandyResourceFactory, tagsViews) {
-
+  $scope.operation = operation;
   $scope.tinymceOptions = {
     menubar : false,
     toolbar: "undo redo | styleselect | bold italic | link image"
   };
+
   $scope.candy = new CandyResourceFactory();
+
   if (candyId) { // We updating?
     $scope.candy.$read({_id: candyId});
   }
-  $scope.tags_data = tagsViews.getTags(); 
-  $scope.operation = operation;
+
+  tagsViews.getTags().then(function(response) {
+    $scope.tags_data = response.data; // all tags
+  }, function(reason){
+    // Use to tell user about error retrieving tags for auto-complete
+    // Not used yet, but can be easily added to form error message
+    // later on
+    $scope.tags_error = reason; 
+  }); 
 
   $scope.saveCandy = function () {
     $modalInstance.close($scope.candy);
@@ -242,8 +249,7 @@ var SaveCandyInstanceModalCtrl = function ($scope, $modalInstance, operation, ca
 var DeleteCandyInstanceModalCtrl = function ($scope, $modalInstance, operation, candyId,
                                              CandyResourceFactory) {
 
-  $scope.candy = new CandyResourceFactory();
-  $scope.candy.$read({_id: candyId});
+  $scope.candy = CandyResourceFactory.read({_id: candyId});
   $scope.operation = operation;
 
   $scope.deleteCandy = function () {
