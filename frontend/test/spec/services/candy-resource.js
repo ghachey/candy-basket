@@ -1,6 +1,6 @@
 'use strict';
 
-describe('Service: candyResource', function () {
+describe('Service: CandyResource', function () {
 
   // load the service's module
   beforeEach(module('nasaraCandyBasketApp'));
