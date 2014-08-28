@@ -5,7 +5,7 @@ describe('Service: tagsViews', function () {
   // load the service's module
   beforeEach(module('nasaraCandyBasketApp'));
 
-  // instantiate service
+  // instantiate service with mocked http backend
   var tagsViews, wsUrl, mockedBackend;
   beforeEach(inject(function (_tagsViews_, $httpBackend, config) {
     tagsViews = _tagsViews_;
@@ -19,7 +19,7 @@ describe('Service: tagsViews', function () {
     mockedBackend.verifyNoOutstandingRequest();
   });
 
-  it('should provide a list of tags as service', function () {
+  it('should provide a list of tags', function () {
     var mockedTagsData = {
       'tags' : {
         'tags': [
@@ -84,7 +84,7 @@ describe('Service: tagsViews', function () {
     expect(tags).toEqual(mockedTagsData.tags);
   });
 
-  it('should provide a list of tags by candies as service', function () {
+  it('should provide a list of tags by candies', function () {
     var mockedTagsByCandiesData = {
       'tags_by_candies': {
         'tags_by_candies': [
