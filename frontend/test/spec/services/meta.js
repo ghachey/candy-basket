@@ -1,14 +1,14 @@
 'use strict';
 
-describe('Service: metaFactory', function () {
+describe('Service: meta', function () {
 
   // load the service's module
   beforeEach(module('nasaraCandyBasketApp'));
 
   // instantiate service with a mocked HTTP backend
-  var metaFactory, wsUrl, mockedBackend;
-  beforeEach(inject(function (_metaFactory_, $httpBackend, config) {
-    metaFactory = _metaFactory_;
+  var meta, wsUrl, mockedBackend;
+  beforeEach(inject(function (_meta_, $httpBackend, config) {
+    meta = _meta_;
     mockedBackend = $httpBackend;
     wsUrl = config.backendUrl;
   }));
@@ -28,7 +28,7 @@ describe('Service: metaFactory', function () {
       .respond(mockedMetaData);
 
     // Call the actual service API
-    var metaDataPromise = metaFactory.getMeta();
+    var metaDataPromise = meta.getMeta();
     
     // Retrieve result from promise
     var meta;

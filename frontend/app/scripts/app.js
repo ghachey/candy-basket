@@ -12,13 +12,16 @@
  */
 angular
   .module('nasaraCandyBasketApp', [
+    /* Angular modules */
     'ngAnimate', 
     'ngRoute', 
     'ngResource', 
     'ngSanitize',
+    /* Third party modules */
     'ui.bootstrap', 
     'ui.tinymce', 
     'ui.slider', 
+    /* Our own reusable modules */
     'pippTimelineDirectives'
   ])
   .config(['$routeProvider', '$httpProvider', function ($routeProvider, $httpProvider) {

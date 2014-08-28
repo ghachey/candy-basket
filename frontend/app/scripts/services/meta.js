@@ -2,13 +2,13 @@
 
 /**
  * @ngdoc service
- * @name nasaraCandyBasketApp.metaFactory
+ * @name nasaraCandyBasketApp.meta
  * @description
- * # metaFactory
+ * # meta
  * Factory in the nasaraCandyBasketApp.
  */
 angular.module('nasaraCandyBasketApp')
-  .factory('metaFactory', function ($http, config) {
+  .factory('meta', function ($http, config) {
     var wsUrl = config.backendUrl;
 
     // Public API here

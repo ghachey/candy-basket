@@ -4,9 +4,9 @@
 
 var app = angular.module('nasaraCandyBasketApp');
 
-app.controller('MetaController', ['$scope', '$location', 'metaFactory', function ($scope, $location, metaFactory) {
+app.controller('MetaController', ['$scope', '$location', 'meta', function ($scope, $location, meta) {
 
-  metaFactory.getMeta().then(function(response){
+  meta.getMeta().then(function(response){
     $scope.info = response.data;
   }, function(reason) {
     console.error('Error getting service meta data: ', reason);
@@ -126,7 +126,7 @@ app.controller('CandyListController', ['$scope', 'CandyResource', 'tagsView', '$
 
 }]);
 
-app.controller('CandyModalCtrl', ['$scope', '$rootScope', '$modal', '$log', '$route', 'StateTracker', '$filter', function ($scope, $rootScope, $modal, $log, $route, StateTracker, $filter) {
+app.controller('CandyModalCtrl', ['$scope', '$rootScope', '$modal', '$log', '$route', 'stateTracker', '$filter', function ($scope, $rootScope, $modal, $log, $route, stateTracker, $filter) {
 
   // Handles all Candy CRUD operations, both in timeline view and table list view
 
@@ -135,7 +135,7 @@ app.controller('CandyModalCtrl', ['$scope', '$rootScope', '$modal', '$log', '$ro
     // Following code needed in timeline mode to know what candy we're dealing with
     if (_id === undefined && operation !== 'create') {
       var candies = [];
-      var index = StateTracker.state.timelineValues['index'];
+      var index = stateTracker.state.timelineValues['index'];
       var candy_index = index >= 1 ? index - 1 : 0;
       //candies = $filter('filterTagsArray')($scope.candies, $scope.tags, $scope.cutoff);
       candies = $filter('filterTagsArray')($scope.candies, $scope.tags);
@@ -146,13 +146,13 @@ app.controller('CandyModalCtrl', ['$scope', '$rootScope', '$modal', '$log', '$ro
     var modalInstance, modalOptions, logMsg;
     
     var candyModalOperationCallback = function () {
-      StateTracker.state.timelineValues['modal_open'] = false;
+      stateTracker.state.timelineValues['modal_open'] = false;
       $log.info(logMsg + ' candy: ' + new Date());
       $rootScope.$broadcast('model-update');
     };
 
     var candyModalDismissedCallback = function () {        
-      StateTracker.state.timelineValues['modal_open'] = false;
+      stateTracker.state.timelineValues['modal_open'] = false;
       $log.info('Modal dismissed at: ' + new Date());
     };
 
@@ -262,7 +262,7 @@ var DeleteCandyInstanceModalCtrl = function ($scope, $modalInstance, operation, 
 
 };
 
-app.controller('ResultsTimelineCtrl', ['$scope', '$location', '$filter', 'CandyResource', 'tagsViews', 'StateTracker', 'utilities', 'filterTagsArrayFilter', function ($scope, $location, $filter, CandyResource, tagsViews, StateTracker, utilities, filterTagsArrayFilter) {
+app.controller('ResultsTimelineCtrl', ['$scope', '$location', '$filter', 'CandyResource', 'tagsViews', 'stateTracker', 'utilities', 'filterTagsArrayFilter', function ($scope, $location, $filter, CandyResource, tagsViews, stateTracker, utilities, filterTagsArrayFilter) {
 
   var tags_map          = [];
   var timeline_items    = [];
@@ -275,7 +275,7 @@ app.controller('ResultsTimelineCtrl', ['$scope', '$location', '$filter', 'CandyR
   };
 
   $scope.candies        = [];
-  $scope.timelineValues = StateTracker.state.timelineValues; // i.e. {index: 0}
+  $scope.timelineValues = stateTracker.state.timelineValues; // i.e. {index: 0}
 
   $scope.changeSlide = function (index) {
     console.log("Changing slide index to: ", index);
@@ -368,7 +368,7 @@ app.controller('ResultsTimelineCtrl', ['$scope', '$location', '$filter', 'CandyR
     $scope.candies = data;
     // When the timelineData is processed (anytime it mutates) there is no need to
     // explicitly change the current_index it will default to the current state
-    // of the index provided by the StateTracker which has a two way binding with the
+    // of the index provided by the stateTracker which has a two way binding with the
     // angular-timelinejs directive. Of course, the current slide index can be forced
     // changed anytime in the controller through $scope.changeSlide callback.
     // Likewise, when explicitly forcing a current_slide index change the timeline
