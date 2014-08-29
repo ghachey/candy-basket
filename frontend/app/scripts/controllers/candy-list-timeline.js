@@ -7,6 +7,11 @@
  * # CandyListTimeline
  * Controller of the nasaraCandyBasketApp contains the logic to power the 
  * candy list in timeline mode.
+ * 
+ * TODO - This controller is very similar to the CandyListTimeline controller
+ * and they could both be merged into an Javascript prototype
+ * only adding properties as they differ eliminating 
+ * much code duplication and future errors.
  */
 angular.module('nasaraCandyBasketApp')
   .controller('CandyListTimeline', function ($scope, 

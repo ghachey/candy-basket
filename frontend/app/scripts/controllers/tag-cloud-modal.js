@@ -1,10 +1,14 @@
 'use strict';
 
-/* Controllers */
-
-var app = angular.module('nasaraCandyBasketApp');
-
-app.controller('tagCloudModalCtl', ['$scope', '$rootScope', '$modal', '$log', '$route', function ($scope, $rootScope, $modal, $log, $route) {
+/**
+ * @ngdoc function
+ * @name nasaraCandyBasketApp.controller:TagCloudModal
+ * @description
+ * # TagCloudModal
+ * Controller of the nasaraCandyBasketApp
+ */
+angular.module('nasaraCandyBasketApp')
+  .controller('TagCloudModal', function ($scope, $rootScope, $modal, $log, $route) {
 
   // Add tags to search from cloud
   $scope.tagOnClickFunction = function(element){
@@ -24,7 +28,7 @@ app.controller('tagCloudModalCtl', ['$scope', '$rootScope', '$modal', '$log', '$
 
     var modalInstance = $modal.open({
       templateUrl: 'welcome.html',
-      controller: tagCloudInstanceModalCtl
+      controller: tagCloudInstanceModal
     });
 
     modalInstance.result.then(function (newcandy) {
@@ -34,10 +38,9 @@ app.controller('tagCloudModalCtl', ['$scope', '$rootScope', '$modal', '$log', '$
     });
 
   };
+  });
 
-}]);
-
-var tagCloudInstanceModalCtl = function ($scope, $modalInstance,
+var tagCloudInstanceModal = function ($scope, $modalInstance,
                                          tagsViews, $location) {
 
   $scope.tagsData = tagsViews.getTags();

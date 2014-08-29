@@ -1,17 +1,17 @@
 'use strict';
 
-describe('Controller: CandyListTimeline', function () {
+describe('Controller: TagCloudModal', function () {
 
   // load the controller's module
   beforeEach(module('nasaraCandyBasketApp'));
 
-  var CandyListTimeline,
+  var TagCloudModal,
       $scope;
 
   // Initialize the controller and a mock scope
   beforeEach(inject(function ($controller, $rootScope) {
     $scope = $rootScope.$new();
-    CandyListTimeline = $controller('CandyListTimeline', {
+    TagCloudModal = $controller('TagCloudModal', {
       $scope: $scope
     });
   }));
