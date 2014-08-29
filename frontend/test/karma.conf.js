@@ -16,6 +16,7 @@ module.exports = function(config) {
 
     // list of files / patterns to load in the browser
     files: [
+      'bower_components/momentjs/moment.js',
       'bower_components/underscore/underscore.js',
       'bower_components/angular/angular.js',
       'bower_components/angular-mocks/angular-mocks.js',
