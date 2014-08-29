@@ -6,116 +6,13 @@ var app = angular.module('nasaraCandyBasketApp');
 
 app.controller('CandyListController', ['$scope', 'CandyResource', 'tagsView', '$location', 'utilities', function ($scope, CandyResource, tagsViews, $location, utilities) {
 
-  // Used to maintain a client-side mapping of candy IDs with their
-  // list of tags
-  var tags_map = [];
-
-  $scope.candies = CandyResource.query().$promise.then(function(data) {
-    $scope.candies = data;
-  }, function(errorMessage){
-    $scope.error=errorMessage;
-  });
-
-  // Register for $broadcast events on rootScope. By doing it this
-  // way it will work nicely for the best possible case (low
-  // latency, light usage...). What is actually happening is that
-  // updates are done on the client side (say when submitting an
-  // update modal) and broadcasted also on the client side while the
-  // resource updates are being done async. on the server. Extending
-  // with proper error handling will become necessary when latency
-  // will be high or if the app would ever be subject to highly
-  // concurrent and heavy usage scenarios. For instance, someone
-  // might try to update a candy that would have been deleted
-  // milliseconds before (or up to a second in high latency
-  // contexts). This would result in an error code on the REST
-  // backend which would need to be nicely reported back to the
-  // user.
-
-  $scope.$on('model-update', function(){
-    CandyResource.query(function(data){
-      $scope.candies = data;
-      console.log("Broadcast received", $scope.candies);
-    });
-    tagsViews.getTagsByCandies.then(function(response) {
-      // Reset mapping of candy IDs and their tags on
-      // broadcasted created and update events
-      tags_map = response.data.tags_by_candies;
-      // Perform reduce with new mapping
-      $scope.tags_data = utilities.getTagsData(tags_map);
-      $scope.ccs_tag_status = utilities.update_status_count(
-        utilities.getTagsData(tags_map));
-    }, function(errorMessage){
-      $scope.error=errorMessage;
-    });
-  });
-
-  // Not making use of Angular's Resource here so maybe service
-  // should be changes to use low level http request instead of
-  // the higher level resource. I guess it will depend on how
-  // this evolves: will we ever take advantage of a full REST point
-  // for tags or do we simply just pull all and process right here.
-
-  tagsViews.getTagsByCandies().then(function(response) {
-    // Initial mapping of candy IDs and their tags as they come
-    // out of the REST service.
-    tags_map = response.data.tags_by_candies;
-    // Initialise tags_data (i.e. tag mapping reduced to unique
-    // tags and tag counts) attached to scope for two-way binding
-    $scope.tags_data = utilities.getTagsData(tags_map);
-    $scope.ccs_tag_status = utilities.update_status_count(utilities.getTagsData(tags_map));
-  }, function(errorMessage){
-    $scope.error=errorMessage;
-  });
-
-  $scope.tags = [];
-
-  // Watch tags being searched and reduce cloud in consequence
-  $scope.$watchCollection('tags', function(newSearch, oldSearch) {
-    var new_map = [];
-
-    tags_map.forEach(function(elem) {
-      if (_.isEqual(_.intersection(newSearch, elem.tag),newSearch)) {
-        new_map.push(elem);
-      }
-    });
-
-    if (new_map.length){
-      $scope.tags_data = utilities.getTagsData(new_map); // reduce cloud
-      $scope.ccs_tag_status = utilities.update_status_count(utilities.getTagsData(new_map));
-    }
-    else {
-      $scope.tags_data = utilities.getTagsData(tags_map); // restore cloud
-      $scope.ccs_tag_status = utilities.update_status_count(utilities.getTagsData(tags_map));
-    }
-  });
-
-  // Add tags to search from cloud
-  $scope.tagOnClickFunction = function(element){
-    if (!_.contains($scope.tags,element.text)) {
-      $scope.tags.push(element.text);
-      // Need digest as we get outside of Angular world when using
-      // tag cloud/d3.
-      $scope.$digest();
-    }
-  };
-
-  $scope.tagOnHoverFunction = function(element){
-    // Nothing for now...
-  };
-
-  // Add tags to search from candy list tags
-  $scope.addTag = function(tag) {
-    if (!_.contains($scope.tags,tag)) {
-      $scope.tags.push(tag);
-    }
-  };
 
 }]);
 
 
 app.controller('ResultsTimelineCtrl', ['$scope', '$location', '$filter', 'CandyResource', 'tagsViews', 'stateTracker', 'utilities', function ($scope, $location, $filter, CandyResource, tagsViews, stateTracker, utilities) {
 
-  var tags_map          = [];
+  var tagsMap          = [];
   var timeline_items    = [];
   var now               = new Date();
   var ranges            = {
@@ -158,27 +55,27 @@ app.controller('ResultsTimelineCtrl', ['$scope', '$location', '$filter', 'CandyR
   };
 
   $scope.slideStop = function (event, ui){
-    var new_map = [];
+    var newMap = [];
 
-    tags_map.forEach(function(elem) {
+    tagsMap.forEach(function(elem) {
       if (_.isEqual(_.intersection($scope.tags, elem.tag),$scope.tags)) {
-        new_map.push(elem);
+        newMap.push(elem);
       }
     });
 
-    if (new_map.length){
-      //$scope.tags_data = utilities.getTagsData(new_map, $scope.cutoff); // reduce cloud
-      //$scope.ccs_tag_status = utilities.update_status_count(utilities.getTagsData(new_map, $scope.cutoff));
-      $scope.tags_data = utilities.getTagsData(new_map); // reduce cloud
-      $scope.ccs_tag_status = utilities.update_status_count(utilities.getTagsData(new_map));
+    if (newMap.length){
+      //$scope.tags_data = utilities.getTagsData(newMap, $scope.cutoff); // reduce cloud
+      //$scope.ccs_tag_status = utilities.update_status_count(utilities.getTagsData(newMap, $scope.cutoff));
+      $scope.tags_data = utilities.getTagsData(newMap); // reduce cloud
+      $scope.ccs_tag_status = utilities.update_status_count(utilities.getTagsData(newMap));
       $scope.changeSlide(0);
       $scope.timelineData = processTimeline($scope.candies);
     }
     else {
-      // $scope.tags_data = utilities.getTagsData(tags_map, $scope.cutoff); // restore cloud
-      // $scope.ccs_tag_status = utilities.update_status_count(utilities.getTagsData(tags_map, $scope.cutoff));
-      $scope.tags_data = utilities.getTagsData(tags_map); // restore cloud
-      $scope.ccs_tag_status = utilities.update_status_count(utilities.getTagsData(tags_map));
+      // $scope.tags_data = utilities.getTagsData(tagsMap, $scope.cutoff); // restore cloud
+      // $scope.ccs_tag_status = utilities.update_status_count(utilities.getTagsData(tagsMap, $scope.cutoff));
+      $scope.tags_data = utilities.getTagsData(tagsMap); // restore cloud
+      $scope.ccs_tag_status = utilities.update_status_count(utilities.getTagsData(tagsMap));
     }
 
   };
@@ -245,10 +142,10 @@ app.controller('ResultsTimelineCtrl', ['$scope', '$location', '$filter', 'CandyR
     tagsViews.getTagsByCandies(function(response) {
       // Reset mapping of candy IDs and their tags on
       // broadcasted created and update events
-      tags_map = response.data.tags_by_candies;
+      tagsMap = response.data.tags_by_candies;
       // Perform reduce with new mapping
-      $scope.tags_data = utilities.getTagsData(tags_map);
-      $scope.ccs_tag_status = utilities.update_status_count(utilities.getTagsData(tags_map));
+      $scope.tags_data = utilities.getTagsData(tagsMap);
+      $scope.ccs_tag_status = utilities.update_status_count(utilities.getTagsData(tagsMap));
     });
     console.log("INDEX on model update: ", $scope.timelineValues.index);
     $scope.changeSlide($scope.timelineValues.index);
@@ -269,7 +166,7 @@ app.controller('ResultsTimelineCtrl', ['$scope', '$location', '$filter', 'CandyR
       var comp_date  = new Date(Date.parse(this_candy['date']));
       var tag        = _.find(this_candy['tags'], function(i) {return i == 'confirm' ||
                                                                i == 'challenge' ||
-                                                               i == 'surprise'});
+                                                               i == 'surprise';});
       var candy_tags = this_candy['tags'];
 
       min_date       = min_date < comp_date ? min_date : comp_date;
@@ -288,7 +185,7 @@ app.controller('ResultsTimelineCtrl', ['$scope', '$location', '$filter', 'CandyR
     });
 
     var num_candies = utilities.pluralise(candies.length.toString() + " candy", "candies");
-    var data = {
+    var timelineData = {
       "timeline":
       {
         "headline"       : num_candies + " in this basket ",
@@ -300,29 +197,28 @@ app.controller('ResultsTimelineCtrl', ['$scope', '$location', '$filter', 'CandyR
             "startDate":min_date,
             "endDate": max_date,
             "headline":"Story duration",
-            "text":"<p>hmmm</p>",
+            "text":"<p>hmmm</p>"
           }
         ]
       }
     };
-    console.log("Timeline processed data: ", data);
 
-    return data;
+    return timelineData;
 
   };
 
   $scope.$watchCollection('tags', function(newSearch, oldSearch) {
-    var new_map = [];
-    tags_map.forEach(function(elem) {
+    var newMap = [];
+    tagsMap.forEach(function(elem) {
       if (_.isEqual(_.intersection(newSearch, elem.tag), newSearch)) {
-        new_map.push(elem);
+        newMap.push(elem);
       }
     });
-    if (new_map.length){
-      // $scope.tags_data = utilities.getTagsData(new_map, $scope.cutoff); // reduce cloud
-      // $scope.ccs_tag_status = utilities.update_status_count(utilities.getTagsData(new_map, $scope.cutoff));
-      $scope.tags_data = utilities.getTagsData(new_map); // restore cloud
-      $scope.ccs_tag_status = utilities.update_status_count(utilities.getTagsData(new_map));
+    if (newMap.length){
+      // $scope.tags_data = utilities.getTagsData(newMap, $scope.cutoff); // reduce cloud
+      // $scope.ccs_tag_status = utilities.update_status_count(utilities.getTagsData(newMap, $scope.cutoff));
+      $scope.tags_data = utilities.getTagsData(newMap); // restore cloud
+      $scope.ccs_tag_status = utilities.update_status_count(utilities.getTagsData(newMap));
 
       // Explicit reset to 0 when searching. otherwise, reload of new timelineData
       // will be with the current slide index
@@ -330,10 +226,10 @@ app.controller('ResultsTimelineCtrl', ['$scope', '$location', '$filter', 'CandyR
       $scope.timelineData = processTimeline($scope.candies);
     }
     else {
-      // $scope.tags_data = utilities.getTagsData(tags_map, $scope.cutoff); // restore cloud
-      // $scope.ccs_tag_status = utilities.update_status_count(utilities.getTagsData(tags_map, $scope.cutoff));
-      $scope.tags_data = utilities.getTagsData(tags_map); // restore cloud
-      $scope.ccs_tag_status = utilities.update_status_count(utilities.getTagsData(tags_map));
+      // $scope.tags_data = utilities.getTagsData(tagsMap, $scope.cutoff); // restore cloud
+      // $scope.ccs_tag_status = utilities.update_status_count(utilities.getTagsData(tagsMap, $scope.cutoff));
+      $scope.tags_data = utilities.getTagsData(tagsMap); // restore cloud
+      $scope.ccs_tag_status = utilities.update_status_count(utilities.getTagsData(tagsMap));
     }
   });
 
@@ -351,14 +247,14 @@ app.controller('ResultsTimelineCtrl', ['$scope', '$location', '$filter', 'CandyR
   tagsViews.getTagsByCandies().then(function(response) {
     // Initial mapping of candy IDs and their tags as they come
     // out of the REST service.
-    tags_map = response.data.tags_by_candies;
+    tagsMap = response.data.tags_by_candies;
     // Initialise tags_data (i.e. tag mapping reduced to unique
     // tags and tag counts) attached to scope for two-way binding
-    // $scope.tags_data = utilities.getTagsData(tags_map, $scope.cutoff);
-    // $scope.ccs_tag_status = utilities.update_status_count(utilities.getTagsData(tags_map, $scope.cutoff));
-    $scope.tags_data = utilities.getTagsData(tags_map); // restore cloud
+    // $scope.tags_data = utilities.getTagsData(tagsMap, $scope.cutoff);
+    // $scope.ccs_tag_status = utilities.update_status_count(utilities.getTagsData(tagsMap, $scope.cutoff));
+    $scope.tags_data = utilities.getTagsData(tagsMap); // restore cloud
     $scope.ccs_tag_status = utilities.update_status_count(
-      utilities.getTagsData(tags_map));
+      utilities.getTagsData(tagsMap));
   }, function(errorMessage){
     $scope.error=errorMessage;
   });

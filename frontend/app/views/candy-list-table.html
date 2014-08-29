@@ -51,9 +51,9 @@
 	  <td class="ctags">
 	    <ul class="tag_collection" ng-repeat="tag in candy.tags">
 	      <li class="tag" ng-click="addTag(tag)" 
-		  ng-class="{confirm: '{{tag|strip}}' === 'confirm',
-                  challenge: '{{tag|strip}}' === 'challenge',
-		  surprise: '{{tag|strip}}' === 'surprise'}">{{tag}}</li>
+		  ng-class="{confirm: '{{tag|stripQuote}}' === 'confirm',
+                  challenge: '{{tag|stripQuote}}' === 'challenge',
+		  surprise: '{{tag|stripQuote}}' === 'surprise'}">{{tag}}</li>
 	    </ul>
 	  </td>
 	  <td class="ctitle">

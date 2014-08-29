@@ -32,8 +32,8 @@ angular
       .when('/contact', {templateUrl: 'views/contact.html'})
       .when('/about-candy-service', {templateUrl: 'views/about-candy-service.html',
 			       controller: 'About'})
-      .when('/candy-list', {templateUrl: 'views/candy-list.html',
-			    controller: 'CandyListController'})
+      .when('/candy-list-table', {templateUrl: 'views/candy-list-table.html',
+			          controller: 'CandyListTable'})
       .when('/candy-list-timeline', {templateUrl: 'views/candy-list-timeline.html',
 				     controller: 'ResultsTimelineCtrl'})
       .otherwise({redirectTo: '/candy-list-timeline'});
