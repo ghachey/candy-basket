@@ -47,7 +47,7 @@
 	</tr>
       </thead>
       <tbody id="tag_results">
-	<tr class="animate" ng-repeat="candy in candies | filterTagsArray:tags | orderBy: 'date':true">
+	<tr class="animate" ng-repeat="candy in candies | candiesByTags:tags | orderBy: 'date':true">
 	  <td class="ctags">
 	    <ul class="tag_collection" ng-repeat="tag in candy.tags">
 	      <li class="tag" ng-click="addTag(tag)" 

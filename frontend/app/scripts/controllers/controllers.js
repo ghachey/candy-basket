@@ -123,8 +123,8 @@ app.controller('CandyModalCtrl', ['$scope', '$rootScope', '$modal', '$log', '$ro
       var candies = [];
       var index = stateTracker.state.timelineValues['index'];
       var candy_index = index >= 1 ? index - 1 : 0;
-      //candies = $filter('filterTagsArray')($scope.candies, $scope.tags, $scope.cutoff);
-      candies = $filter('filterTagsArray')($scope.candies, $scope.tags);
+      //candies = $filter('candiesByTags')($scope.candies, $scope.tags, $scope.cutoff);
+      candies = $filter('candiesByTags')($scope.candies, $scope.tags);
       candies = $filter('orderBy')(candies, 'date', false);
       _id = candies[candy_index]['_id'];
     }
@@ -248,7 +248,7 @@ var DeleteCandyInstanceModalCtrl = function ($scope, $modalInstance, operation, 
 
 };
 
-app.controller('ResultsTimelineCtrl', ['$scope', '$location', '$filter', 'CandyResource', 'tagsViews', 'stateTracker', 'utilities', 'filterTagsArrayFilter', function ($scope, $location, $filter, CandyResource, tagsViews, stateTracker, utilities, filterTagsArrayFilter) {
+app.controller('ResultsTimelineCtrl', ['$scope', '$location', '$filter', 'CandyResource', 'tagsViews', 'stateTracker', 'utilities', function ($scope, $location, $filter, CandyResource, tagsViews, stateTracker, utilities) {
 
   var tags_map          = [];
   var timeline_items    = [];
@@ -397,8 +397,8 @@ app.controller('ResultsTimelineCtrl', ['$scope', '$location', '$filter', 'CandyR
     var min_date   = new Date();
     var max_date   = new Date(1990); // need to ensure we get a real maximum from the set
 
-    //candies = $filter('filterTagsArray')($scope.candies, $scope.tags, $scope.cutoff);
-    candies = $filter('filterTagsArray')($scope.candies, $scope.tags);
+    //candies = $filter('candiesByTags')($scope.candies, $scope.tags, $scope.cutoff);
+    candies = $filter('candiesByTags')($scope.candies, $scope.tags);
 
     candies.forEach(function(this_candy){
       var comp_date  = new Date(Date.parse(this_candy['date']));

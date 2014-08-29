@@ -13,7 +13,7 @@
  * This is only used with a plain input box for testing. Another
  * filter is used to filter the custom taglist element.
  * 
- * @see nasaraCandyBasketApp.filter:filterTagsArray
+ * @see nasaraCandyBasketApp.filter:candiesByTags
  *
  * Also, this filter does not work with spaces between tags, but it is
  * good enough to test and get started on the real tags filter.
