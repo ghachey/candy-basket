@@ -31,11 +31,11 @@ angular
       .when('/about', {templateUrl: 'views/about.html'})
       .when('/contact', {templateUrl: 'views/contact.html'})
       .when('/about-candy-service', {templateUrl: 'views/about-candy-service.html',
-			       controller: 'About'})
+			             controller: 'About'})
       .when('/candy-list-table', {templateUrl: 'views/candy-list-table.html',
 			          controller: 'CandyListTable'})
       .when('/candy-list-timeline', {templateUrl: 'views/candy-list-timeline.html',
-				     controller: 'ResultsTimelineCtrl'})
+				     controller: 'CandyListTimeline'})
       .otherwise({redirectTo: '/candy-list-timeline'});
 
     // http://stackoverflow.com/questions/17289195/angularjs-post-data-to-external-rest-api
