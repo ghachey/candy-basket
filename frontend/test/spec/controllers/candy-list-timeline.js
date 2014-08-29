@@ -17,5 +17,7 @@ describe('Controller: CandyListTimeline', function () {
   }));
 
   it('TODO - write some tests', function () {
+    expect(true).toBe(false);
   });
+
 });
