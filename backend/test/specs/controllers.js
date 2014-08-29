@@ -715,8 +715,8 @@ describe('The whole controller API', function(){
     it('should respond 200 and the list of candies by id', function(done){
       /* jshint ignore:start */
       var viewResult = {
-        'tags_by_candies': {
-          'tags_by_candies':
+        'tagsByCandies': {
+          'tagsByCandies':
           [
             {
               'candy_id': candyId2,
@@ -734,12 +734,12 @@ describe('The whole controller API', function(){
         .expect(200)
         .end(function(err, res){
           if (err) {return done(err);}
-          res.body.tags_by_candies.tags_by_candies[0].candy_id.should.equal(candyId2);
-          res.body.tags_by_candies.tags_by_candies[0].tag.should.deep.equal(
-            viewResult.tags_by_candies.tags_by_candies[0].tag);
-          res.body.tags_by_candies.tags_by_candies[1].candy_id.should.equal(candyId3);
-          res.body.tags_by_candies.tags_by_candies[1].tag.should.deep.equal(
-            viewResult.tags_by_candies.tags_by_candies[1].tag);
+          res.body.tagsByCandies.tagsByCandies[0].candy_id.should.equal(candyId2);
+          res.body.tagsByCandies.tagsByCandies[0].tag.should.deep.equal(
+            viewResult.tagsByCandies.tagsByCandies[0].tag);
+          res.body.tagsByCandies.tagsByCandies[1].candy_id.should.equal(candyId3);
+          res.body.tagsByCandies.tagsByCandies[1].tag.should.deep.equal(
+            viewResult.tagsByCandies.tagsByCandies[1].tag);
           return done();
         });
       /* jshint ignore:end */

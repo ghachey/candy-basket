@@ -19,7 +19,7 @@ describe('Service: utilities', function () {
   });
 
   it('should mashup tags counts', function () {
-    var tagsByCandies = {'tags_by_candies': [
+    var tagsByCandies = {'tagsByCandies': [
       {
         'candy_id': 'bd79168f4137232c9714102a08000591',
         'date': '2013-10-09T11:59:57Z',
@@ -41,7 +41,7 @@ describe('Service: utilities', function () {
         'McGarry',
         'surprise',
       ],
-      'tags_counts': [
+      'tagsCounts': [
         {
           'count': 1,
           'word': 'Ghislain'
@@ -72,7 +72,7 @@ describe('Service: utilities', function () {
         }
       ]
     };
-    expect(utilities.getTagsData(tagsByCandies.tags_by_candies)).toEqual(tagsCounts);
+    expect(utilities.getTagsData(tagsByCandies.tagsByCandies)).toEqual(tagsCounts);
   });
 
   it('should check if string ends with other string', function () {

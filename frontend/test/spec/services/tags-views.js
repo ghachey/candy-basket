@@ -31,7 +31,7 @@ describe('Service: tagsViews', function () {
           'McGarry',
           'surprise',
         ],
-        'tags_counts': [
+        'tagsCounts': [
           {
             'count': 1,
             'word': 'Ghislain'
@@ -86,8 +86,8 @@ describe('Service: tagsViews', function () {
 
   it('should provide a list of tags by candies', function () {
     var mockedTagsByCandiesData = {
-      'tags_by_candies': {
-        'tags_by_candies': [
+      'tagsByCandies': {
+        'tagsByCandies': [
           {
             'candy_id': 'bd79168f4137232c9714102a08000591',
             'date': '2013-10-09T11:59:57Z',
@@ -118,7 +118,7 @@ describe('Service: tagsViews', function () {
     // Flush pending request
     mockedBackend.flush();
 
-    expect(tagsByCandies).toEqual(mockedTagsByCandiesData.tags_by_candies);
+    expect(tagsByCandies).toEqual(mockedTagsByCandiesData.tagsByCandies);
   });
 
 });

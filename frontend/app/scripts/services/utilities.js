@@ -44,15 +44,15 @@ utilities.factory('utilities', function () {
    */
   var getTagsData = function(data, cutoff) {
     var tags        = [];
-    var tags_counts = [];
-    var start       = {"tags": tags, "tags_counts": tags_counts};
+    var tagsCounts = [];
+    var start       = {"tags": tags, "tagsCounts": tagsCounts};
     var subset      = [];
 
     cutoff  = typeof cutoff  !== 'undefined' ? cutoff  : 0;
 
-    var incWordCount = function(tags_counts, tag) {
-      tags_counts.forEach(function(elem) {
-        if (_.isEqual(elem.word,tag)) {
+    var incWordCount = function(tagsCounts, tag) {
+      tagsCounts.forEach(function(elem) {
+        if (_.isEqual(elem.word, tag)) {
 	  elem.count++;
 	  return;
         }
@@ -74,7 +74,7 @@ utilities.factory('utilities', function () {
     /**
      Reduce from input data to desired output.
      */
-    var result = _.reduce(subset, function(memory,object) {
+    var result = _.reduce(subset, function(memory, object) {
 
       var candy_tags = object.tag;
       var processed  = {};
@@ -84,23 +84,22 @@ utilities.factory('utilities', function () {
         // Add tag if not present
         if (!_.contains(memory.tags, tag)) {
 	  tags.push(tag);
-	  tags_counts.push({"count": 1, "word": tag});
+	  tagsCounts.push({"count": 1, "word": tag});
 	  processed = {
 	    "tags": tags,
-	    "tags_counts": tags_counts
+	    "tagsCounts": tagsCounts
 	  };
         } else { // Update its count if present
-	  incWordCount(tags_counts,tag);
+	  incWordCount(tagsCounts,tag);
 	  processed =  {
 	    "tags": tags,
-	    "tags_counts": tags_counts
+	    "tagsCounts": tagsCounts
 	  };
         }
       });
       return processed;
     }, start);
 
-    // console.debug("Results: ", result);
     return result;
   };
 
@@ -131,27 +130,27 @@ utilities.factory('utilities', function () {
     return str.indexOf(sub) != -1;
   };
 
-  var update_status_count = function(tag_data){
+  var updateStatusCount = function(tagData){
 
-    var ccs_tag_status = [
+    var ccsTagStatus = [
       {'value':0,'type':'success'},
       {'value':0,'type':'danger'},
       {'value':0,'type':'warning'}
     ];
 
     var confirm = 0, challenge = 0, surprise = 0;
-    var tag_counts = typeof tag_data.tags_counts !== 'undefined' ? tag_data.tags_counts : [];
+    var tagCounts = typeof tagData.tagsCounts !== 'undefined' ? tagData.tagsCounts : [];
 
-    $.each(tag_counts, function(index,this_count){
-      switch (this_count.word){
+    $.each(tagCounts, function(index,thisCount){
+      switch (thisCount.word){
       case 'confirm':
-        confirm+=this_count.count;
+        confirm+=thisCount.count;
         break;
       case 'challenge':
-        challenge+=this_count.count;
+        challenge+=thisCount.count;
         break;
       case 'surprise':
-        surprise+=this_count.count;
+        surprise+=thisCount.count;
         break;
       default:
         break;
@@ -163,20 +162,20 @@ utilities.factory('utilities', function () {
     var aggr = 0;
 
     if (total){
-      $.each(ccs_tag_status, function(index, this_status){
+      $.each(ccsTagStatus, function(index, thisStatus){
         var num = 0;
-        switch (this_status.type){
+        switch (thisStatus.type){
         case 'success':
 	  num = confirm/total;
-	  this_status.value = num.toPrecision(precision) * 100;
+	  thisStatus.value = num.toPrecision(precision) * 100;
 	  break;
         case 'danger':
 	  num = challenge/total;
-	  this_status.value = num.toPrecision(precision) * 100;
+	  thisStatus.value = num.toPrecision(precision) * 100;
 	  break;
         case 'warning':
 	  num = surprise/total;
-	  this_status.value = num.toPrecision(precision) * 100;
+	  thisStatus.value = num.toPrecision(precision) * 100;
 	  break;
         }
 
@@ -187,15 +186,15 @@ utilities.factory('utilities', function () {
       // I suck at math - fudge it.
       //console.debug("AGGR: " , aggr, ccs_tag_status);
       if (aggr > 100){
-        ccs_tag_status[0].value -= (aggr - 100);
+        ccsTagStatus[0].value -= (aggr - 100);
       }
       if (aggr < 100){
-        ccs_tag_status[0].value += (100 - aggr);
+        ccsTagStatus[0].value += (100 - aggr);
       }
 
     }
 
-    return ccs_tag_status;
+    return ccsTagStatus;
 
   };
 
@@ -236,7 +235,7 @@ utilities.factory('utilities', function () {
     isArray: isArray,
     endsWith: endsWith,
     contains: contains,
-    update_status_count: update_status_count,
+    updateStatusCount: updateStatusCount,
     pluralise: pluralise,
     compareByDates: compareByDates
   };

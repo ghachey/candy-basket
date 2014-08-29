@@ -51,9 +51,9 @@ angular.module('nasaraCandyBasketApp')
         console.log("Broadcast received");
       });
       tagsViews.getTagsByCandies().then(function(response) {
-        tagsMap = response.data.tags_by_candies;
-        $scope.tags_data = utilities.getTagsData(tagsMap);
-        $scope.ccs_tag_status = utilities.update_status_count(
+        tagsMap = response.data.tagsByCandies;
+        $scope.tagsData = utilities.getTagsData(tagsMap);
+        $scope.ccsTagStatus = utilities.updateStatusCount(
           utilities.getTagsData(tagsMap));
       }, function(errorMessage){
         $scope.error=errorMessage;
@@ -62,9 +62,9 @@ angular.module('nasaraCandyBasketApp')
 
     // TODO - Remove this code duplication in a easily testable fashion
     tagsViews.getTagsByCandies().then(function(response) {
-      tagsMap = response.data.tags_by_candies;
-      $scope.tags_data = utilities.getTagsData(tagsMap);
-      $scope.ccs_tag_status = utilities.update_status_count(
+      tagsMap = response.data.tagsByCandies;
+      $scope.tagsData = utilities.getTagsData(tagsMap);
+      $scope.ccsTagStatus = utilities.updateStatusCount(
         utilities.getTagsData(tagsMap));
     }, function(errorMessage){
       $scope.error=errorMessage;
@@ -77,19 +77,19 @@ angular.module('nasaraCandyBasketApp')
       var newMap = [];
 
       tagsMap.forEach(function(elem) {
-        if (_.isEqual(_.intersection(newSearch, elem.tag),newSearch)) {
+        if (_.isEqual(_.intersection(newSearch, elem.tag), newSearch)) {
           newMap.push(elem);
         }
       });
 
       if (newMap.length){
-        $scope.tags_data = utilities.getTagsData(newMap); // reduce cloud
-        $scope.ccs_tag_status = utilities.update_status_count(
+        $scope.tagsData = utilities.getTagsData(newMap); // reduce cloud
+        $scope.ccsTagStatus = utilities.updateStatusCount(
           utilities.getTagsData(newMap));
       }
       else {
-        $scope.tags_data = utilities.getTagsData(tagsMap); // restore cloud
-        $scope.ccs_tag_status = utilities.update_status_count(
+        $scope.tagsData = utilities.getTagsData(tagsMap); // restore cloud
+        $scope.ccsTagStatus = utilities.updateStatusCount(
           utilities.getTagsData(tagsMap));
       }
     });

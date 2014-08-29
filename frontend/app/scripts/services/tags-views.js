@@ -26,7 +26,7 @@ angular.module('nasaraCandyBasketApp')
         return $http.get(wsUrl + '/basket/candies/tags-by-candies',
                          {
                            transformResponse: function (data) {
-                             return angular.fromJson(data).tags_by_candies;
+                             return angular.fromJson(data).tagsByCandies;
                            },
                            isArray: false 
                          });

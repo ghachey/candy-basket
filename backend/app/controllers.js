@@ -297,7 +297,7 @@ var getTags = function(req, res) {
         tagsCounts.push({'word': doc.key, 'count': doc.value});
       });
       /* jshint ignore:start */
-      viewData = {'tags' : {'tags': tags, 'tags_counts': tagsCounts}};
+      viewData = {'tags' : {'tags': tags, 'tagsCounts': tagsCounts}};
       /* jshint ignore:end */
       res.send(200, viewData);
     } else {
@@ -330,9 +330,7 @@ var getTagsByCandies = function(req, res) {
           'tag': doc.value.map(function(tag) {return tag.toLowerCase();})
         });
       });
-      /* jshint ignore:start */
-      viewData = {'tags_by_candies' : {'tags_by_candies': tags}};
-      /* jshint ignore:end */
+      viewData = {'tagsByCandies' : {'tagsByCandies': tags}};
       res.send(200, viewData);
     } else {
       console.error('Error getting view: ', err);
