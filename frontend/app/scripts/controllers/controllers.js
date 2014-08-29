@@ -4,20 +4,6 @@
 
 var app = angular.module('nasaraCandyBasketApp');
 
-app.controller('MetaController', ['$scope', '$location', 'meta', function ($scope, $location, meta) {
-
-  meta.getMeta().then(function(response){
-    $scope.info = response.data;
-  }, function(reason) {
-    console.error('Error getting service meta data: ', reason);
-  });
-
-  $scope.getStarted = function () {
-    $location.path('/candy-list-timeline');
-  };
-
-}]);
-
 app.controller('CandyListController', ['$scope', 'CandyResource', 'tagsView', '$location', 'utilities', function ($scope, CandyResource, tagsViews, $location, utilities) {
 
   // Used to maintain a client-side mapping of candy IDs with their

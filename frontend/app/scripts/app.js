@@ -30,8 +30,8 @@ angular
 		      controller: 'MainCtrl'})
       .when('/about', {templateUrl: 'views/about.html'})
       .when('/contact', {templateUrl: 'views/contact.html'})
-      .when('/candy-service', {templateUrl: 'views/candy-service.html',
-			       controller: 'MetaController'})
+      .when('/about-candy-service', {templateUrl: 'views/about-candy-service.html',
+			       controller: 'About'})
       .when('/candy-list', {templateUrl: 'views/candy-list.html',
 			    controller: 'CandyListController'})
       .when('/candy-list-timeline', {templateUrl: 'views/candy-list-timeline.html',

@@ -31,15 +31,15 @@ describe('Service: meta', function () {
     var metaDataPromise = meta.getMeta();
     
     // Retrieve result from promise
-    var meta;
+    var result;
     metaDataPromise.then(function(response) {
-      meta = response.data;
+      result = response.data;
     });
 
     // Flush pending request
     mockedBackend.flush();
 
-    expect(meta).toEqual(mockedMetaData);
+    expect(result).toEqual(mockedMetaData);
   });
 
 });

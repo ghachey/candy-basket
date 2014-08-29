@@ -1,22 +1,49 @@
 'use strict';
 
-describe('Controller: AboutCtrl', function () {
+describe('Controller: About', function () {
+
+  var mockedMetaData = {'name':'Candy Basket','version':0.3};
 
   // load the controller's module
   beforeEach(module('nasaraCandyBasketApp'));
 
-  var AboutCtrl,
-    scope;
+  var About,
+      $scope,
+      $timeout,
+      $location,
+      metaMock;
 
   // Initialize the controller and a mock scope
-  beforeEach(inject(function ($controller, $rootScope) {
-    scope = $rootScope.$new();
-    AboutCtrl = $controller('AboutCtrl', {
-      $scope: scope
-    });
-  }));
+  beforeEach(function() {
 
-  it('should attach a list of awesomeThings to the scope', function () {
-    expect(scope.awesomeThings.length).toBe(3);
+    metaMock = jasmine.createSpyObj('meta', ['getMeta']);
+
+    inject(function ($controller, $rootScope, $q, _$timeout_, _$location_) {
+      $scope = $rootScope.$new();
+      $timeout = _$timeout_;
+      $location = _$location_;
+      metaMock.getMeta.andReturn($q.when(mockedMetaData));
+
+      About = $controller('About', {
+        $scope: $scope,
+        meta: metaMock
+      });
+    });
+
   });
+
+  it('should contain getStarted function on the scope redirecting url', function () {
+    expect($scope.getStarted).toBeDefined();
+    $scope.getStarted();
+    expect($location.url()).toEqual('/candy-list-timeline');
+  });
+
+  it('should retrieve the backend API service meta information', function () {
+    expect(metaMock.getMeta).toHaveBeenCalled();
+    $timeout.flush();
+    $timeout(function() { 
+      expect($scope.info).toEqual(mockedMetaData); 
+    }, 1);
+  });
+
 });

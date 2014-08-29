@@ -2,16 +2,22 @@
 
 /**
  * @ngdoc function
- * @name nasaraCandyBasketApp.controller:AboutCtrl
+ * @name nasaraCandyBasketApp.controller:About
  * @description
- * # AboutCtrl
+ * # About
  * Controller of the nasaraCandyBasketApp
  */
 angular.module('nasaraCandyBasketApp')
-  .controller('AboutCtrl', function ($scope) {
-    $scope.awesomeThings = [
-      'HTML5 Boilerplate',
-      'AngularJS',
-      'Karma'
-    ];
+  .controller('About', function ($scope, $location, meta) {
+
+    meta.getMeta().then(function(response){
+      $scope.info = response.data;
+    }, function(reason) {
+      console.error('Error getting service meta data: ', reason);
+    });
+
+    $scope.getStarted = function () {
+      $location.path('/candy-list-timeline');
+    };
+
   });
