@@ -1,17 +1,17 @@
-<div style="background: transparent;" ng-controller="tagCloudModalCtl">
+<div style="background: transparent;" ng-controller="TagCloudModal">
   <script type="text/ng-template" id="welcome.html">
-    <div class="modal-body" id="welcome-cloud" ng-controller="tagCloudModalCtl">
-			<welcometagcloud 
-				id="intro-tags"
-				cloud-data="tagsData.tagsCounts"
-				on-click="tagOnClickFunction(element)"
-				on-hover="tagOnHoverFunction(element)">
-				<svg class="welcome"></svg>
+    <div class="modal-body" id="welcome-cloud" ng-controller="TagCloudModal">
+      <welcometagcloud 
+	id="intro-tags"
+cloud-data="tagsData.tagsCounts"
+on-click="tagOnClickFunction(element)"
+on-hover="tagOnHoverFunction(element)">
+	<svg class="welcome"></svg>
 			</tagcloud>
     </div>
     <div class="modal-footer">
-			<button class="btn btn-primary"
-							ng-click="cancel()">BEGIN</button>
+      <button class="btn btn-primary"
+	      ng-click="cancel()">BEGIN</button>
     </div>
   </script>
 
