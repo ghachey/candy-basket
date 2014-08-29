@@ -12,11 +12,12 @@ describe('Filter: dateFromNow', function () {
   }));
 
   it('should return user friendly from now date', function () {
-    var d1 = moment().subtract(1, 'days').format('YYYY-MM-DDThh:mm:ss');
-    var d2 = moment().subtract(2, 'minutes').format('YYYY-MM-DDThh:mm:ss');
-    var d3 = moment().subtract(3, 'months').format('YYYY-MM-DDThh:mm:ss');
-    var d4 = moment().subtract(1, 'years').format('YYYY-MM-DDThh:mm:ss');
-    var d5 = moment().subtract(45, 'seconds').format('YYYY-MM-DDThh:mm:ss');
+    var d1 = JSON.stringify(moment().subtract(1, 'days'));
+    var d2 = JSON.stringify(moment().subtract(2, 'minutes'));
+    var d3 = JSON.stringify(moment().subtract(3, 'months'));
+    var d4 = JSON.stringify(moment().subtract(1, 'years'));
+    var d5 = JSON.stringify(moment().subtract(45, 'seconds'));
+
     expect(dateFromNow(d1)).toBe('a day ago');
     expect(dateFromNow(d2)).toBe('2 minutes ago');
     expect(dateFromNow(d3)).toBe('3 months ago');

@@ -12,6 +12,6 @@
 angular.module('nasaraCandyBasketApp')
   .filter('dateFromNow', function () {
     return function(dtString) {
-      return moment(dtString,'YYYY-MM-DDThh:mm:ss').fromNow();
+      return moment(dtString,'YYYY-MM-DDThh:mm:ssZ').fromNow();
     };
   });
