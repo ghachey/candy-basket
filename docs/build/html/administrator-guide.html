@@ -1,0 +1,817 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>Administrator Guide &mdash; Candy Basket 1.0 documentation</title>
+    
+    <link rel="stylesheet" href="_static/default.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    './',
+        VERSION:     '1.0',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <link rel="top" title="Candy Basket 1.0 documentation" href="index.html" />
+    <link rel="next" title="Developer Guide" href="developer-guide.html" />
+    <link rel="prev" title="User Guide" href="user-guide.html" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="developer-guide.html" title="Developer Guide"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="user-guide.html" title="User Guide"
+             accesskey="P">previous</a> |</li>
+        <li><a href="index.html">Candy Basket 1.0 documentation</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <div class="section" id="administrator-guide">
+<h1>Administrator Guide<a class="headerlink" href="#administrator-guide" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="introduction">
+<h2>Introduction<a class="headerlink" href="#introduction" title="Permalink to this headline">¶</a></h2>
+<p><strong>Note: Mnemoniq is referred herein as Candy Basket and memories and
+candies for historical reasons. This will eventually be changed, but
+for now the technical terminologies used are the old ones.</strong></p>
+<p>This guide is meant for the person who wants to deploy Candy Basket in
+its own environment. Candy Basket supports single signon for
+authentication, and once authenticated users have full access to the
+application. Candy Basket was tested to work with both Windows Server
+2008 and Samba 4 as Active Directory and Domain Controller.</p>
+<p>Candy Basket can be deployed on essentially any operating system using
+any HTTP server. However, the only tested and supported approach is
+deploying Candy Basket on the latest Debian 7 with Apache and WSGI.</p>
+</div>
+<div class="section" id="pre-built-vmware-image">
+<h2>Pre-Built VMWare Image<a class="headerlink" href="#pre-built-vmware-image" title="Permalink to this headline">¶</a></h2>
+<p>The supported way of deploying Candy Basket is the pre-built VMWare
+image. This image comes ready to be deployed to your VMware
+infrastructure with minimal configuration.</p>
+<p>The installation of the image should be a simple matter of booting it
+from your VMware host server. However, you will need to correctly
+setup networking, preferably in bridge mode where it will live
+side-by-side with the rest of the network. You will need to assign it
+a static IP address.</p>
+<p>It is assumed you run your own internal DNS. You will need to add your
+chosen fully qualified host name as an A record to this new server,
+for example:</p>
+<div class="highlight-python"><div class="highlight"><pre>192.168.1.10     A      candy.pacificpolicy.org
+</pre></div>
+</div>
+<p>Reverse DNS must also be working for single sign-on to work. Once the
+new server is part of your network and you can correctly ping it using
+its host name you will need to change the domain name in several
+places.</p>
+<ul class="simple">
+<li>All three Apache Virtual Hosts configuration in
+<cite>/etc/apache2/sites-available/</cite></li>
+<li>The CORS Python file in
+<cite>/srv/www-apps/candybasket/backend/config.py</cite>. The allowed domains
+should be identified there. This should a single fully qualified
+host name such as <cite>candy.pacificpolicy.org</cite>.</li>
+<li>The Candy Basket RESTful service location in
+<cite>/srv/www-apps/candybasket/frontend/static/js/services.js</cite>. The
+variable <cite>wsUrl</cite> should be changed to your own fully qualified host
+name.</li>
+</ul>
+<p>Restart Apache, tail -f its <cite>/var/log/error.log</cite> file and try
+pointing your browser to <cite>https://candy.pacificpolicy.org</cite>.</p>
+</div>
+<div class="section" id="vmware-test-environment">
+<h2>VMWare Test Environment<a class="headerlink" href="#vmware-test-environment" title="Permalink to this headline">¶</a></h2>
+<p>If you are interested in improving the VMWare image or anything in the
+build process these notes might come in handy to create your own test
+environment. We use VMware workstation with a number of VMware Virtual
+Machines (VM) to simulate a production environment. On my machines I
+create the following VMs:</p>
+<ul>
+<li><dl class="first docutils">
+<dt><strong>debian.pacificpolicy.org</strong> the machine running the Candy Basket</dt>
+<dd><p class="first last">application deployed as detailed in <a class="reference internal" href="#deploy-debian-apache">deploy-debian-apache</a></p>
+</dd>
+</dl>
+</li>
+<li><dl class="first docutils">
+<dt><strong>winserver2008.pacificpolicy.org</strong> An Active Directory and Domain</dt>
+<dd><p class="first last">Controller running Windows Server 2008</p>
+</dd>
+</dl>
+</li>
+<li><dl class="first docutils">
+<dt><strong>samba4.pacificpolicy.org</strong> An Active Directory and Domain</dt>
+<dd><p class="first last">Controller running Samba4 on Debian</p>
+</dd>
+</dl>
+</li>
+<li><p class="first"><strong>win7.pacificpolicy.org</strong> A Windows 7 workstion</p>
+</li>
+</ul>
+<div class="section" id="vmware-vitual-machines-lab-setup">
+<h3>VMWare Vitual Machines Lab Setup<a class="headerlink" href="#vmware-vitual-machines-lab-setup" title="Permalink to this headline">¶</a></h3>
+<ul class="simple">
+<li>Install VMware workstation</li>
+<li>Create a number of vitual machines: one Windows Server 2008
+(winserver2008.pacificpolicy.org), one Windows 7 Pro
+(win7.pacificpolicy.org), one Windows 8 Pro
+(win8.pacificpolicy.org), one Debian Linux to host software
+application (server.pacificpolicy.org).</li>
+<li>Create a private LAN Segment. This can be done in any VM&#8217;s LAN
+settings.</li>
+<li>Configure the Windows server 2008 VM with two virtual network
+interfaces: one will NAT from the host and the other should be part
+of a the private LAN segment.</li>
+<li>Configure the VMs that will be part of the domain (Win7, Win8 and
+Debian Linux) with the private LAN segment for networking.</li>
+</ul>
+</div>
+<div class="section" id="windows-server-2008-configuration">
+<h3>Windows Server 2008 Configuration<a class="headerlink" href="#windows-server-2008-configuration" title="Permalink to this headline">¶</a></h3>
+<p>Open the Server Manager and add and configure necessary roles including:</p>
+<ul class="simple">
+<li>Active Directory Domain Services steps.</li>
+<li>DHCP Server (e.g. assign a pool of 192.168.30.100-200 on the Windows
+server internal network interfaces with static IP of 192.168.30.1)</li>
+<li>DNS Server (e.g. create A records for all machines in the test lab:
+win7.pacificpolicy.org, debian.pacificpolicy.org,
+winserver2008.pacificpolicy.org and add CNAME records for services
+on the debian server, something like CNAME www.pacificpolicy.org -&gt;
+debian.pacificpolicy.org)</li>
+<li>Network Policy and Access Services (to turn it into a Gateway
+(Route/NAT)) step.</li>
+</ul>
+<p>If you want to access private VMs using SSH from your host you could
+port forward traffic through the Windows Server with the following
+commands:</p>
+<div class="highlight-python"><div class="highlight"><pre>C:\&gt; netsh interface portproxy add v4tov4 listenport=2222 listenaddress=172.16.228.136 connectport=22 connectaddress=192.168.20.10
+</pre></div>
+</div>
+</div>
+<div class="section" id="join-domain-with-windows-vms">
+<h3>Join Domain with Windows VMs<a class="headerlink" href="#join-domain-with-windows-vms" title="Permalink to this headline">¶</a></h3>
+<p>Boot the VMs and verify that networking is working correctly. Make
+sure IP addresses are assigned according to the DHCP pool configure in
+the previous step. Test DNS with nslookup or simple ping:</p>
+<div class="highlight-python"><div class="highlight"><pre>[root]$ nslookup winserver2008.pacificpolicy.org
+[root]$ nslookup win7.pacificpolicy.org
+[root]$ nslookup server.pacificpolicy.org
+</pre></div>
+</div>
+<p>If the Windows Server was correctly setup as a gateway in &#8220;Network
+Policy and Access Services&#8221; access to the Internet should work. Verify
+that the time is correctly being synced with Internet servers. You
+should now be able to join the domain.</p>
+</div>
+<div class="section" id="join-domain-with-the-linux-server-vm">
+<h3>Join Domain with the Linux Server VM<a class="headerlink" href="#join-domain-with-the-linux-server-vm" title="Permalink to this headline">¶</a></h3>
+<p>The Linux server can make use of a static IP address. The appropriate
+A record should be added to the Windows Server 2008 DNS zone
+file. Test networking (DNS and Internet access) and join the domain as
+a samba client.</p>
+<p>Regarding Linux Guest VMs, VMWare specifically recommends to use NTP
+on the guest instead of the VMware&#8217;s time syncing feature (see
+here). Since time sync is critical for the proper functioning of the
+single signon authentication it is better to be safe and follow best
+practices.  Installing ntp on Debian is easy:</p>
+<div class="highlight-python"><div class="highlight"><pre>[root]$ aptitude install ntp
+</pre></div>
+</div>
+<p>The default values in /etc/ntp.conf are fine, but it is recommended by
+VMware to add the following line to make sure ntp always syncs
+regarless of any large time jump it observes between Internet NTP
+servers and local OS time:</p>
+<div class="highlight-python"><div class="highlight"><pre>tinker panic 0
+</pre></div>
+</div>
+<p>then restart ntp:</p>
+<div class="highlight-python"><div class="highlight"><pre>[root]$ service ntp restart
+</pre></div>
+</div>
+<p>You might find it useful to allow yourself to SSH inside the Debian
+VMware from your host terminal; otherwise, getting in and out of the
+VM&#8217;s terminal is annoying and you loose the ability to copy/paste from
+host to VM. Apparently setting up port forwarding on Windows Server
+2008 R2 through the GUI is cmpletely broken. I have not tested this
+myself, but it is easy to do on the command line as detailed here.</p>
+</div>
+</div>
+<div class="section" id="deployment-on-debian-with-apache-http-server">
+<h2>Deployment on Debian with Apache HTTP server<a class="headerlink" href="#deployment-on-debian-with-apache-http-server" title="Permalink to this headline">¶</a></h2>
+<p>The steps to deploy Candy Basket on a production Debian server are
+very similar to setting up Candy Basket in a development environment.</p>
+<div class="section" id="oerating-system">
+<h3>Oerating System<a class="headerlink" href="#oerating-system" title="Permalink to this headline">¶</a></h3>
+<p>Download an ISO of the latest Debian and do a bare installation with
+only the standard utilities and SSH. You may also install any other
+useful packages you will most likely eventually need such as rsync,
+ntp, curl, wget.</p>
+<div class="highlight-python"><div class="highlight"><pre>[root]$ aptitude install rsync ntp sudo curl wget vim locate screen zip git
+</pre></div>
+</div>
+<p>Create a user to &#8216;own&#8217; the Candy Basket application</p>
+<div class="highlight-python"><div class="highlight"><pre>[root]$ adduser candy
+</pre></div>
+</div>
+</div>
+<div class="section" id="dependencies">
+<h3>Dependencies<a class="headerlink" href="#dependencies" title="Permalink to this headline">¶</a></h3>
+<p>Install the Apache HTTP server with Python support.</p>
+<div class="highlight-python"><div class="highlight"><pre>[root]$ aptitude install apache2 libapache2-mod-wsgi python-dev
+</pre></div>
+</div>
+<p>Install Python and preferably virtualenv to cleanly isolate the
+application and its dependencies. This process is exactly as defined
+in <a href="#id2"><span class="problematic" id="id3">python-and-virtualenv_</span></a>. The only difference in production
+will be the creation of an BASELINE virtual environment for Apache:
+this is an empty virtual environment with its own clean Python
+installation meant to power Python web applications. The BASELINE
+virtual environment could be owned by any user but in this case we
+will make use of the <cite>candy</cite> user.</p>
+<p>Create the BASELINE.</p>
+<div class="highlight-python"><div class="highlight"><pre>[candy]$ mkvirtualenv BASELINE
+</pre></div>
+</div>
+<p>And finally, tell Apache about it by adding the following line in
+<cite>/etc/apache2/conf.d/wsgi.conf</cite>.</p>
+<div class="highlight-python"><div class="highlight"><pre>WSGIPythonHome  /home/candy/.virtualenvs/BASELINE
+</pre></div>
+</div>
+<p>At this point, you should have two virgin virtual environments, test
+it before going further.</p>
+<div class="highlight-python"><div class="highlight"><pre>[candy]$ lsvirtualenv
+BASELINE
+========
+
+candy.pacificpolicy.org
+=======================
+</pre></div>
+</div>
+<p>Install CouchDB in a similar way as you would in a development
+environment. In production, CouchDB can also be owned by <cite>candy</cite>
+instead of <cite>root</cite>. The new Linux Filesystem Hierarchy Standard <a class="reference internal" href="developer-guide.html#fhs" id="id1">[FHS]</a>
+recommends installing such &#8220;non-distro provided&#8221; or optional software
+in <cite>/opt/</cite>. As user <cite>root</cite>, make a nice place for it.</p>
+<div class="highlight-python"><div class="highlight"><pre>[root]$ mkdir /opt/candy/
+[root]$ chown candy:candy -R /opt/candy/
+</pre></div>
+</div>
+<p>As user <cite>candy</cite>, install CouchDB as detailed in
+<a href="#id4"><span class="problematic" id="id5">couchdb_</span></a>. Couchdb dependencies will have to be installed as
+<cite>root</cite>, of course. In production it would be a good idea to have an
+init script. On Debian you can simply edit the distribution provided
+<cite>/etc/init.d/skeleton</cite>. Test you correctly created the init script:</p>
+<div class="highlight-python"><div class="highlight"><pre>[root]$ /etc/init.d/couchdb start
+[root]$ ps -ef | grep couch
+(couchdb processes running)
+[root]$ /etc/init.d/couchdb stop
+[root]$ ps -ef | grep couch
+(no couchdb process output)
+[root]$ /etc/init.d/couchdb restart
+</pre></div>
+</div>
+<p>Once the init script is working you can instruct the system to start
+it on boot:</p>
+<div class="highlight-python"><div class="highlight"><pre>[root]$ update-rc.d couchdb default
+</pre></div>
+</div>
+<p>You should not be able to login CouchDB by pointing your browser to
+<cite>http://localhost:5984/_utils</cite> or <cite>http://ip.address:5984/_utils</cite> if
+you are connecting from a remote machine although by default CouchDB
+listens on localhost so this would involved changing the
+configuration.  From the administrative interface create a database
+with the name <cite>candybasketng</cite> and add the design documents
+(i.e. views) located in <cite>db/views/docs/</cite>.</p>
+</div>
+<div class="section" id="candy-basket-as-apache-virtual-host">
+<h3>Candy Basket as Apache Virtual Host<a class="headerlink" href="#candy-basket-as-apache-virtual-host" title="Permalink to this headline">¶</a></h3>
+<p>The final step to deploy the Candy Basket application. Create a
+directory where the application will be served from:</p>
+<div class="highlight-python"><div class="highlight"><pre>[root]$ mkdir -p /srv/www-apps/candybasket/
+</pre></div>
+</div>
+<p>More work will be done to improve the development to production
+workflow cycle but for now simply <cite>rsync</cite> the whole source tree into
+<cite>/srv/www-apps/candy.pacificpolicy.org/</cite>. Let&#8217;s assume you have the
+latest source checked out in <cite>/home/candy/</cite>:</p>
+<div class="highlight-python"><div class="highlight"><pre>[root]$ rsync -avg /home/candy/tagging-tool/ /srv/www-apps/candybasket/
+[root]$ chown candy:www-data -R /srv/www-apps/candybasket/
+</pre></div>
+</div>
+<p>Create three Apache virtual hosts: one for the Candy Basket REST
+service and two for the Candy Basket application (HTTP and
+HTTPS). Sample configuration are included below.</p>
+<p><em>candybasket.http</em>:</p>
+<div class="highlight-python"><div class="highlight"><pre>&lt;VirtualHost *:80&gt;
+        ServerName candy.pacificpolicy.org
+        ServerAlias candy candy.pacificpolicy.org.vu
+        ServerAdmin admin@localhost
+
+        RewriteEngine on
+        ReWriteCond %{SERVER_PORT} !^443$
+        RewriteRule ^/(.*) https://%{HTTP_HOST}/$1 [NC,R,L]
+
+        ErrorLog ${APACHE_LOG_DIR}/error.log
+        LogLevel warn
+        CustomLog ${APACHE_LOG_DIR}/access.log combined
+&lt;/VirtualHost&gt;
+</pre></div>
+</div>
+<p><em>candybasket.https</em>:</p>
+<div class="highlight-python"><div class="highlight"><pre>&lt;IfModule mod_ssl.c&gt;
+&lt;VirtualHost *:443&gt;
+        ServerName candy.pacificpolicy.org.vu
+        ServerAlias candy candy.pacificpolicy.org
+        ServerAdmin admin@localhost
+
+        DocumentRoot /srv/www-apps/candybasket/frontend/
+
+        &lt;Directory /srv/www-apps/candybasket/frontend/&gt;
+                Order allow,deny
+                Allow from all
+        &lt;/Directory&gt;
+
+        Alias /help /srv/www-apps/candybasket/docs/build/html/
+
+        ProxyPass /basket http://candy-restapi-v1.pacificpolicy.org.vu/basket
+        ProxyPassReverse /basket http://candy-restapi-v1.pacificpolicy.org.vu/basket
+
+        ErrorLog ${APACHE_LOG_DIR}/error.log
+        LogLevel warn
+        CustomLog ${APACHE_LOG_DIR}/ssl_access.log combined
+
+        SSLEngine on
+        SSLCertificateFile    /etc/ssl/certs/ssl-cert-snakeoil.pem
+        SSLCertificateKeyFile /etc/ssl/private/ssl-cert-snakeoil.key
+
+        &lt;FilesMatch &quot;\.(cgi|shtml|phtml|php)$&quot;&gt;
+                SSLOptions +StdEnvVars
+        &lt;/FilesMatch&gt;
+
+        &lt;Directory /usr/lib/cgi-bin&gt;
+                SSLOptions +StdEnvVars
+        &lt;/Directory&gt;
+
+        BrowserMatch &quot;MSIE [2-6]&quot; \
+                nokeepalive ssl-unclean-shutdown \
+                downgrade-1.0 force-response-1.0
+        # MSIE 7 and newer should be able to use keepalive
+        BrowserMatch &quot;MSIE [17-9]&quot; ssl-unclean-shutdown
+&lt;/VirtualHost&gt;
+&lt;/IfModule&gt;
+</pre></div>
+</div>
+<p><em>candybasket-restapi-v1</em>:</p>
+<div class="highlight-python"><div class="highlight"><pre>&lt;VirtualHost *:80&gt;
+        ServerName candy-restapi-v1.pacificpolicy.org
+        ServerAlias candy-restapi-v1 candy-restapi-v1.pacificpolicy.org.vu
+        ServerAdmin admin@localhost
+
+        WSGIDaemonProcess runservice user=www-data group=www-data processes=1 threads=5
+        WSGIScriptAlias / /srv/www-apps/candybasket/backend/runservice.wsgi
+
+        &lt;Directory /srv/www-apps/candybasket/backend/&gt;
+#               Header set Access-Control-Allow-Origin &quot;*&quot;
+#               Header set Access-Control-Allow-Credentials true
+                WSGIProcessGroup runservice
+                WSGIApplicationGroup %{GLOBAL}
+                WSGIScriptReloading On
+                Order deny,allow
+                Allow from all
+        &lt;/Directory&gt;
+
+        ErrorLog ${APACHE_LOG_DIR}/error.log
+        LogLevel warn
+        CustomLog ${APACHE_LOG_DIR}/access.log combined
+&lt;/VirtualHost&gt;
+</pre></div>
+</div>
+<p>Enable the needed modules and the new virtual hosts and then restart Apache:</p>
+<div class="highlight-python"><div class="highlight"><pre>[root]$ a2ensite candybasket.http
+[root]$ a2ensite candybasket.https
+[root]$ a2ensite candybasket-restapi-v1
+[root]$ a2enmod ssl
+[root]$ a2enmod rewrite
+[root]$ a2enmod proxy
+[root]$ a2enmod proxy_http
+
+[root]$ service apache2 restart
+</pre></div>
+</div>
+<p>Make sure name resolution is working for the domains used in the
+Apache Virtual Hosts. If you you do not have internal DNS adding the
+records in the servers&#8217; <cite>/etc/hosts</cite> file will work:</p>
+<div class="highlight-python"><div class="highlight"><pre>127.0.0.1       candy.pacificpolicy.org
+127.0.0.1       candy-restapi-v1.pacificpolicy.org
+127.0.0.1       candy.pacificpolicy.org.vu
+127.0.0.1       candy-restapi-v1.pacificpolicy.org.vu
+</pre></div>
+</div>
+<p>Connect to the <cite>candy</cite> virtualenv and install Candy Basket&#8217;s Python
+dependencies:</p>
+<div class="highlight-python"><div class="highlight"><pre>[candy]$ workon candy.pacificpolicy.org
+(candy.pacificpolicy.org)[candy]$ cd /srv/www-apps/candybasket/backend/
+(candy.pacificpolicy.org)[candy]$ pip install -r requirements.pip
+</pre></div>
+</div>
+<p>As a final step to make sure that all the bits connect together the
+WSGI script <cite>/srv/www-apps/candybasket/backend/runservice.wsgi</cite> should
+be verified. It is mostly also preconfigured except that the following
+two lines will depend on your own environment: what did you call the
+Python virtualenv (it&#8217;s <cite>candy</cite> here) and what Python version is
+running on your OS. If steps herein were closely followed the
+following two lines should be edited and uncommented to look like:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="c"># If using virtualenv, add the virtualenv&#39;s site-packages to sys.path as well</span>
+<span class="n">VENV_PATH</span> <span class="o">=</span> <span class="s">&quot;/home/candy/.virtualenvs/candy.pacificpolicy.org/&quot;</span>
+<span class="n">site</span><span class="o">.</span><span class="n">addsitedir</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">VENV_PATH</span><span class="p">,</span><span class="s">&#39;lib/python2.7/site-packages/&#39;</span><span class="p">))</span>
+</pre></div>
+</div>
+<p>Restart Apache, tail -f its <cite>/var/log/error.log</cite> file and try pointing
+your browser to <cite>https://candy.pacificpolicy.org</cite>. At this point you
+should have a fully working albeit insecured installation of Candy
+Basket.</p>
+</div>
+</div>
+<div class="section" id="windows-active-directory-and-apache-kerberos-single-sign-on">
+<h2>Windows Active Directory and Apache Kerberos Single Sign-on<a class="headerlink" href="#windows-active-directory-and-apache-kerberos-single-sign-on" title="Permalink to this headline">¶</a></h2>
+<p>Candy Basket can be securely deployed in a Windows environment with
+users authenticating to it using single signon (SOO). In other words,
+members of the domain that are logged in the network should be able to
+access the web application securely without providing credentials.</p>
+<div class="section" id="install-necessary-software">
+<h3>Install Necessary Software<a class="headerlink" href="#install-necessary-software" title="Permalink to this headline">¶</a></h3>
+<p>Some kerberos, Apache and samba packages are needed:</p>
+<div class="highlight-python"><div class="highlight"><pre>[root]$ aptitude install apache2-mpm-prefork libapache2-mod-auth-kerb
+[root]$ aptitude install krb5-config krb5-user krb5-clients samba-client ntp
+</pre></div>
+</div>
+</div>
+<div class="section" id="time-synchronization">
+<h3>Time Synchronization<a class="headerlink" href="#time-synchronization" title="Permalink to this headline">¶</a></h3>
+<p>This setup is high sensitive to clocks being in sync. The network time
+protocol is the best approach to make things work:</p>
+<div class="highlight-python"><div class="highlight"><pre>[root]$ aptitude install ntp
+</pre></div>
+</div>
+<p>The default values in <cite>/etc/ntp.conf</cite> are fine. However, ntp will stop
+syncing if it detects a large enough jump in time as it assumes you
+are getting time from an invalid source.  Syncing using the provided
+default OS&#8217; ntp servers should be safe. If you are on VMware or
+anywhere the time may drift easily it would be a good idea to always
+sync regarless of any large time jump; it can be achieved by adding
+the following line at the top of <cite>/etc/ntp.conf</cite>:</p>
+<div class="highlight-python"><div class="highlight"><pre>tinker panic 0
+</pre></div>
+</div>
+<p>then restart ntp:</p>
+<div class="highlight-python"><div class="highlight"><pre>[root]$ service ntp restart
+</pre></div>
+</div>
+</div>
+<div class="section" id="dns-configuration">
+<h3>DNS Configuration<a class="headerlink" href="#dns-configuration" title="Permalink to this headline">¶</a></h3>
+<p>The setup here as three machines: a Windows Server 2008 RC2 with
+Active Directory and Domain Controller, a Debian werver running the
+web service and a Windows 7 workstation. Forward and reverse DNS
+should be configured something like this:</p>
+<div class="highlight-python"><div class="highlight"><pre>winserver2008.pacificpolicy.org    A    192.168.30.1
+debian.pacificpolicy.org    A    192.168.30.10
+www.pacificpolicy.org    CNAME    debian.pacificpolicy.org
+test.pacificpolicy.org    CNAME    debian.pacificpolicy.org
+</pre></div>
+</div>
+<p>Make sure everything resolves as it should from within
+win7.pacificpolicy.org:</p>
+<div class="highlight-python"><div class="highlight"><pre>[root]$ nslookup debian.pacificpolicy.org
+Server:        192.168.30.1
+Address:    192.168.30.1#53
+Name:    debian.pacificpolicy.org
+Address: 192.168.30.10
+
+[root]$ nslookup www.pacificpolicy.org
+Server:        192.168.30.1
+Address:    192.168.30.1#53
+www.pacificpolicy.org    canonical name = debian.pacificpolicy.org.
+Name:    www.pacificpolicy.org
+Address: 192.168.30.10
+
+[root]$ nslookup 192.168.30.10
+Server:        192.168.30.1
+Address:    192.168.30.1#53
+10.30.168.192.in-addr.arpa    name = debian.pacificpolicy.org.
+</pre></div>
+</div>
+</div>
+<div class="section" id="kerberos-configuration">
+<h3>Kerberos configuration<a class="headerlink" href="#kerberos-configuration" title="Permalink to this headline">¶</a></h3>
+<p>Back on the Debian server, backup the original and create your own:</p>
+<div class="highlight-python"><div class="highlight"><pre>[root]$ sudo cp /etc/krb5.conf /etc/krb5.conf.bak
+
+[libdefaults]
+        default_realm = PACIFICPOLICY.ORG
+        # The following krb5.conf variables are only for MIT Kerberos.
+        krb4_config = /etc/krb.conf
+        krb4_realms = /etc/krb.realms
+        kdc_timesync = 1
+        ccache_type = 4
+        forwardable = true
+        proxiable = true
+
+[realms]
+        PACIFICPOLICY.ORG = {
+                kdc = winserver2008.pacificpolicy.org
+                master_kdc = winserver2008.pacificpolicy.org
+                admin_server = winserver2008.pacificpolicy.org
+                default_domain = pacificpolicy.org
+        }
+
+[domain_realm]
+        .pacificpolicy.org = PACIFICPOLICY.ORG
+        pacificpolicy.org = PACIFICPOLICY.ORG
+
+[login]
+        krb4_convert = true
+        krb4_get_tickets = false
+</pre></div>
+</div>
+<p>Test Kerberos by getting a ticket-granting ticket (TGT) for the domain
+controller&#8217;s Administrator user:</p>
+<div class="highlight-python"><div class="highlight"><pre>[root]$ kinit Administrator
+Password for Administrator@PACIFICPOLICY.ORG:
+[root]$ klist
+Ticket cache: FILE:/tmp/krb5cc_0
+Default principal: Administrator@PACIFICPOLICY.ORG
+
+Valid starting    Expires           Service principal
+24/10/2013 15:13  25/10/2013 01:13  krbtgt/PACIFICPOLICY.ORG@PACIFICPOLICY.ORG
+    renew until 25/10/2013 15:13
+</pre></div>
+</div>
+</div>
+<div class="section" id="configure-samba-to-join-the-domain">
+<h3>Configure Samba to Join the Domain<a class="headerlink" href="#configure-samba-to-join-the-domain" title="Permalink to this headline">¶</a></h3>
+<p>Backup the original configuration and use the minimal configuration below:</p>
+<div class="highlight-python"><div class="highlight"><pre>[root]$ cp /etc/samba/smb.conf /etc/samba/smb.conf.bak
+
+[global]
+        netbios name = debian
+        realm = PACIFICPOLICY.ORG
+        workgroup = PACIFICPOLICY
+        server string = %h server
+        dns proxy = no
+        log file = /var/log/samba/log.%m
+        max log size = 1000
+        panic action = /usr/share/samba/panic-action %d
+        security = ADS
+        password server = winserver2008.pacificpolicy.org
+        encrypt passwords = true
+        passdb backend = tdbsam
+        obey pam restrictions = yes
+        unix password sync = yes
+        passwd program = /usr/bin/passwd %u
+        passwd chat = *Enter\snew\s*\spassword:* %n\n *Retype\snew\s*\spassword:* %n\n *password\supdated\ssuccessfully* .
+        pam password change = yes
+        map to guest = bad user
+        kerberos method = dedicated keytab
+</pre></div>
+</div>
+</div>
+<div class="section" id="join-the-domain">
+<h3>Join the domain<a class="headerlink" href="#join-the-domain" title="Permalink to this headline">¶</a></h3>
+<p>The server should be a member of the domain; this is easy with Samba:</p>
+<div class="highlight-python"><div class="highlight"><pre>[root]$ net ads join -U Administrator
+Enter Administrator&#39;s password:
+Using short pacificpolicy.org -- PACIFICPOLICY
+Joined &#39;SERVER&#39; to realm &#39;pacificpolicy.org&#39;
+</pre></div>
+</div>
+<p>If the domain is joined successfully a new Active Directory account
+will be created. That machine account could be used but I opted to
+create a specific user to handle authentication of the service. On the
+windows server add a new AD user account (e.g. I add a user HTTP
+Service with user httpservice) and make sure the password can not be
+reset and will last foreever.</p>
+<p>Now you need to create the &#8216;principle&#8217;: someone or something to
+authenticate or authenticate to (e.g. users, services). This can be a
+little tricky and there are a few ways to achieve this. Use the kpass
+utility to create the keytab with the principal; it will both add the
+service principal to the user and create a keytab which can later be
+used by a service such as Apache:</p>
+<div class="highlight-python"><div class="highlight"><pre>C:\&gt; ktpass -princ HTTP/debian.pacificpolicy.org@PACIFICPOLICY.ORG
+-mapuser httpservice@PACIFICPOLICY.ORG
+-crypto RC4-HMAC-NT
+-ptype KRB5_NT_PRINCIPAL
+-pass somepassword
+-out c:\Temp\krb5.keytab
+</pre></div>
+</div>
+<p>Copy the file <cite>c:\Temp\krb5.keytab</cite> on the Debian server somewhere
+appropriate (e.g. <cite>/etc/krb5.keytab</cite>). Assign correct ownership and
+permissions:</p>
+<div class="highlight-python"><div class="highlight"><pre>[root]$ chown root.www-data /etc/krb5.keytab
+[root]$ chmod 0640 /etc/krb5.keytab
+</pre></div>
+</div>
+<p>This should be it, but some testing will help. Get a Ticket-Granting
+Ticket (TGT) for the service principal:</p>
+<div class="highlight-python"><div class="highlight"><pre>[root]$ kinit HTTP/debian.pacificpolicy.org@PACIFICPOLICY.ORG
+</pre></div>
+</div>
+<p>View the ticket from the cache:</p>
+<div class="highlight-python"><div class="highlight"><pre>[root]$ klist
+Ticket cache: FILE:/tmp/krb5cc_0
+Default principal: HTTP/debian.pacificpolicy.org@PACIFICPOLICY.ORG
+
+Valid starting    Expires           Service principal
+30/10/2013 16:20  31/10/2013 02:20  krbtgt/PACIFICPOLICY.ORG@PACIFICPOLICY.ORG
+    renew until 31/10/2013 16:20
+</pre></div>
+</div>
+<p>Get a service ticket for the principal:</p>
+<div class="highlight-python"><div class="highlight"><pre>[root]$ kvno HTTP/debian.pacificpolicy.org@PACIFICPOLICY.ORG
+HTTP/debian.pacificpolicy.org@PACIFICPOLICY.ORG: kvno = 4
+</pre></div>
+</div>
+<p>List what is in the ticket cache and make sure you show the encryption
+type usig the &#8216;-e&#8217; flag:</p>
+<div class="highlight-python"><div class="highlight"><pre>[root]$ klist -e
+Ticket cache: FILE:/tmp/krb5cc_0
+Default principal: HTTP/debian.pacificpolicy.org@PACIFICPOLICY.ORG
+
+Valid starting    Expires           Service principal
+30/10/2013 16:20  31/10/2013 02:20  krbtgt/PACIFICPOLICY.ORG@PACIFICPOLICY.ORG
+    renew until 31/10/2013 16:20, Etype (skey, tkt): aes256-cts-hmac-sha1-96, aes256-cts-hmac-sha1-96
+30/10/2013 16:22  31/10/2013 02:20  HTTP/debian.pacificpolicy.org@PACIFICPOLICY.ORG
+    renew until 31/10/2013 16:20, Etype (skey, tkt): arcfour-hmac, arcfour-hmac
+</pre></div>
+</div>
+<p>Compare the service principal ticket above with the one from the
+keytab file which will be used by Apache:</p>
+<div class="highlight-python"><div class="highlight"><pre>[root]$ klist -e -k -t /etc/krb5.keytab
+Keytab name: FILE:/etc/krb5.keytab
+KVNO Timestamp        Principal
+---- ---------------- ---------------------------------------------------------
+   4 01/01/1970 11:00 HTTP/debian.pacificpolicy.org@PACIFICPOLICY.ORG (arcfour-hmac)
+</pre></div>
+</div>
+<p>The KVNO (password version number) , the encryption type and the
+service principal name (i.e. <a class="reference external" href="mailto:HTTP/debian&#46;pacificpolicy&#46;org&#37;&#52;&#48;PACIFICPOLICY&#46;ORG">HTTP/debian<span>&#46;</span>pacificpolicy<span>&#46;</span>org<span>&#64;</span>PACIFICPOLICY<span>&#46;</span>ORG</a>) must
+all match.  Apache VirtualHost Configuration</p>
+<p>Add appropriate lines in the virtualhost to enable kerberos
+authentication:</p>
+<div class="highlight-python"><div class="highlight"><pre>&lt;VirtualHost *:80&gt;
+        ServerAdmin webmaster@localhost
+        ServerName test.pacificpolicy.org
+
+        DocumentRoot /srv/www-apps/test-single-signon
+
+        &lt;Directory /srv/www-apps/test-single-signon&gt;
+                Options Indexes FollowSymLinks MultiViews
+                AllowOverride None
+                Order allow,deny
+                allow from all
+
+                # Kerberos Single Signon
+                AuthType Kerberos
+                AuthName &quot;Kerberos Login&quot;
+                KrbAuthRealms PACIFICPOLICY.ORG
+                KrbServiceName HTTP
+                KrbMethodNegotiate On
+                KrbMethodK5Passwd On
+                Krb5KeyTab /etc/krb5.keytab
+                Require valid-user
+
+        &lt;/Directory&gt;
+
+        ErrorLog ${APACHE_LOG_DIR}/error.log
+
+        # Possible values include: debug, info, notice, warn, error, crit,
+        # alert, emerg.
+        LogLevel debug
+
+        CustomLog ${APACHE_LOG_DIR}/access.log combined
+&lt;/VirtualHost&gt;
+</pre></div>
+</div>
+</div>
+<div class="section" id="test-from-client-workstations">
+<h3>Test from Client Workstations<a class="headerlink" href="#test-from-client-workstations" title="Permalink to this headline">¶</a></h3>
+<p>Try login from a workstation that is joined to the domain and logged
+in with a user; you should automatically be authenticated. You migvht
+have to indicate to the Internet Explorer that the site you are
+accessing is part of the Intranet. For example, add
+<cite>http://*.pacificpolicy.org</cite> to Internet <cite>Options-&gt;Security-&gt;Intranet-&gt;Sites</cite>.</p>
+<p>Try with another workstion not joined to the domain; you should be
+prompt to enter credentials.</p>
+</div>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+  <h3><a href="index.html">Table Of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">Administrator Guide</a><ul>
+<li><a class="reference internal" href="#introduction">Introduction</a></li>
+<li><a class="reference internal" href="#pre-built-vmware-image">Pre-Built VMWare Image</a></li>
+<li><a class="reference internal" href="#vmware-test-environment">VMWare Test Environment</a><ul>
+<li><a class="reference internal" href="#vmware-vitual-machines-lab-setup">VMWare Vitual Machines Lab Setup</a></li>
+<li><a class="reference internal" href="#windows-server-2008-configuration">Windows Server 2008 Configuration</a></li>
+<li><a class="reference internal" href="#join-domain-with-windows-vms">Join Domain with Windows VMs</a></li>
+<li><a class="reference internal" href="#join-domain-with-the-linux-server-vm">Join Domain with the Linux Server VM</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#deployment-on-debian-with-apache-http-server">Deployment on Debian with Apache HTTP server</a><ul>
+<li><a class="reference internal" href="#oerating-system">Oerating System</a></li>
+<li><a class="reference internal" href="#dependencies">Dependencies</a></li>
+<li><a class="reference internal" href="#candy-basket-as-apache-virtual-host">Candy Basket as Apache Virtual Host</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#windows-active-directory-and-apache-kerberos-single-sign-on">Windows Active Directory and Apache Kerberos Single Sign-on</a><ul>
+<li><a class="reference internal" href="#install-necessary-software">Install Necessary Software</a></li>
+<li><a class="reference internal" href="#time-synchronization">Time Synchronization</a></li>
+<li><a class="reference internal" href="#dns-configuration">DNS Configuration</a></li>
+<li><a class="reference internal" href="#kerberos-configuration">Kerberos configuration</a></li>
+<li><a class="reference internal" href="#configure-samba-to-join-the-domain">Configure Samba to Join the Domain</a></li>
+<li><a class="reference internal" href="#join-the-domain">Join the domain</a></li>
+<li><a class="reference internal" href="#test-from-client-workstations">Test from Client Workstations</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="user-guide.html"
+                        title="previous chapter">User Guide</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="developer-guide.html"
+                        title="next chapter">Developer Guide</a></p>
+  <h3>This Page</h3>
+  <ul class="this-page-menu">
+    <li><a href="_sources/administrator-guide.txt"
+           rel="nofollow">Show Source</a></li>
+  </ul>
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="developer-guide.html" title="Developer Guide"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="user-guide.html" title="User Guide"
+             >previous</a> |</li>
+        <li><a href="index.html">Candy Basket 1.0 documentation</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2013, Ghislain Hachey and Dan McGarry.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.2.2.
+    </div>
+  </body>
+</html>
