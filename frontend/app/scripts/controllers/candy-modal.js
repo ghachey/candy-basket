@@ -25,7 +25,7 @@ angular.module('nasaraCandyBasketApp')
       // Following code needed in timeline mode to know what candy we're dealing with
       if (_id === undefined && operation !== 'create') {
         var candies = [];
-        var index = stateTracker.state.timelineValues['index'];
+        var index = stateTracker.state.timelineValues.index;
         var candy_index = index >= 1 ? index - 1 : 0;
         //candies = $filter('candiesByTags')($scope.candies, $scope.tags, $scope.cutoff);
         candies = $filter('candiesByTags')($scope.candies, $scope.tags);
@@ -93,6 +93,8 @@ angular.module('nasaraCandyBasketApp')
         modalInstance = $modal.open(modalOptions);
         modalInstance.result.then(function (modalCandy) {
           modalCandy.$remove(candyModalOperationCallback);
+          stateTracker.state.timelineValues.index =
+            stateTracker.state.timelineValues.index - 1;
         }, candyModalDismissedCallback);
         break;
       default:
@@ -112,7 +114,7 @@ angular.module('nasaraCandyBasketApp')
  * of a CandyModal works for saving (creating/updating) candies
  */
 var SaveCandyInstanceModal = function ($scope, $modalInstance, operation, candyId,
-                                           CandyResource, tagsViews) {
+                                       CandyResource, tagsViews) {
   $scope.operation = operation;
   $scope.tinymceOptions = {
     menubar : false,
@@ -152,7 +154,7 @@ var SaveCandyInstanceModal = function ($scope, $modalInstance, operation, candyI
  * of a CandyModal works for deleting candies
  */
 var DeleteCandyInstanceModal = function ($scope, $modalInstance, operation, candyId,
-                                             CandyResource) {
+                                         CandyResource) {
 
   $scope.candy = CandyResource.read({_id: candyId});
   $scope.operation = operation;
