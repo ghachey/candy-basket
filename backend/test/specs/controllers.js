@@ -601,7 +601,7 @@ describe('The whole controller API', function(){
     it('should respond 200 and the list of candies by id', function(done){
       /* jshint ignore:start */
       var viewResult = {
-        'candies_by_id': 
+        'candiesById': 
         [ { _id: candyId2,
             source: 'http://ghachey.info',
             title: 'Updated Ghislain Hachey Website',
@@ -621,33 +621,33 @@ describe('The whole controller API', function(){
         .expect(200)
         .end(function(err, res){
           if (err) {return done(err);}
-          res.body.candies_by_id[0]._id.should.equal(
-            viewResult.candies_by_id[0]._id);
-          res.body.candies_by_id[0].source.should.equal(
-            viewResult.candies_by_id[0].source);
-          res.body.candies_by_id[0].description.should.equal(
-            viewResult.candies_by_id[0].description);
-          res.body.candies_by_id[0].title.should.equal(
-            viewResult.candies_by_id[0].title);
-          res.body.candies_by_id[0].description.should.equal(
-            viewResult.candies_by_id[0].description);
-          new Date(Date.parse(res.body.candies_by_id[0].date)).should.be.a('date');
-          res.body.candies_by_id[0].tags.should.deep.equal(
-            viewResult.candies_by_id[0].tags);
+          res.body.candiesById[0]._id.should.equal(
+            viewResult.candiesById[0]._id);
+          res.body.candiesById[0].source.should.equal(
+            viewResult.candiesById[0].source);
+          res.body.candiesById[0].description.should.equal(
+            viewResult.candiesById[0].description);
+          res.body.candiesById[0].title.should.equal(
+            viewResult.candiesById[0].title);
+          res.body.candiesById[0].description.should.equal(
+            viewResult.candiesById[0].description);
+          new Date(Date.parse(res.body.candiesById[0].date)).should.be.a('date');
+          res.body.candiesById[0].tags.should.deep.equal(
+            viewResult.candiesById[0].tags);
 
-          res.body.candies_by_id[1]._id.should.equal(
-            viewResult.candies_by_id[1]._id);
-          res.body.candies_by_id[1].source.should.equal(
-            viewResult.candies_by_id[1].source);
-          res.body.candies_by_id[1].description.should.equal(
-            viewResult.candies_by_id[1].description);
-          res.body.candies_by_id[1].title.should.equal(
-            viewResult.candies_by_id[1].title);
-          res.body.candies_by_id[1].description.should.equal(
-            viewResult.candies_by_id[1].description);
-          new Date(Date.parse(res.body.candies_by_id[1].date)).should.be.a('date');
-          res.body.candies_by_id[1].tags.should.deep.equal(
-            viewResult.candies_by_id[1].tags);
+          res.body.candiesById[1]._id.should.equal(
+            viewResult.candiesById[1]._id);
+          res.body.candiesById[1].source.should.equal(
+            viewResult.candiesById[1].source);
+          res.body.candiesById[1].description.should.equal(
+            viewResult.candiesById[1].description);
+          res.body.candiesById[1].title.should.equal(
+            viewResult.candiesById[1].title);
+          res.body.candiesById[1].description.should.equal(
+            viewResult.candiesById[1].description);
+          new Date(Date.parse(res.body.candiesById[1].date)).should.be.a('date');
+          res.body.candiesById[1].tags.should.deep.equal(
+            viewResult.candiesById[1].tags);
           return done();
         });
       /* jshint ignore:end */

@@ -1,3 +1,5 @@
+/* global _ */
+
 'use strict';
 
 /**
@@ -33,7 +35,7 @@ angular.module('nasaraCandyBasketApp')
         if (a < b){
 	  return -1;
         }
-        if (a == b){
+        if (a === b){
 	  return 0;
         }
         
@@ -55,7 +57,7 @@ angular.module('nasaraCandyBasketApp')
 	    }
 	  });
       } else {
-        //console.log("Not an array: ", input);
+        //console.log('Not an array: ', input);
       }
 
       return inputFiltered;

@@ -1,3 +1,5 @@
+/* global _ */
+
 'use strict';
 
 /**
@@ -45,17 +47,17 @@ angular.module('nasaraCandyBasketApp')
     // backend which would need to be nicely reported back to the
     // user.
 
-    $scope.$on('model-update', function(){
-      CandyResource.query(function(data){
+    $scope.$on('model-update', function() {
+      CandyResource.query(function(data) {
         $scope.candies = data;
-        console.log("Broadcast received");
+        console.log('Broadcast received');
       });
       tagsViews.getTagsByCandies().then(function(response) {
         tagsMap = response.data.tagsByCandies;
         $scope.tagsData = utilities.getTagsData(tagsMap);
         $scope.ccsTagStatus = utilities.updateStatusCount(
           utilities.getTagsData(tagsMap));
-      }, function(errorMessage){
+      }, function(errorMessage) {
         $scope.error=errorMessage;
       });
     });
@@ -66,14 +68,14 @@ angular.module('nasaraCandyBasketApp')
       $scope.tagsData = utilities.getTagsData(tagsMap);
       $scope.ccsTagStatus = utilities.updateStatusCount(
         utilities.getTagsData(tagsMap));
-    }, function(errorMessage){
+    }, function(errorMessage) {
       $scope.error=errorMessage;
     });
 
     $scope.tags = [];
 
     // Watch tags being searched and reduce cloud in consequence
-    $scope.$watchCollection('tags', function(newSearch, oldSearch) {
+    $scope.$watchCollection('tags', function(newSearch) {
       var newMap = [];
 
       tagsMap.forEach(function(elem) {
@@ -95,17 +97,16 @@ angular.module('nasaraCandyBasketApp')
     });
 
     // Add tags to search from cloud
-    $scope.tagOnClickFunction = function(element){
-      if (!_.contains($scope.tags,element.text)) {
+    $scope.tagOnClickFunction = function(element) {
+      if (!_.contains($scope.tags, element.text)) {
         $scope.tags.push(element.text);
-        // Need digest as we get outside of Angular world when using
-        // tag cloud/d3.
-        $scope.$digest();
+        // TODO - $apply should really be pushed to relevant directive somehow
+        $scope.apply();
       }
     };
 
-    $scope.tagOnHoverFunction = function(element){
-      // Nothing for now...
+    $scope.tagOnHoverFunction = function(element) {
+      console.log(element);
     };
 
     // Add tags to search from candy list tags

@@ -15,8 +15,10 @@ angular.module('nasaraCandyBasketApp')
   .factory('stateTracker', function () {
     var state = {
       timelineValues: {
-        index: 0, // i.e. current_slide index
-        modal_open: false
+        index: 0, // i.e. current_slide index in TimelineJS
+        /* jshint ignore:start */
+        modal_open: false // this must go against convention...for now.
+        /* jshint ignore:end */
       }
     };
 

@@ -18,6 +18,6 @@
 angular.module('nasaraCandyBasketApp')
   .filter('stripQuote', function () {
     return function(input) {
-      return input.replace("'","");
+      return input.replace('\'','');
     };
   });

@@ -2,6 +2,70 @@
 
 /**
  * @ngdoc function
+ * @name nasaraCandyBasketApp.controller:SaveCandyInstanceModal
+ * @description
+ * # SaveCandyInstanceModal
+ * Controller of the nasaraCandyBasketApp controls how a a single instance
+ * of a CandyModal works for saving (creating/updating) candies
+ */
+var SaveCandyInstanceModal = function ($scope, $modalInstance, operation, candyId,
+                                       CandyResource, tagsViews) {
+  $scope.operation = operation;
+  $scope.tinymceOptions = {
+    menubar : false,
+    toolbar: 'undo redo | styleselect | bold italic | link image'
+  };
+
+  $scope.candy = new CandyResource();
+
+  if (candyId) { // We updating?
+    $scope.candy.$read({_id: candyId});
+  }
+
+  tagsViews.getTags().then(function(response) {
+    $scope.tagsData = response.data; // all tags
+  }, function(reason){
+    // Use to tell user about error retrieving tags for auto-complete
+    // Not used yet, but can be easily added to form error message
+    // later on
+    $scope.tagsError = reason; 
+  }); 
+
+  $scope.saveCandy = function () {
+    $modalInstance.close($scope.candy);
+  };
+
+  $scope.cancel = function () {
+    $modalInstance.dismiss('cancel');
+  };
+};
+
+/**
+ * @ngdoc function
+ * @name nasaraCandyBasketApp.controller:DeleteCandyInstanceModal
+ * @description
+ * # DeleteCandyInstanceModal
+ * Controller of the nasaraCandyBasketApp controls how a a single instance
+ * of a CandyModal works for deleting candies
+ */
+var DeleteCandyInstanceModal = function ($scope, $modalInstance, operation, candyId,
+                                         CandyResource) {
+
+  $scope.candy = CandyResource.read({_id: candyId});
+  $scope.operation = operation;
+
+  $scope.deleteCandy = function () {
+    $modalInstance.close($scope.candy);
+  };
+
+  $scope.cancel = function () {
+    $modalInstance.dismiss('cancel');
+  };
+
+};
+
+/**
+ * @ngdoc function
  * @name nasaraCandyBasketApp.controller:CandyModal
  * @description
  * # CandyModal
@@ -26,23 +90,27 @@ angular.module('nasaraCandyBasketApp')
       if (_id === undefined && operation !== 'create') {
         var candies = [];
         var index = stateTracker.state.timelineValues.index;
-        var candy_index = index >= 1 ? index - 1 : 0;
+        var candyIndex = index >= 1 ? index - 1 : 0;
         //candies = $filter('candiesByTags')($scope.candies, $scope.tags, $scope.cutoff);
         candies = $filter('candiesByTags')($scope.candies, $scope.tags);
         candies = $filter('orderBy')(candies, 'date', false);
-        _id = candies[candy_index]['_id'];
+        _id = candies[candyIndex]._id;
       }
 
       var modalInstance, modalOptions, logMsg;
       
       var candyModalOperationCallback = function () {
+        /* jshint ignore:start */
         stateTracker.state.timelineValues['modal_open'] = false;
+        /* jshint ignore:end */
         $log.info(logMsg + ' candy: ' + new Date());
         $rootScope.$broadcast('model-update');
       };
 
       var candyModalDismissedCallback = function () {        
+        /* jshint ignore:start */
         stateTracker.state.timelineValues['modal_open'] = false;
+        /* jshint ignore:end */
         $log.info('Modal dismissed at: ' + new Date());
       };
 
@@ -104,67 +172,3 @@ angular.module('nasaraCandyBasketApp')
     }; // end of $scope.open
 
   });
-
-/**
- * @ngdoc function
- * @name nasaraCandyBasketApp.controller:SaveCandyInstanceModal
- * @description
- * # SaveCandyInstanceModal
- * Controller of the nasaraCandyBasketApp controls how a a single instance
- * of a CandyModal works for saving (creating/updating) candies
- */
-var SaveCandyInstanceModal = function ($scope, $modalInstance, operation, candyId,
-                                       CandyResource, tagsViews) {
-  $scope.operation = operation;
-  $scope.tinymceOptions = {
-    menubar : false,
-    toolbar: "undo redo | styleselect | bold italic | link image"
-  };
-
-  $scope.candy = new CandyResource();
-
-  if (candyId) { // We updating?
-    $scope.candy.$read({_id: candyId});
-  }
-
-  tagsViews.getTags().then(function(response) {
-    $scope.tags_data = response.data; // all tags
-  }, function(reason){
-    // Use to tell user about error retrieving tags for auto-complete
-    // Not used yet, but can be easily added to form error message
-    // later on
-    $scope.tags_error = reason; 
-  }); 
-
-  $scope.saveCandy = function () {
-    $modalInstance.close($scope.candy);
-  };
-
-  $scope.cancel = function () {
-    $modalInstance.dismiss('cancel');
-  };
-};
-
-/**
- * @ngdoc function
- * @name nasaraCandyBasketApp.controller:DeleteCandyInstanceModal
- * @description
- * # DeleteCandyInstanceModal
- * Controller of the nasaraCandyBasketApp controls how a a single instance
- * of a CandyModal works for deleting candies
- */
-var DeleteCandyInstanceModal = function ($scope, $modalInstance, operation, candyId,
-                                         CandyResource) {
-
-  $scope.candy = CandyResource.read({_id: candyId});
-  $scope.operation = operation;
-
-  $scope.deleteCandy = function () {
-    $modalInstance.close($scope.candy);
-  };
-
-  $scope.cancel = function () {
-    $modalInstance.dismiss('cancel');
-  };
-
-};

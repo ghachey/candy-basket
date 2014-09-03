@@ -1,3 +1,5 @@
+/* global _ */
+
 'use strict';
 
 /**
@@ -23,17 +25,17 @@ angular.module('nasaraCandyBasketApp')
     return function(input, tagsSearchedString, cutoff) {
 
       var tags = null; // entered tags used to filter
-      var input_filtered = []; // to be returned based on tags
+      var inputFiltered = []; // to be returned based on tags
       cutoff = typeof cutoff !== 'undefined' ? cutoff : 0;
 
       // no search or search started without a full tag yet...
       // return unfiltered input
-      if (!tagsSearchedString || !utilities.contains(tagsSearchedString, ",")) {
+      if (!tagsSearchedString || !utilities.contains(tagsSearchedString, ',')) {
         return input;
       } else {
         // at least one search tag provided
         // Strip off trailing chars and only keep completed tags
-        if (utilities.endsWith(tagsSearchedString, ",")) {
+        if (utilities.endsWith(tagsSearchedString, ',')) {
 	  tags = utilities.removeTrailingEmpty(tagsSearchedString.split(','));
         } else {
 	  tags = tagsSearchedString.split(',');
@@ -48,18 +50,16 @@ angular.module('nasaraCandyBasketApp')
         // Check every candy and keep those with all matching searched tags
         input.forEach(function(elem) {
 	  // Filter for dates first.
-	  var comp_date = new Date(Date.parse(elem.date));
-	  if (comp_date >= cutoff){
-	    console.debug('COMP: ', comp_date, ' CUTOFF: ', cutoff);
-
-	    if (_.isEqual(_.intersection(tags,elem.tags), tags)) {
-	      input_filtered.push(elem);
+	  var compDate = new Date(Date.parse(elem.date));
+	  if (compDate >= cutoff){
+	    if (_.isEqual(_.intersection(tags, elem.tags), tags)) {
+	      inputFiltered.push(elem);
 	    }
 	  }
         });
       }
 
-      return input_filtered;
+      return inputFiltered;
       
     };
   });
