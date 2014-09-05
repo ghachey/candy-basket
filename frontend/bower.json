@@ -30,7 +30,6 @@
   "appPath": "app",
   "resolutions": {
     "angular": "1.2.16",
-    "jquery-ui": "~1.11.1",
-    "tinymce": "4.0.22"
+    "jquery-ui": "~1.11.1"
   }
 }

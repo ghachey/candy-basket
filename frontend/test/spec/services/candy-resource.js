@@ -1,3 +1,5 @@
+/* global _ */
+
 'use strict';
 
 describe('Service: CandyResource', function () {
@@ -21,7 +23,7 @@ describe('Service: CandyResource', function () {
 
   it('should retrieve a list of candies by ID', function () {
     var mockedCandiesData = {
-      'candies_by_id': [
+      'candiesById': [
         {
           '_id': '03c0b670e5c56bfb461a76dcf70091c7',
           'source': 'https://getsyme.com/#',
@@ -139,7 +141,7 @@ describe('Service: CandyResource', function () {
     // Zip items together so they can easily be tested, will look something like
     // [[candieResourceFromService,candieDataExpected],
     //  [candieResourceFromService,candieDataExpected],...]
-    var candiesTuples = _.zip(candies, mockedCandiesData.candies_by_id);
+    var candiesTuples = _.zip(candies, mockedCandiesData.candiesById);
 
     candiesTuples.forEach(function(candyTuple) {
       expect(candyTuple[0]._id).toEqual(candyTuple[1]._id);

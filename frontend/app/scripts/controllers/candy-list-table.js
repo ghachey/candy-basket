@@ -1,4 +1,4 @@
-/* global _ */
+/* global _, async */
 
 'use strict';
 
@@ -22,94 +22,115 @@ angular.module('nasaraCandyBasketApp')
                                           tagsViews, 
                                           utilities) {
 
-    // Used to maintain a client-side mapping of candy IDs with their
-    // list of tags
-    var tagsMap = [];
+    /////////////////////////////////////////////////
+    // Controller private variables and functions  //
+    /////////////////////////////////////////////////
 
-    $scope.candies = CandyResource.query().$promise.then(function(data) {
-      $scope.candies = data;
-    }, function(errorMessage){
-      $scope.error=errorMessage;
-    });
+    // Controller's own private full list of candies. Currently
+    // filtering is done on the whole list everytime. We can't filter
+    // on $scope.candies as it is dynamic and candies are lost on each
+    // search. For the same reason we also have a private
+    // tagsByCandies handy in the controller
+    var candies;
+    var tagsByCandies = [];
 
-    // Register for $broadcast events on rootScope. By doing it this
-    // way it will work nicely for the best possible case (low
-    // latency, light usage...). What is actually happening is that
-    // updates are done on the client side (say when submitting an
-    // update modal) and broadcasted also on the client side while the
-    // resource updates are being done async. on the server. Extending
-    // with proper error handling will become necessary when latency
-    // will be high or if the app would ever be subject to highly
-    // concurrent and heavy usage scenarios. For instance, someone
-    // might try to update a candy that would have been deleted
-    // milliseconds before (or up to a second in high latency
-    // contexts). This would result in an error code on the REST
-    // backend which would need to be nicely reported back to the
-    // user.
-
-    $scope.$on('model-update', function() {
-      CandyResource.query(function(data) {
-        $scope.candies = data;
-        console.log('Broadcast received');
+    /**
+     * @ngdoc function
+     * @name nasaraCandyBasketApp.controller:CandyListTimeline.fetchData
+     * @description
+     * # CandyListTimeline.fetchData is an async function that fetches
+     * a fresh copy of data from the backend. It fetches both candies
+     * and tags data in parallel before returning results into a
+     * doneFetchingData callback. This function is currently execute
+     * on start of the application and on CRUD updates
+     * ($on('model-update')
+     *
+     * @param {Function} doneFetchingCallback a callback function used
+     * to execute some work after fetchData is done
+     */
+    var fetchData = function(doneFetchingCallBack) {
+      async.parallel([
+        function(callback){
+          CandyResource.query().$promise.then(function(data) {
+            candies = data;
+            callback(null, 'Candies retrieved');
+          }, function(errorMessage){
+            $scope.error = errorMessage;
+            callback(errorMessage, null);
+          });
+        },
+        function(callback){
+          tagsViews.getTagsByCandies().then(function(response) {
+            tagsByCandies = response.data.tagsByCandies;
+            callback(null, 'Tags retrieved');
+          }, function(errorMessage){
+            $scope.error = errorMessage;
+            callback(errorMessage, null);
+          });
+        }
+      ], function(err, results){
+        // Currently not doing anything with err except logging
+        if (err) {console.error('Error retrieving data: ', err);}
+        // Nor are we using results directly
+        console.log(results);
+        doneFetchingCallBack();
       });
-      tagsViews.getTagsByCandies().then(function(response) {
-        tagsMap = response.data.tagsByCandies;
-        $scope.tagsData = utilities.getTagsData(tagsMap);
-        $scope.ccsTagStatus = utilities.updateStatusCount(
-          utilities.getTagsData(tagsMap));
-      }, function(errorMessage) {
-        $scope.error=errorMessage;
-      });
-    });
+    };
 
-    // TODO - Remove this code duplication in a easily testable fashion
-    tagsViews.getTagsByCandies().then(function(response) {
-      tagsMap = response.data.tagsByCandies;
-      $scope.tagsData = utilities.getTagsData(tagsMap);
-      $scope.ccsTagStatus = utilities.updateStatusCount(
-        utilities.getTagsData(tagsMap));
-    }, function(errorMessage) {
-      $scope.error=errorMessage;
-    });
+    ///////////////////////////////////////////////////
+    // Controller scope variables to drive the view  //
+    ///////////////////////////////////////////////////
 
+    // Initialize variables on the scope used to power view dynamically
+    $scope.candies = [];
     $scope.tags = [];
+    $scope.tagsData = [];
 
-    // Watch tags being searched and reduce cloud in consequence
+    // Fetch data on controller instantiation, and then assign data on scope 
+    fetchData(function() {
+      $scope.candies = candies;
+      $scope.tagsData = utilities.getTagsData(tagsByCandies);
+      $scope.ccsTagStatus = utilities.updateStatusCount(
+        utilities.getTagsData(tagsByCandies));
+    });
+    
+    // On model update (CRUD operations) get fresh data
+    $scope.$on('model-update', function(){
+      fetchData(function() {
+        $scope.candies = candies;
+      });
+    });
+
+    // Work to perform every time the $scope.tags property changes
     $scope.$watchCollection('tags', function(newSearch) {
       var newMap = [];
 
-      tagsMap.forEach(function(elem) {
-        if (_.isEqual(_.intersection(newSearch, elem.tag), newSearch)) {
-          newMap.push(elem);
-        }
-      });
+      if (newSearch.length > 0) {
+        tagsByCandies.forEach(function(elem) {
+          if (_.isEqual(_.intersection(newSearch, elem.tag), newSearch)) {
+            newMap.push(elem);
+          }
+        });
+      } else {
+        newMap = tagsByCandies;
+      }
 
-      if (newMap.length){
-        $scope.tagsData = utilities.getTagsData(newMap); // reduce cloud
-        $scope.ccsTagStatus = utilities.updateStatusCount(
-          utilities.getTagsData(newMap));
-      }
-      else {
-        $scope.tagsData = utilities.getTagsData(tagsMap); // restore cloud
-        $scope.ccsTagStatus = utilities.updateStatusCount(
-          utilities.getTagsData(tagsMap));
-      }
+      $scope.tagsData = utilities.getTagsData(newMap);
+      $scope.ccsTagStatus = utilities.updateStatusCount(
+        utilities.getTagsData(newMap));
     });
+
 
     // Add tags to search from cloud
     $scope.tagOnClickFunction = function(element) {
       if (!_.contains($scope.tags, element.text)) {
         $scope.tags.push(element.text);
         // TODO - $apply should really be pushed to relevant directive somehow
-        $scope.apply();
+        $scope.$apply();
       }
     };
 
-    $scope.tagOnHoverFunction = function(element) {
-      console.log(element);
-    };
-
-    // Add tags to search from candy list tags
+    // Add tags to search from candy list table view tags
     $scope.addTag = function(tag) {
       if (!_.contains($scope.tags,tag)) {
         $scope.tags.push(tag);
