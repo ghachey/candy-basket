@@ -1,3 +1,5 @@
+/* global _ */
+
 'use strict';
 
 /**
@@ -20,8 +22,8 @@ utilities.factory('utilities', function () {
    * @return {Array} arr of tags without trailing empty tag
    */
   var removeTrailingEmpty = function(arr) {
-    if (arr.indexOf("") > -1) {
-      arr.splice(arr.indexOf(""), 1);
+    if (arr.indexOf('') > -1) {
+      arr.splice(arr.indexOf(''), 1);
     }
     return arr;
   };
@@ -45,7 +47,7 @@ utilities.factory('utilities', function () {
   var getTagsData = function(data, cutoff) {
     var tags        = [];
     var tagsCounts = [];
-    var start       = {"tags": tags, "tagsCounts": tagsCounts};
+    var start       = {'tags': tags, 'tagsCounts': tagsCounts};
     var subset      = [];
 
     cutoff  = typeof cutoff  !== 'undefined' ? cutoff  : 0;
@@ -60,14 +62,14 @@ utilities.factory('utilities', function () {
     };
 
     data.forEach(function(item){
-      var comp_date = new Date(Date.parse(item.date));
-      if (comp_date >= cutoff){
+      var compDate = new Date(Date.parse(item.date));
+      if (compDate >= cutoff){
         subset.push(item);
       }
     });
 
     if (subset.length < 1){
-      // console.debug ("Nothing here...");
+      // console.debug ('Nothing here...');
       return start;
     }
 
@@ -76,24 +78,24 @@ utilities.factory('utilities', function () {
      */
     var result = _.reduce(subset, function(memory, object) {
 
-      var candy_tags = object.tag;
+      var candyTags = object.tag;
       var processed  = {};
 
       // Go through array of tags of current object being reduced
-      candy_tags.forEach(function(tag) {
+      candyTags.forEach(function(tag) {
         // Add tag if not present
         if (!_.contains(memory.tags, tag)) {
 	  tags.push(tag);
-	  tagsCounts.push({"count": 1, "word": tag});
+	  tagsCounts.push({'count': 1, 'word': tag});
 	  processed = {
-	    "tags": tags,
-	    "tagsCounts": tagsCounts
+	    'tags': tags,
+	    'tagsCounts': tagsCounts
 	  };
         } else { // Update its count if present
 	  incWordCount(tagsCounts,tag);
 	  processed =  {
-	    "tags": tags,
-	    "tagsCounts": tagsCounts
+	    'tags': tags,
+	    'tagsCounts': tagsCounts
 	  };
         }
       });
@@ -120,14 +122,14 @@ utilities.factory('utilities', function () {
    * Keep this around until ECMASCRIPT 6
    */
   var endsWith = function (str, sub) {
-    return str.length >= sub.length && str.substr(str.length - sub.length) == sub;
+    return str.length >= sub.length && str.substr(str.length - sub.length) === sub;
   };
 
   /**
    * Keep this around until ECMASCRIPT 6
    */
   var contains = function(str, sub) {
-    return str.indexOf(sub) != -1;
+    return str.indexOf(sub) !== -1;
   };
 
   var updateStatusCount = function(tagData){
@@ -141,7 +143,7 @@ utilities.factory('utilities', function () {
     var confirm = 0, challenge = 0, surprise = 0;
     var tagCounts = typeof tagData.tagsCounts !== 'undefined' ? tagData.tagsCounts : [];
 
-    $.each(tagCounts, function(index,thisCount){
+    tagCounts.forEach(function(index,thisCount){
       switch (thisCount.word){
       case 'confirm':
         confirm+=thisCount.count;
@@ -162,7 +164,7 @@ utilities.factory('utilities', function () {
     var aggr = 0;
 
     if (total){
-      $.each(ccsTagStatus, function(index, thisStatus){
+      ccsTagStatus.forEach(function(index, thisStatus){
         var num = 0;
         switch (thisStatus.type){
         case 'success':
@@ -184,7 +186,7 @@ utilities.factory('utilities', function () {
       });
 
       // I suck at math - fudge it.
-      //console.debug("AGGR: " , aggr, ccs_tag_status);
+      //console.debug('AGGR: ' , aggr, ccs_tag_status);
       if (aggr > 100){
         ccsTagStatus[0].value -= (aggr - 100);
       }
@@ -200,8 +202,8 @@ utilities.factory('utilities', function () {
 
   var pluralise =  function(s, pl){
     var n= parseFloat(s);
-    if(isNaN(n) || Math.abs(n)=== 1) return s;
-    if(!pl) return s+'s';
+    if(isNaN(n) || Math.abs(n)=== 1) {return s;}
+    if(!pl) {return s+'s';}
     return s.replace(/\S+(\s*)$/, pl+'$1');
   };
 

@@ -268,7 +268,7 @@ var getCandies = function(req, res) {
         };
         docs.push(docData);
       });
-      res.send(200, {'candies_by_id' : docs});
+      res.send(200, {'candiesById' : docs});
     } else {
       console.error('Error getting view: ', err);
       /* jshint ignore:start */

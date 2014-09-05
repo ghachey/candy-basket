@@ -11,7 +11,7 @@
  * into its own module and available as bower angular package for others.
  */
 angular.module('nasaraCandyBasketApp')
-  .directive('taglist', function ($timeout) {
+  .directive('taglist', function () {
     return {
       restrict: 'EA',
       replace: true,
@@ -20,19 +20,31 @@ angular.module('nasaraCandyBasketApp')
         taglistBlurTimeout: '='
       },
       transclude: true,
-      template:
-      '<div class="taglist">\
-        <span class="tag" data-ng-repeat="tag in tagData" ng-class="{confirm: \'{{tag}}\' === \'confirm\', challenge: \'{{tag}}\' === \'challenge\', surprise: \'{{tag}}\' === \'surprise\'}">\
-        <a href data-ng-click="tagData.splice($index, 1)">x</a> <span>{{tag}}</span></span>\
-        <div class="tag-input" ng-transclude></div><div class="tags_clear"></div></div>',
-      compile: function (tElement, tAttrs, transcludeFn) {
+      template: 
+      '<div class="taglist">' + 
+        '<span class="tag" data-ng-repeat="tag in tagData" ' + 
+              'ng-class="{confirm: \'{{tag}}\' === \'confirm\', ' + 
+                         'challenge: \'{{tag}}\' === \'challenge\', ' + 
+                         'surprise: \'{{tag}}\' === \'surprise\'}">' + 
+          '<a href data-ng-click="tagData.splice($index, 1)">x</a> ' + 
+          '<span>{{tag}}</span>' + 
+        '</span>' + 
+        '<div class="tag-input" ng-transclude></div>' + 
+        '<div class="tags_clear"></div>' + 
+      '</div>',
+      compile: function (tElement, tAttrs) {
+
+        console.debug('Directive element and attributes: ', tElement, tAttrs);
 
         return function (scope, element, attrs) {
 
+          console.debug('Scope, element and attributes: ', scope, element, attrs);
 	  // element[0] is <div class="taglist">...</div>
 
 	  // <input...>...</input> element
-          var input = angular.element(element[0].getElementsByTagName('div')[0].getElementsByTagName('input')[0]);
+          var input = angular.element(element[0]
+                                      .getElementsByTagName('div')[0]
+                                      .getElementsByTagName('input')[0]);
 
 	  // transforming template
           element.bind('click', function () {
@@ -47,13 +59,13 @@ angular.module('nasaraCandyBasketApp')
               return;
 	    }
 
-	    if (e.which == 188 || e.which == 13) {
+	    if (e.which === 188 || e.which === 13) {
 	      // 188 = comma, 13 = return
               e.preventDefault();
               addTag(this);
-	    } else if (e.which == 8 /* 8 = delete */
-		       && this.value.trim().length == 0
-		       && element[0].getElementsByClassName('tag').length > 0) {
+	    } else if (e.which === 8 && 
+                       this.value.trim().length === 0 && 
+                       element[0].getElementsByClassName('tag').length > 0) {
               e.preventDefault();
               scope.$apply(function () {
 	        scope.tagData.splice(scope.tagData.length - 1, 1);
@@ -74,7 +86,7 @@ angular.module('nasaraCandyBasketApp')
             }
             scope.$apply(function () {
               scope.tagData.push(val);
-              element.value = "";
+              element.value = '';
             });
           }
         };
