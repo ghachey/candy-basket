@@ -20,58 +20,82 @@
   </div>
 </div>
 
-<div class="row">
-  <div class="col-md-12">
-    <progress>
-      <bar ng-repeat="s in ccsTagStatus" 
-	   value="s.value" type="{{s.type}}"></bar>
-    </progress>
-  </div>
-</div>
+<div ng-controller="CandyModal">
 
-<div id="candy-list" class="row" ng-controller="CandyModal">
-  <div class="col-md-12">
-    <p class="text-right">
-              <button class="operations ops-new" ng-click="open('create', candy._id)">
-                <span class="glyphicon glyphicon-plus ops-add" tooltip="New..." tooltip-placement="bottom" ng-include="'views/candy-save-modal.html'"></span>
-              </button>
-    </p>
+  <div id="candy-list" class="row combined-ops">
+
+    <div class="col-md-2">
+      <button class="operations ops-new" ng-click="open('create', candy._id)">
+        <span class="glyphicon glyphicon-plus ops-add" tooltip="New..." tooltip-placement="bottom" ng-include="'views/candy-save-modal.html'"></span>
+      </button>
+    </div>
+
+    <div class="col-md-6">
+      <div class="slider"
+           ui-slider="slider.options"
+           min="{{sliderMin}}"
+           max="{{sliderMax}}"
+           step="1"
+           ng-model="sliderRange"></div>
+    </div>
+
+    <div class="col-md-4 slider-date-range">
+      {{sliderRange|dateRangeFormatter}}
+    </div>
+
   </div>
-  <div id="display-table" class="col-md-12">
-    <table id="links-table" style="margin: 0 auto;float: none;" class="table table-striped">
-      <thead>
-	<tr>
-	  <th class="ctags">Tags</th>
-	  <th class="ctitle">Title/Description</th>
-	  <th class="cdate">Date</th>
-	</tr>
-      </thead>
-      <tbody id="tag_results">
-	<tr class="animate" ng-repeat="candy in candies | candiesByTags:tags | orderBy: 'date':true">
-	  <td class="ctags">
-	    <ul class="tag_collection" ng-repeat="tag in candy.tags">
-	      <li class="tag" ng-click="addTag(tag)" 
-		  ng-class="{confirm: '{{tag|stripQuote}}' === 'confirm',
-                  challenge: '{{tag|stripQuote}}' === 'challenge',
-		  surprise: '{{tag|stripQuote}}' === 'surprise'}">{{tag}}</li>
-	    </ul>
-	  </td>
-	  <td class="ctitle">
-	    <div class="ops">
-              <button class="operations ops-edit" ng-click="open('edit', candy._id)">
-                <span class="glyphicon glyphicon-edit ops-edit" tooltip="Edit..." tooltip-placement="bottom" ng-include="'views/candy-save-modal.html'"></span>
-              </button>
-              <button class="operations ops-delete" ng-click="open('delete', candy._id)">
-                <span class="glyphicon glyphicon-minus ops-delete" tooltip="Delete..." tooltip-placement="bottom" ng-include="'views/candy-delete-modal.html'"></span>
-              </button>
-	    </div>
-	    <h2><a href="{{candy.source}}" target="_new">{{candy.title}}</a></h2>
-	    <p class="candy-description" ng-bind-html="candy.description">{{candy.description}}</p>
-	  </td>
-	  <td class="cdate">{{candy.date | dateFromNow}}</td>
-	</tr>
-      </tbody>
-    </table>
+
+  <div class="row">
+    <div class="col-md-12">
+      <display-percentages percentages="ccsTagStatus"></display-percentages>
+    </div>
+  </div>
+
+
+  <div class="row">
+    <div id="display-table" class="col-md-12">
+      <table id="links-table" style="margin: 0 auto;float: none;" class="table table-striped">
+        <thead>
+	  <tr>
+	    <th class="ctags">Tags</th>
+	    <th class="ctitle">Title/Description</th>
+	    <th class="cdate">Date</th>
+	  </tr>
+        </thead>
+        <tbody id="tag_results">
+	  <tr class="animate" ng-repeat="candy in candies | candiesByTags:tags | orderBy: 'date':true">
+	    <td class="ctags">
+	      <ul class="tag_collection" ng-repeat="tag in candy.tags">
+	        <li class="tag" ng-click="addTag(tag)" 
+		    ng-class="{confirm: '{{tag|stripQuote}}' === 'confirm',
+                    challenge: '{{tag|stripQuote}}' === 'challenge',
+		    surprise: '{{tag|stripQuote}}' === 'surprise'}">{{tag}}</li>
+	      </ul>
+	    </td>
+	    <td class="ctitle">
+	      <div class="ops">
+                <button class="operations ops-edit" 
+                        ng-click="open('edit', candy._id)">
+                  <span class="glyphicon glyphicon-edit ops-edit" 
+                        tooltip="Edit..." tooltip-placement="bottom" 
+                        ng-include="'views/candy-save-modal.html'"></span>
+                </button>
+                <button class="operations ops-delete" 
+                        ng-click="open('delete', candy._id)">
+                  <span class="glyphicon glyphicon-minus ops-delete" 
+                        tooltip="Delete..." tooltip-placement="bottom" 
+                        ng-include="'views/candy-delete-modal.html'"></span>
+                </button>
+	      </div>
+	      <h2><a href="{{candy.source}}" target="_new">{{candy.title}}</a></h2>
+	      <p class="candy-description" 
+                 ng-bind-html="candy.description">{{candy.description}}</p>
+	    </td>
+	    <td class="cdate">{{candy.date | dateFromNow}}</td>
+	  </tr>
+        </tbody>
+      </table>
+    </div>
   </div>
 
 </div>
