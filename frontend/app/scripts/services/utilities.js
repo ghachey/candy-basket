@@ -1,4 +1,4 @@
-/* global _ */
+/* global _, moment */
 
 'use strict';
 
@@ -11,7 +11,9 @@
  */
 var utilities = angular.module('nasaraCandyBasketApp');
 
-utilities.factory('utilities', function () {
+utilities.factory('utilities', function ($filter) {
+
+  var orderBy = $filter('orderBy');
 
   /**
    * @name removeTrailingEmpty
@@ -132,6 +134,17 @@ utilities.factory('utilities', function () {
     return str.indexOf(sub) !== -1;
   };
 
+  /**
+   * @name updateStatusCount
+   * @description Function calculating the number of confirm,
+   * challenge and surprise special tags. This is used to display
+   * proportion of special tags from the current list of viewed
+   * candies by the users.
+   * 
+   * @param {tagData} tagData an object containing all the tags and their counts
+   * @return {Object} ccsTagStatus with number of confirm, challenge
+   * and surprise tags
+   */
   var updateStatusCount = function(tagData){
 
     var ccsTagStatus = [
@@ -198,6 +211,17 @@ utilities.factory('utilities', function () {
     return ccsTagStatus;
   };
 
+  /**
+   * @name pluralise
+   * @description Function to pluralise a candies string before
+   * sending to a TimelineJS object.
+   *
+   * TODO - Non-generic function that could be made more useful
+   * 
+   * @param {String} s a string
+   * @param {String} pl the plural for s
+   * @return {String} pluralised string
+   */
   var pluralise =  function(s, pl){
     var n= parseFloat(s);
     if(isNaN(n) || Math.abs(n)=== 1) {return s;}
@@ -291,6 +315,23 @@ utilities.factory('utilities', function () {
     return timelineData;
   };
 
+  /**
+   * @name getDateRange
+   * @description   
+   *
+   * A function to return a date range between the oldest and newest
+   * candies retrieved 
+   *
+   * @param {Object} candies as a sorted list
+   * @return {Array} range of the form [OldestDate, NewestDate] in
+   * seconds since Unix Epoch
+   */
+  var getDateRange = function(candies) {
+    var sortedCandies = orderBy(candies, 'date', false);
+    var oldest = moment(sortedCandies[0].date);
+    var newest = moment(sortedCandies[sortedCandies.length-1].date);
+    return [oldest.unix(),newest.unix()];
+  };
 
   // Public API here
   return {
@@ -302,7 +343,8 @@ utilities.factory('utilities', function () {
     updateStatusCount: updateStatusCount,
     pluralise: pluralise,
     compareByDates: compareByDates,
-    processTimeline: processTimeline
+    processTimeline: processTimeline,
+    getDateRange: getDateRange
   };
 
 });

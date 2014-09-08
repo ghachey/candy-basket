@@ -18,6 +18,7 @@
 angular.module('nasaraCandyBasketApp')
   .controller('CandyListTable', function ($scope, 
                                           $location, 
+                                          $filter,
                                           CandyResource, 
                                           tagsViews, 
                                           utilities) {
@@ -33,6 +34,8 @@ angular.module('nasaraCandyBasketApp')
     // tagsByCandies handy in the controller
     var candies;
     var tagsByCandies = [];
+    var filterByTags = $filter('candiesByTags');
+    var filterByDates = $filter('candiesByDates');
 
     /**
      * @ngdoc function
@@ -77,6 +80,26 @@ angular.module('nasaraCandyBasketApp')
       });
     };
 
+    /**
+     * @ngdoc function
+     * @name nasaraCandyBasketApp.controller:CandyListTimeline.filterData
+     * @description 
+     * # CandyListTimeline.filterData is a synchronous
+     * function that merely groups a list of repeating operations to
+     * avoid duplicate code at various locations in the controller. It
+     * primarily filters that candy data set and can optionally set
+     * the slide index depending on what called this filtering
+     * operation in the first place (e.g. a model-update, a slide
+     * change, a tag search)
+     */
+    var filterData = function() {
+      var tempCandies = filterByDates(candies, 
+                                      $scope.dateRange[0], 
+                                      $scope.dateRange[1]);
+      $scope.candies = filterByTags(tempCandies, $scope.tags);
+      $scope.timelineData = utilities.processTimeline($scope.candies);
+    };
+
     ///////////////////////////////////////////////////
     // Controller scope variables to drive the view  //
     ///////////////////////////////////////////////////
@@ -85,6 +108,24 @@ angular.module('nasaraCandyBasketApp')
     $scope.candies = [];
     $scope.tags = [];
     $scope.tagsData = [];
+    $scope.dateRange = [undefined, undefined];
+    $scope.slider = {
+      'options': {
+        range: true,
+        stop: function (event, ui) { 
+          console.log('Slider stopped', event);
+          ui.handle.blur(); // focus interferes with timeline navigation
+          // Here I thought I could directly use the
+          // $scope.sliderRange values on two way binding but I am
+          // missing something and could not get it to work so
+          // explicitly put the values on their own scope property
+          $scope.dateRange = ui.values;
+          filterData();
+          // $apply should be pushed to directive
+          $scope.$apply();
+        }
+      }
+    };
 
     // Fetch data on controller instantiation, and then assign data on scope 
     fetchData(function() {
@@ -92,12 +133,21 @@ angular.module('nasaraCandyBasketApp')
       $scope.tagsData = utilities.getTagsData(tagsByCandies);
       $scope.ccsTagStatus = utilities.updateStatusCount(
         utilities.getTagsData(tagsByCandies));
+      // Oldest and newest candies
+      var range = utilities.getDateRange(candies);
+      $scope.sliderMin = range[0];
+      $scope.sliderMax = range[1];
+      $scope.sliderStep = 24 * 3600 * 1000; // a day in milliseconds
+      $scope.sliderRange = range;
     });
+
+    // Listeners
     
     // On model update (CRUD operations) get fresh data
     $scope.$on('model-update', function(){
       fetchData(function() {
-        $scope.candies = candies;
+        //$scope.candies = candies;
+        filterData();
       });
     });
 
@@ -115,11 +165,13 @@ angular.module('nasaraCandyBasketApp')
         newMap = tagsByCandies;
       }
 
+      filterData();
       $scope.tagsData = utilities.getTagsData(newMap);
       $scope.ccsTagStatus = utilities.updateStatusCount(
         utilities.getTagsData(newMap));
     });
 
+    // UI Methods
 
     // Add tags to search from cloud
     $scope.tagOnClickFunction = function(element) {
