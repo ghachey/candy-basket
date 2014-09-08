@@ -227,6 +227,8 @@ describe('Filter: candiesByTags', function () {
       .toEqual(candiesConfirmedSample);
     expect(candiesByTags(candiesSample, ['confirm','china']))
       .toEqual(candiesConfirmedChinaSample);
+    expect(candiesByTags(candiesSample, []))
+      .toEqual(candiesSample);
   });
 
 });

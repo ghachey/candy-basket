@@ -46,11 +46,8 @@
   <!-- <span style="display:inline-table;" class="ops-date-picker" ng-include="'views/date-slider.html'"></span> -->
 </div>
 <div class="row">
-  <div class="col-md-12" tooltip-html-unsafe="{{displayPercentages()}}" tooltip-placement="bottom">
-    <progress>
-      <bar ng-repeat="s in ccsTagStatus"
-	   value="s.value" type="{{s.type}}"></bar>
-    </progress>
+  <div class="col-md-12">
+    <display-percentages percentages="ccsTagStatus"></display-percentages>
   </div>
 </div>
 

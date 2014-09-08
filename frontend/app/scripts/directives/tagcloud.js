@@ -133,12 +133,25 @@ angular.module('nasaraCandyBasketApp')
                 scope.onHover({element: d});
 	      });
 
-	    d3.selectAll('text').style('opacity', 0).transition().duration(200).style('opacity', 0.8);
-	    d3.selectAll('div.tag-cloud').style('opacity', 0).transition().duration(200).style('opacity', 0.7);
+	    d3
+              .selectAll('text')
+              .style('opacity', 0)
+              .transition()
+              .duration(200)
+              .style('opacity', 0.8);
+	    d3
+              .selectAll('div.tag-cloud')
+              .style('opacity', 0)
+              .transition()
+              .duration(200)
+              .style('opacity', 0.7);
 
 	  }
 
-	  d3.layout.cloud().size([width, height])
+	  d3
+            .layout
+            .cloud()
+            .size([width, height])
 	    .words(tags.map(function(d) {
 	      return {text: d.word, size: 6 + d.count * 10};
 	    }))

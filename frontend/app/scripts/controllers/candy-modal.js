@@ -86,7 +86,8 @@ angular.module('nasaraCandyBasketApp')
 
     $scope.open = function (operation, _id) {
 
-      // Following code needed in timeline mode to know what candy we're dealing with
+      // Following code needed in timeline mode to know what candy
+      // we're dealing with
       if (_id === undefined && operation !== 'create') {
         var candies = [];
         var index = stateTracker.state.timelineValues.index;

@@ -18,6 +18,7 @@ module.exports = function(config) {
     files: [
       'bower_components/momentjs/moment.js',
       'bower_components/underscore/underscore.js',
+      'bower_components/async/lib/async.js',
       'bower_components/angular/angular.js',
       'bower_components/angular-mocks/angular-mocks.js',
       'bower_components/angular-animate/angular-animate.js',

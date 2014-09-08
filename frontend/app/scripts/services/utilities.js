@@ -135,15 +135,16 @@ utilities.factory('utilities', function () {
   var updateStatusCount = function(tagData){
 
     var ccsTagStatus = [
-      {'value':0,'type':'success'},
-      {'value':0,'type':'danger'},
-      {'value':0,'type':'warning'}
+      {'value':0, 'type':'success'},
+      {'value':0, 'type':'danger'},
+      {'value':0, 'type':'warning'}
     ];
 
     var confirm = 0, challenge = 0, surprise = 0;
-    var tagCounts = typeof tagData.tagsCounts !== 'undefined' ? tagData.tagsCounts : [];
+    var tagsCounts = typeof tagData.tagsCounts !== undefined ? 
+          tagData.tagsCounts : [];
 
-    tagCounts.forEach(function(index,thisCount){
+    tagsCounts.forEach(function(thisCount){
       switch (thisCount.word){
       case 'confirm':
         confirm+=thisCount.count;
@@ -164,7 +165,7 @@ utilities.factory('utilities', function () {
     var aggr = 0;
 
     if (total){
-      ccsTagStatus.forEach(function(index, thisStatus){
+      ccsTagStatus.forEach(function(thisStatus){
         var num = 0;
         switch (thisStatus.type){
         case 'success':
@@ -185,8 +186,6 @@ utilities.factory('utilities', function () {
 
       });
 
-      // I suck at math - fudge it.
-      //console.debug('AGGR: ' , aggr, ccs_tag_status);
       if (aggr > 100){
         ccsTagStatus[0].value -= (aggr - 100);
       }
@@ -197,7 +196,6 @@ utilities.factory('utilities', function () {
     }
 
     return ccsTagStatus;
-
   };
 
   var pluralise =  function(s, pl){
@@ -230,6 +228,70 @@ utilities.factory('utilities', function () {
     return 0;
   };
 
+  /**
+   * @name processTimeline
+   * @description   
+   *
+   * A function whose sole purpose is to take a list of candies and
+   * transform this into an object ready to pass to a TimelineJS
+   * instance. See {@link
+   * https://github.com/ghachey/angular-timelinejs} and {@link
+   * https://github.com/ghachey/TimelineJS}.
+   * 
+   * @param {Object} candies a list of candies objects
+   * @return {Object} timelineData an object ready for a TimelineJS instance
+   */
+  var processTimeline = function(candies) {
+    var timelineItems = [];
+    var minDate   = new Date();
+    var maxDate   = new Date(1990); // ensure we get a real maximum from the set
+
+    candies.forEach(function(thisCandy){
+      var compDate  = new Date(Date.parse(thisCandy.date));
+      var tag       = _.find(thisCandy.tags, function(i) {
+        return i === 'confirm' || i === 'challenge' || i === 'surprise';
+      });
+      var candyTags = thisCandy.tags;
+
+      minDate       = minDate < compDate ? minDate : compDate;
+      maxDate       = maxDate < compDate ? compDate : maxDate;
+
+      timelineItems.push(
+        {
+          '_id'      : thisCandy._id,
+          'startDate': thisCandy.date,
+          'headline' : thisCandy.title,
+          'text'     : candyTags + '|ENDTAGS|' + thisCandy.description,
+          'tag'      : tag,
+          'asset'    : {'media': thisCandy.source}
+        }
+      );
+    });
+
+    var numCandies = pluralise(candies.length.toString() + ' candy', 'candies');
+
+    var timelineData = {
+      'timeline':
+      {
+        'headline'       : numCandies + ' in this basket ',
+        'type'           : 'default',
+        'text'           : '<p>Here is a timeline of your results...</p>',
+        'date'           : timelineItems,
+        'era': [
+          {
+            'startDate': minDate,
+            'endDate': maxDate,
+            'headline': 'Story duration',
+            'text': '<p>hmmm</p>'
+          }
+        ]
+      }
+    };
+    
+    return timelineData;
+  };
+
+
   // Public API here
   return {
     removeTrailingEmpty: removeTrailingEmpty,
@@ -239,7 +301,8 @@ utilities.factory('utilities', function () {
     contains: contains,
     updateStatusCount: updateStatusCount,
     pluralise: pluralise,
-    compareByDates: compareByDates
+    compareByDates: compareByDates,
+    processTimeline: processTimeline
   };
 
 });

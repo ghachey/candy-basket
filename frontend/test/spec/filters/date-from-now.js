@@ -1,3 +1,5 @@
+/* global moment */
+
 'use strict';
 
 describe('Filter: dateFromNow', function () {
