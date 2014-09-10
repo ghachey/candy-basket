@@ -19,32 +19,55 @@
     </tagcloud>
   </div>
 </div>
+
 <div class="row combined-ops" ng-controller="CandyModal">  
 
-  <button class="operations" ng-click="open('edit')">
-    <span class="glyphicon glyphicon-edit ops-edit" tooltip="Edit..." tooltip-placement="bottom" ng-include="'views/candy-save-modal.html'"></span>
-  </button>
+  <div class="col-md-2">
+    <button class="operations" ng-click="open('edit')"
+            tooltip="Edit..." tooltip-placement="bottom">
+      <span class="glyphicon glyphicon-edit ops-edit"
+            ng-include="'views/candy-save-modal.html'"></span>
+    </button>
 
-  <button class="operations" ng-click="open('delete')">
-    <span class="glyphicon glyphicon-minus ops-delete" tooltip="Delete..." tooltip-placement="bottom" ng-include="'views/candy-delete-modal.html'"></span>
-  </button>
+    <button class="operations" ng-click="open('delete')"
+            tooltip="Delete..." tooltip-placement="bottom">
+      <span class="glyphicon glyphicon-minus ops-delete"
+            ng-include="'views/candy-delete-modal.html'"></span>
+    </button>
 
-  <button class="operations" ng-click="open('create')">
-    <span class="glyphicon glyphicon-plus ops-add" tooltip="New..." tooltip-placement="bottom" ng-include="'views/candy-save-modal.html'"></span>
-  </button>        
+    <button class="operations" ng-click="open('create')"
+            tooltip="New..." tooltip-placement="bottom">
+      <span class="glyphicon glyphicon-plus ops-add" 
+            ng-include="'views/candy-save-modal.html'"></span>
+    </button>        
 
-  <button class="operations" tooltip="Go to the start" tooltip-placement="bottom"
-	  ng-click="changeSlide(0)">
-    <span class="glyphicon glyphicon-chevron-left ops-nav"></span>
-  </button>
+    <button class="operations" ng-click="changeSlide(0)"
+            tooltip="Go to the start" tooltip-placement="bottom">
+      <span class="glyphicon glyphicon-chevron-left ops-nav"></span>
+    </button>
 
-  <button class="operations" tooltip="Go to the last candy" tooltip-placement="bottom"
-	  ng-click="changeSlide(candies.length)">
-    <span class="glyphicon glyphicon-chevron-right ops-nav"></span>
-  </button>
+    <button class="operations" ng-click="changeSlide(candies.length)"
+            tooltip="Go to the last candy" tooltip-placement="bottom">
+      <span class="glyphicon glyphicon-chevron-right ops-nav"></span>
+    </button>
+  </div>
 
-  <!-- <span style="display:inline-table;" class="ops-date-picker" ng-include="'views/date-slider.html'"></span> -->
+
+  <div class="col-md-6">
+    <div class="slider"
+         ui-slider="slider.options"
+         min="{{sliderMin}}"
+         max="{{sliderMax}}"
+         step="1"
+         ng-model="sliderRange"></div>
+  </div>
+
+  <div class="col-md-4 slider-date-range">
+    {{sliderRange|dateRangeFormatter}}
+  </div>
+
 </div>
+
 <div class="row">
   <div class="col-md-12">
     <display-percentages percentages="ccsTagStatus"></display-percentages>
