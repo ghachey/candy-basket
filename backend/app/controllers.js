@@ -11,6 +11,7 @@
  */
 
 var async = require('async');
+var fs = require('fs');
 var nano = require('nano');
 var validator = require('validator');
 var sanitizer = require('sanitizer');
@@ -342,6 +343,28 @@ var getTagsByCandies = function(req, res) {
  
 };
 
+/**
+ * @description
+ * 
+ * A function to asynchronously handle file uploads. Currently, it
+ * stores the files on the filesystem automatically. Eventually it
+ * should upload the files to an ownCloud shared folder. The
+ * filesystem is straight forward and thus used in order to try and
+ * get the file uploading from the Angular frontend working.
+ * 
+ * When the time comes, uploading to the cloud will be handled here.
+ * And even further down the line it could be useful to directly
+ * stream the files to the cloud completely by-passing the filesystem
+ * to optimize both space and time.
+ */
+var uploadFile = function(req, res) {
+
+  console.log('files: ', req.files);
+  res.send(200, {'name': req.files.file.name, 
+                 'originalName': req.files.file.originalname});
+
+};
+
 var serve404 = function(req, res) {
   res.send(404);
 };
@@ -359,4 +382,5 @@ exports.deleteCandy = deleteCandy;
 exports.getCandies = getCandies;
 exports.getTags = getTags;
 exports.getTagsByCandies = getTagsByCandies;
+exports.uploadFile = uploadFile;
 exports.serve404 = serve404;
