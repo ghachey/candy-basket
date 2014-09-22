@@ -9,7 +9,7 @@
  * of a CandyModal works for saving (creating/updating) candies
  */
 var SaveCandyInstanceModal = function ($scope, $modalInstance, operation, candyId,
-                                       CandyResource, tagsViews) {
+                                       CandyResource, tagsViews, FileUploader) {
   $scope.operation = operation;
   $scope.tinymceOptions = {
     menubar : false,
@@ -31,7 +31,45 @@ var SaveCandyInstanceModal = function ($scope, $modalInstance, operation, candyI
     $scope.tagsError = reason; 
   }); 
 
+  ////////////////////////////////////////////////////
+  // Putting all the file upload stuff here for now //
+  ////////////////////////////////////////////////////
+
+  // Private tracking of what has been uploaded to server async'ly
+  var uploadedFiles = []; 
+  // The Actual file upload service
+  var uploader = $scope.uploader = new FileUploader({
+    url: 'http://localhost:3003/upload' // Our own NodeJS backend
+  });
+  // Filters can be added on allowed types of files
+  uploader.filters.push({
+    name: 'customFilter',
+    fn: function(item /*{File|FileLikeObject}*/, options) {
+      return this.queue.length < 10;
+    }
+  });
+  // Callbacks (see {@link
+  // https://github.com/nervgh/angular-file-upload/wiki/Module-APIñ}
+  // for a full API)
+  uploader.onCompleteItem = function(fileItem, response, status, headers) {
+    console.info('onCompleteItem', fileItem, response, status, headers);
+    uploadedFiles.push(response);
+  };
+  
   $scope.saveCandy = function () {
+    // Before closing the modal and saving the candy check files still
+    // in the queue (users might have been removing some of them) and
+    // compare with ones pushed into uploadedFiles which contains meta
+    // data about files already asynchronously uploaded to server
+    // successfully. Only keep meta data of files still in the
+    // uploader queue and save *that* into CouchDB with candy data.
+    var queueNames = _.map(uploader.queue, function(fileItem) {
+      return fileItem.file.name;
+    });
+    $scope.candy.files = _.filter(uploadedFiles, function(fileMeta) {
+      return _.contains(queueNames, fileMeta.originalName); 
+    });;
+
     $modalInstance.close($scope.candy);
   };
 

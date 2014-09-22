@@ -6,6 +6,7 @@ var logger = require('morgan');
 var bodyParser = require('body-parser');
 var errorHandler = require('errorhandler');
 var cors = require('cors');
+var multer  = require('multer');
 
 var conf = require('../config');
 var middlewares = require('./middlewares');
@@ -23,12 +24,14 @@ api.use(cors(conf.corsOptions));
 api.use(favicon(path.join(__dirname, '/public/icons/favicon.ico')));
 api.use(logger('dev'));
 api.use(bodyParser.json());
+api.use(multer({ dest: path.join(__dirname,'/uploads/')}));
 if (process.env.NODE_ENV === 'development') {
   api.use(errorHandler());
 }
 
 // Routes
 api.get('/', controllers.getMeta);
+api.post('/upload', controllers.uploadFile);
 api.get('/basket/candies', controllers.getCandies);
 api.get('/basket/candies/tags', controllers.getTags);
 api.get('/basket/candies/tags-by-candies', controllers.getTagsByCandies);
