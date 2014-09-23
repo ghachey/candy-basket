@@ -20,7 +20,8 @@ angular
     /* Third party modules */
     'ui.bootstrap', 
     'ui.tinymce', 
-    'ui.slider', 
+    'ui.slider',
+    'angularFileUpload',
     /* Our own reusable modules */
     'pippTimelineDirectives'
   ])

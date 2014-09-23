@@ -15,6 +15,7 @@
     "express": "~4.2.0",
     "iz": "^0.5.1",
     "morgan": "~1.1.1",
+    "multer": "^0.1.4",
     "nano": "^5.10.0",
     "sanitizer": "^0.1.2",
     "serve-favicon": "~2.0.1",
