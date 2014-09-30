@@ -1,3 +1,5 @@
+/* global moment */
+
 'use strict';
 
 describe('Filter: candiesByDates', function () {
@@ -107,10 +109,10 @@ describe('Filter: candiesByDates', function () {
   }));
 
   it('should return only candies between start and end dates', function () {
-    var start1 = moment("2013-11-30T23:02:40Z").unix();
-    var start2 = moment("2013-12-04T19:53:45Z").unix();
-    var end1 = moment("2013-12-09T10:42:40Z").unix();
-    var end2 = moment("2013-12-08T18:03:31Z").unix();
+    var start1 = moment('2013-11-30T23:02:40Z').unix();
+    var start2 = moment('2013-12-04T19:53:45Z').unix();
+    var end1 = moment('2013-12-09T10:42:40Z').unix();
+    var end2 = moment('2013-12-08T18:03:31Z').unix();
 
     expect(candiesByDates(candiesSample, start1, end1))
       .toEqual(candiesSample.slice(1,candiesSample.length-1));
