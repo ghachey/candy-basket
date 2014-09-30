@@ -39,8 +39,8 @@ var couchdb = couchServer.db.use(dbName);
  * cleaned up description field
  */
 var validateCandy = function(candy) {
- 
- var urlOptions;
+  
+  var urlOptions;
   /* jshint ignore:start */
   // Forced to not comply with my Lint conventions due to third party, so ignore it.
   urlOptions = { 
@@ -61,8 +61,8 @@ var validateCandy = function(candy) {
   if (candy.description === undefined) {return {'status': false, 
                                                 'msg': 'No description'};}
   if ((candy.attachmentFilename && candy.attachment && 
-      validator.isBase64(candy.attachment)) ||
-     (!candy.attachmentFilename && !candy.attachment)) {
+       validator.isBase64(candy.attachment)) ||
+      (!candy.attachmentFilename && !candy.attachment)) {
     // We've got both the filename and the file itself and the file is properly encoded
     // in base64, we're good
     // or
@@ -340,10 +340,11 @@ var getTagsByCandies = function(req, res) {
       /* jshint ignore:end */
     }
   });
- 
+  
 };
 
 /**
+ * @name nasaraCandyBasketBackend.controllers:uploadFile
  * @description
  * 
  * A function to asynchronously handle file uploads. Currently, it
@@ -358,10 +359,44 @@ var getTagsByCandies = function(req, res) {
  * to optimize both space and time.
  */
 var uploadFile = function(req, res) {
-
   console.log('files: ', req.files);
   res.send(200, {'name': req.files.file.name, 
                  'originalName': req.files.file.originalname});
+};
+
+/**
+ * @name nasaraCandyBasketBackend.controllers:downloadFile
+ * @description
+ * 
+ * A function to asynchronously handle serving files
+ * (i.e. downloads). Currently, it gets the files from the filesystem
+ * (see {@link nasaraCandyBasketBackend.controllers:uploadFile}). 
+ * 
+ * When files will be uploaded to a ownCloud shared folder they can be
+ * first downloaded from the ownCloud account and then served here
+ * with very little changed to this function (hopefully).
+ */
+var downloadFile = function(req, res, next) {
+
+  var options = {
+    root: __dirname + '/files/',
+    dotfiles: 'deny',
+    headers: {
+      'x-timestamp': Date.now(),
+      'x-sent': true
+    }
+  };
+
+  var fileName = req.params.id;
+  res.sendFile(fileName, options, function (err) {
+    if (err) {
+      console.log(err);
+      res.status(err.status).end();
+    }
+    else {
+      console.log('Sent:', fileName);
+    }
+  });
 
 };
 
@@ -383,4 +418,5 @@ exports.getCandies = getCandies;
 exports.getTags = getTags;
 exports.getTagsByCandies = getTagsByCandies;
 exports.uploadFile = uploadFile;
+exports.downloadFile = downloadFile;
 exports.serve404 = serve404;

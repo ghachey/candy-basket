@@ -3,5 +3,5 @@ dist
 .tmp
 .sass-cache
 public/components
-uploads
+files
 .DS_Store

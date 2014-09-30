@@ -45,7 +45,7 @@
               <div class="row">
 
                 <div class="col-md-12">
-                  <em>Upload queue</em>
+                  <em>Queue of new uploads</em>
                   <table class="table">
                     <thead>
                       <tr>
@@ -93,6 +93,11 @@
                   <div class="progress" style="">
                     <div class="progress-bar" role="progressbar" ng-style="{ 'width': uploader.progress + '%' }"></div>
                   </div>
+                </div>
+
+                <div class="col-md-12">
+                  <em>Queue actions</em>
+                  <br />
                   <button type="button" class="btn btn-success btn-s" ng-click="uploader.uploadAll()" ng-disabled="!uploader.getNotUploadedItems().length">
                     <span class="glyphicon glyphicon-upload"></span> Upload all
                   </button>
@@ -102,6 +107,13 @@
                   <button type="button" class="btn btn-danger btn-s" ng-click="uploader.clearQueue()" ng-disabled="!uploader.queue.length">
                     <span class="glyphicon glyphicon-trash"></span> Remove all
                   </button>
+                </div>
+
+                <div id="download-zone" class="col-md-12">
+                  <em>Candy files</em>
+                  <ul>
+                    <li ng-repeat="file in candy.files"><i class="glaphicon glyphicon glyphicon-cloud-download"></i><a href="http://localhost:3003/files/{{file.name}}"> {{file.originalName}}</a></li>
+                  </ul>
                 </div>
 
               </div> <!-- end of row -->

@@ -41,7 +41,7 @@ var SaveCandyInstanceModal = function ($scope, $modalInstance, operation, candyI
   var uploadedFiles = []; 
   // The Actual file upload service
   var uploader = $scope.uploader = new FileUploader({
-    url: 'http://localhost:3003/upload' // Our own NodeJS backend
+    url: 'http://localhost:3003/files' // Our own NodeJS backend
   });
   // Filters can be added on allowed types of files
   uploader.filters.push({
@@ -59,7 +59,7 @@ var SaveCandyInstanceModal = function ($scope, $modalInstance, operation, candyI
     console.info('onCompleteItem', fileItem, response, status, headers);
     uploadedFiles.push(response);
   };
-  
+
   $scope.saveCandy = function () {
     // Before closing the modal and saving the candy check files still
     // in the queue (users might have been removing some of them) and
@@ -70,10 +70,11 @@ var SaveCandyInstanceModal = function ($scope, $modalInstance, operation, candyI
     var queueNames = _.map(uploader.queue, function(fileItem) {
       return fileItem.file.name;
     });
-    $scope.candy.files = _.filter(uploadedFiles, function(fileMeta) {
+    var newFiles = _.filter(uploadedFiles, function(fileMeta) {
       return _.contains(queueNames, fileMeta.originalName); 
     });
-
+    $scope.candy.files = ($scope.candy.files) ? 
+      $scope.candy.files.concat(newFiles) : $scope.candy.files = newFiles;
     $modalInstance.close($scope.candy);
   };
 
