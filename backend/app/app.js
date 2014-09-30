@@ -24,14 +24,13 @@ api.use(cors(conf.corsOptions));
 api.use(favicon(path.join(__dirname, '/public/icons/favicon.ico')));
 api.use(logger('dev'));
 api.use(bodyParser.json());
-api.use(multer({ dest: path.join(__dirname,'/uploads/')}));
+api.use(multer({ dest: path.join(__dirname,'/files/')}));
 if (process.env.NODE_ENV === 'development') {
   api.use(errorHandler());
 }
 
 // Routes
 api.get('/', controllers.getMeta);
-api.post('/upload', controllers.uploadFile);
 api.get('/basket/candies', controllers.getCandies);
 api.get('/basket/candies/tags', controllers.getTags);
 api.get('/basket/candies/tags-by-candies', controllers.getTagsByCandies);
@@ -39,6 +38,8 @@ api.post('/basket/candies', controllers.createCandy);
 api.get('/basket/candies/:uuid', controllers.getCandy);
 api.put('/basket/candies/:uuid', controllers.updateCandy);
 api.delete('/basket/candies/:uuid', controllers.deleteCandy);
+api.post('/files', controllers.uploadFile);
+api.get('/files/:id', controllers.downloadFile);
 api.use(controllers.serve404);
 
 // Server
