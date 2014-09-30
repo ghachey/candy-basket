@@ -1,3 +1,5 @@
+/* global _ */
+
 'use strict';
 
 /**
@@ -45,6 +47,8 @@ var SaveCandyInstanceModal = function ($scope, $modalInstance, operation, candyI
   uploader.filters.push({
     name: 'customFilter',
     fn: function(item /*{File|FileLikeObject}*/, options) {
+      console.log('item: ', item);
+      console.log('options: ', options);
       return this.queue.length < 10;
     }
   });
@@ -68,7 +72,7 @@ var SaveCandyInstanceModal = function ($scope, $modalInstance, operation, candyI
     });
     $scope.candy.files = _.filter(uploadedFiles, function(fileMeta) {
       return _.contains(queueNames, fileMeta.originalName); 
-    });;
+    });
 
     $modalInstance.close($scope.candy);
   };

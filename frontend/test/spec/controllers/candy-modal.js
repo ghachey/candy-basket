@@ -34,7 +34,7 @@ describe('Controller: CandyModal', function () {
     stateTrackerMock = jasmine.createSpyObj('stateTracker', ['state']);
 
     inject(function ($controller, $rootScope,
-                     $q, _$timeout_, stateTracker) {
+                     $q, _$timeout_) {
       $scope = $rootScope.$new();
       $timeout = _$timeout_;
       stateTrackerMock.state.andReturn($q.when(mockedStateTrackerData));
