@@ -31,6 +31,7 @@ module.exports = function(config) {
       'bower_components/angular-ui-tinymce/src/tinymce.js',
       'bower_components/angular-ui-slider/src/slider.js',
       'bower_components/angular-timelinejs/build/angular-timelinejs.js',
+      'bower_components/angular-file-upload/angular-file-upload.js',
       'bower_components/jquery/dist/jquery.js',
       'bower_components/TimelineJS/build/js/timeline.js',
       'app/scripts/**/*.js',

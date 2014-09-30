@@ -297,8 +297,9 @@ describe('Service: utilities', function () {
   });
 
   it('should return the correct date range for candies', function() {
+    var candies;
     /*jshint ignore:start */
-    var candies = [
+    candies = [
       {
         "_id": "03c0b670e5c56bfb461a76dcf700a467",
         "source": "http://thediplomat.com/2013/12/time-for-us-and-china-to-establish-maritime-rules-of-the-road/",
@@ -407,8 +408,9 @@ describe('Service: utilities', function () {
   });
 
   it('should return the correct date range for unsorted candies', function() {
-    /*jshint ignore:start */
-    var unsortedCandies = [
+    var unsortedCandies;
+    /* jshint ignore:start */
+    unsortedCandies = [
       {
         "_id": "03c0b670e5c56bfb461a76dcf700af8f",
         "source": "http://thediplomat.com/2013/12/chinas-adiz-and-the-japan-us-response/",
