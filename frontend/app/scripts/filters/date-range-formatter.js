@@ -17,7 +17,7 @@ angular.module('nasaraCandyBasketApp')
       if (input) {
         var oldest = moment.unix(input[0]);
         var newest = moment.unix(input[1]);
-        return oldest.format('Do MMMM YYYY') + ' and ' + 
+        return 'From ' + oldest.format('Do MMMM YYYY') + '<br /> to <br />' + 
           newest.format('Do MMMM YYYY');
       } else {
         return 'loading range...';
