@@ -11,7 +11,6 @@
  */
 
 var async = require('async');
-var fs = require('fs');
 var nano = require('nano');
 var validator = require('validator');
 var sanitizer = require('sanitizer');
@@ -376,7 +375,7 @@ var uploadFile = function(req, res) {
  * first downloaded from the ownCloud account and then served here
  * with very little changed to this function (hopefully).
  */
-var downloadFile = function(req, res, next) {
+var downloadFile = function(req, res) {
 
   var options = {
     root: __dirname + '/files/',
