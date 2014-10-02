@@ -22,7 +22,7 @@
 
 <div class="row combined-ops" ng-controller="CandyModal">  
 
-  <div class="col-md-2">
+  <div class="col-md-3">
     <button class="operations" ng-click="open('edit')"
             tooltip="Edit..." tooltip-placement="bottom">
       <span class="glyphicon glyphicon-edit ops-edit"
@@ -54,7 +54,9 @@
 
 
   <div class="col-md-6">
-    <div class="slider"
+    <div class="slider" 
+				 tooltip-html-unsafe="{{sliderRange|dateRangeFormatter}}"
+				 tooltip-placement="bottom"
          ui-slider="slider.options"
          min="{{sliderMin}}"
          max="{{sliderMax}}"
@@ -62,9 +64,9 @@
          ng-model="sliderRange"></div>
   </div>
 
-  <div class="col-md-4 slider-date-range">
+  <!--  div class="col-md-3 slider-date-range">
     {{sliderRange|dateRangeFormatter}}
-  </div>
+  </div -->
 
 </div>
 
