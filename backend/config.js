@@ -1,4 +1,5 @@
 var path = require('path');
+var fs = require('fs');
 
 var rootPath = path.normalize(__dirname + '/.');
 var env = process.env.NODE_ENV || 'development';
@@ -26,7 +27,7 @@ var config = {
         'password' : 'P@55word',
         'protocol' : 'https',
         'port' : 443,
-        'verifySSL' : '/Users/ghachey/Development/Python/projects/candybasketv2.pacificpolicy.org/owncloud-attachment-branch/tagging-tool/backend/arc.ghachey.info.pem'
+        'ca' : fs.readFileSync('certificates/arc.ghachey.info.pem')
     },
     'webdavFileLocation' : '/owncloud/remote.php/webdav/documents/development/'
   },
@@ -47,7 +48,7 @@ var config = {
         'password' : 'P@55word',
         'protocol' : 'https',
         'port' : 443,
-        'verifySSL' : '/Users/ghachey/Development/Python/projects/candybasketv2.pacificpolicy.org/owncloud-attachment-branch/tagging-tool/backend/arc.ghachey.info.pem'
+        'ca' : fs.readFileSync('certificates/arc.ghachey.info.pem')
     },
     'webdavFileLocation' : '/owncloud/remote.php/webdav/documents/test/'
   },
@@ -73,7 +74,7 @@ var config = {
         'password' : 'P@55word',
         'protocol' : 'https',
         'port' : 443,
-        'verifySSL' : '/Users/ghachey/Development/Python/projects/candybasketv2.pacificpolicy.org/owncloud-attachment-branch/tagging-tool/backend/arc.ghachey.info.pem'
+        'ca' : fs.readFileSync('certificates/arc.ghachey.info.pem')
     },
     'webdavFileLocation' : '/owncloud/remote.php/webdav/documents/'
   }

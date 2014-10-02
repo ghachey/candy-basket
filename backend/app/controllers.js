@@ -14,12 +14,27 @@ var async = require('async');
 var nano = require('nano');
 var validator = require('validator');
 var sanitizer = require('sanitizer');
+var request = require('superagent');
+var path = require('path');
+var fs = require('fs');
+/* jshint ignore:start */
+var multimethod = require('multimethod');
+/* jshint ignore:end */
+var mmm = require('mmmagic');
 
 var conf = require('../config');
+
+var Magic = mmm.Magic;
 
 var dbName = conf.dbName;
 var couchServer = nano(conf.dbUrl); //nano
 var couchdb = couchServer.db.use(dbName);
+
+var ownCloudServer = conf.webdavServer.protocol + '://' + conf.webdavServer.host;
+var ownCloudShare = conf.webdavFileLocation;
+var ownCloudUser = conf.webdavServer.username;
+var ownCloudPassword = conf.webdavServer.password;
+var ownCloudCA = conf.webdavServer.ca;
 
 /**
  * @description
@@ -41,7 +56,8 @@ var validateCandy = function(candy) {
   
   var urlOptions;
   /* jshint ignore:start */
-  // Forced to not comply with my Lint conventions due to third party, so ignore it.
+  // Forced to not comply with my Lint conventions due to third party,
+  // so ignore it.
   urlOptions = { 
     protocols: ['http','https','ftp'], 
     require_tld: false, 
@@ -62,14 +78,15 @@ var validateCandy = function(candy) {
   if ((candy.attachmentFilename && candy.attachment && 
        validator.isBase64(candy.attachment)) ||
       (!candy.attachmentFilename && !candy.attachment)) {
-    // We've got both the filename and the file itself and the file is properly encoded
-    // in base64, we're good
-    // or
-    // We don't have any filename or attachment at all, we're still good
+    // We've got both the filename and the file itself and the file is
+    // properly encoded in base64, we're good or We don't have any
+    // filename or attachment at all, we're still good
   } else {
     return {'status': false, 'msg': 'Bad attachment'};
   }
-  if (!Array.isArray(candy.tags)) {return {'status': false, 'msg': 'Tags not an array'};}
+  if (!Array.isArray(candy.tags)) {
+    return {'status': false, 'msg': 'Tags not an array'};
+  }
 
   // Sanitize user submitted HTML to your taste here, 
   // see https://www.npmjs.org/package/sanitizer
@@ -93,17 +110,17 @@ var createCandy = function(req, res) {
     couchdb.insert(req.body, function(err, body) {
       if (!err) {
         res.set('Location', body.id); // Set Location header to resource ID (couch ID)
-        res.send(201);
+        res.status(201).end();
         console.log('Insert success response: ', body);
       } else {
         console.log('Error inserting document: ', err);
-        res.send(500, err);
+        res.status(500).send(err);
       }
     });
 
   } else {
     console.error('Validation error: ', validateCandy(req.body).msg);
-    res.send(400, validateCandy(req.body).msg);
+    res.status(400).send(validateCandy(req.body).msg);
   }
 };
 
@@ -116,7 +133,7 @@ var getCandy = function(req, res) {
     } else {
       /* jshint ignore:start */
       // CouchDB response not inline with my JS conventions
-      res.send(err.status_code, err);
+      res.status(err.status_code).send(err);
       /* jshint ignore:end */
     }
   });
@@ -154,7 +171,7 @@ var updateCandy = function(req, res) {
             // Any memory implications?
             /* jshint ignore:start */
             // CouchDB response not inline with my JS conventions
-            res.send(err.status_code, err);
+            res.status(err.status_code).send(err);
             /* jshint ignore:end */
             callback(err);
           }
@@ -170,8 +187,9 @@ var updateCandy = function(req, res) {
         couchdb.insert(req.body, function(err, body) {
           if (!err) {
             // Do I need to call callback(null);
-            res.set('Location', body.id); // Set Location header to resource ID (couch ID)
-            res.send(200);
+            // Set Location header to resource ID (couch ID)
+            res.set('Location', body.id); 
+            res.status(200).end();
             console.log('Insert success response: ', body);
             callback(null);
           } else if (err.status === 409) { // Update conflict, try again
@@ -179,7 +197,7 @@ var updateCandy = function(req, res) {
             // using service in higher latency context
           } else  {
             console.log('Error inserting document: ', err);
-            res.send(500, err);
+            res.status(500).send(err);
             callback(err);
           }
         });
@@ -188,7 +206,7 @@ var updateCandy = function(req, res) {
 
   } else {
     console.error('Validation error: ', validateCandy(req.body).msg);
-    res.send(400, validateCandy(req.body).msg);
+    res.status(400).send(validateCandy(req.body).msg);
   }
 };
 
@@ -209,7 +227,7 @@ var deleteCandy = function(req, res) {
           // Any memory implications?
           /* jshint ignore:start */
           // CouchDB response not inline with my JS conventions
-          res.send(err.status_code, err);
+          res.status(err.status_code).send(err);
           /* jshint ignore:end */
           callback(err);
         }
@@ -220,12 +238,12 @@ var deleteCandy = function(req, res) {
       couchdb.destroy(uuid, rev, function(err, body) {
         if (!err) {
           // Do I need to call callback(null);
-          res.send(200);
+          res.status(200).end();
           console.log('Delete success response: ', body);
           callback(null);
         } else  {
           console.log('Error deleting document: ', err);
-          res.send(500, err);
+          res.status(500).send(err);
           callback(err);
         }
       });
@@ -268,11 +286,11 @@ var getCandies = function(req, res) {
         };
         docs.push(docData);
       });
-      res.send(200, {'candiesById' : docs});
+      res.status(200).send({'candiesById' : docs});
     } else {
       console.error('Error getting view: ', err);
       /* jshint ignore:start */
-      res.send(err.status_code, err);
+      res.status(err.status_code).send(err);
       /* jshint ignore:end */
     }
   });
@@ -299,11 +317,11 @@ var getTags = function(req, res) {
       /* jshint ignore:start */
       viewData = {'tags' : {'tags': tags, 'tagsCounts': tagsCounts}};
       /* jshint ignore:end */
-      res.send(200, viewData);
+      res.status(200).send(viewData);
     } else {
       console.error('Error getting view: ', err);
       /* jshint ignore:start */
-      res.send(err.status_code, err);
+      res.status(err.status_code).send(err);
       /* jshint ignore:end */
     }
   });
@@ -331,11 +349,11 @@ var getTagsByCandies = function(req, res) {
         });
       });
       viewData = {'tagsByCandies' : {'tagsByCandies': tags}};
-      res.send(200, viewData);
+      res.status(200).send(viewData);
     } else {
       console.error('Error getting view: ', err);
       /* jshint ignore:start */
-      res.send(err.status_code, err);
+      res.status(err.status_code).send(err);
       /* jshint ignore:end */
     }
   });
@@ -343,24 +361,135 @@ var getTagsByCandies = function(req, res) {
 };
 
 /**
+ * @name nasaraCandyBasketBackend.controllers:_ownCloudRequestCallback
+ * @description
+ * @private
+ *
+ * Callback handler for requests to ownCloud WebDAV server used by
+ * private multimethod {@link
+ * nasaraCandyBasketBackend.controllers:_sendToOwnCloud}.
+ */
+/* jshint ignore:start */
+var _ownCloudRequestCallback = function(ownCloudErr, ownCloudRes) {
+  if (ownCloudErr) {
+    console.error('Error uploading to ownCloud: ', ownCloudErr);
+    return {'status': 503, 'body': ownCloudErr};
+  } else {
+    console.log('Successful upload to ownCloud: ', ownCloudRes.status);
+    return {'status': 200, 'body': ownCloudRes};
+  }
+};
+/* jshint ignore:end */
+
+/**
+ * @name nasaraCandyBasketBackend.controllers:_sendToOwnCloud
+ * @description
+ * @private
+ *
+ * A private function to handle sending files to ownCloud. It is
+ * abstracted here because of the intricacies I faced when dealing
+ * with this as an inexperienced person on the subject. In short, I
+ * could never get it to work properly using only sending via
+ * multipart requests. It would only work on non-image files
+ * (corrupting images). This is either because the Sabre WebDAV server
+ * of ownCloud did not understand how to process those or I was doing
+ * something wrong (though I could get it to work on my own test
+ * backends).
+ * 
+ * After days of frustration I finally opted to send images not as
+ * multipart request but as plain buffered binary data setting my own
+ * headers. All other files seem to work as multipart request though I
+ * only really tested with PDF making this later statement a bit over
+ * confident.
+ *
+ * While I'm at it, might as well try out this cool multimethod lib to
+ * dispatch appropriate behavior instead of Javascript's classical
+ * prototype based polymorphism. If we find out we need to send files
+ * to ownCloud differently based on files then it will be easy to add
+ * polymorphic behavior :)
+ *
+ * Used only by {@link nasaraCandyBasketBackend.controllers:uploadFile}.
+ */
+/* jshint ignore:start */
+var _sendToOwnCloud = multimethod()
+      .dispatch(function(file, fileType, fileMime) {
+        return fileType;
+      })
+      .when("image", function(file, fileType, fileMime) {
+        fs.readFile(file.path, function(err, data){
+          request
+            .put(ownCloudServer + ownCloudShare + file.name)
+            .ca(ownCloudCA)
+            .auth(ownCloudUser, ownCloudPassword)
+            .set('Content-Type', fileType)
+            .set('Content-Disposition', 'attachment; filename='+file.name)
+            .set('Content-Length', data.length)
+            .send(data)
+            .end(_ownCloudRequestCallback);
+        });
+      })
+      .default(function(file, fileType, fileMime) {
+        request
+          .put(ownCloudServer + ownCloudShare + file.name)
+          .ca(ownCloudCA)
+          .auth(ownCloudUser, ownCloudPassword)
+          .attach(file.name, file.path)
+          .end(_ownCloudRequestCallback);
+      });
+/* jshint ignore:end */
+
+/**
  * @name nasaraCandyBasketBackend.controllers:uploadFile
  * @description
  * 
  * A function to asynchronously handle file uploads. Currently, it
- * stores the files on the filesystem automatically. Eventually it
- * should upload the files to an ownCloud shared folder. The
- * filesystem is straight forward and thus used in order to try and
- * get the file uploading from the Angular frontend working.
+ * stores the files on the filesystem automatically and also securely
+ * transfers the file to an ownCloud server share. The easiest for now
+ * is to leave the files on the filesystem and ignore them possibly
+ * setting up some regular cleanup routine. Eventually, the files
+ * could be directly streamed from the request to the ownCloud server
+ * completely by-passing the filesystem to optimize both space and
+ * time.
  * 
- * When the time comes, uploading to the cloud will be handled here.
- * And even further down the line it could be useful to directly
- * stream the files to the cloud completely by-passing the filesystem
- * to optimize both space and time.
+ * Also note that this will not wait for a candy to be saved before
+ * uploading the file async'ly to ownCloud which may not always be
+ * desired (user changes their mind during candy updating).
  */
 var uploadFile = function(req, res) {
-  console.log('files: ', req.files);
-  res.send(200, {'name': req.files.file.name, 
-                 'originalName': req.files.file.originalname});
+  var fileType;
+  var fileMime;
+  var magic = new Magic(mmm.MAGIC_MIME_TYPE);
+
+  magic.detectFile(req.files.file.path, function(err, result) {
+    if (err) {throw err;}
+    console.log('File type: ', result);
+    fileMime = result;
+    fileType = result.split('/')[0];
+    /* jshint ignore:start */
+    _sendToOwnCloud(req.files.file, fileType, fileMime);
+    /* jshint ignore:end */
+    res.status(200).send({'name': req.files.file.name, 
+                          'originalName': req.files.file.originalname});
+  });
+};
+
+/**
+ * @name nasaraCandyBasketBackend.controllers:_binaryParser
+ * @description
+ * @private
+ * 
+ * A private binary parser to get files from ownCloud. Currently, only used by
+ * {@link nasaraCandyBasketBackend.controllers:downloadFile}.
+ */
+var _binaryParser = function(res, callback) {
+    res.setEncoding('binary');
+    res.data = '';
+    res.on('data', function (chunk) {
+        res.data += chunk;
+    });
+    res.on('end', function () {
+        callback(null, new Buffer(res.data, 'binary'));
+    });
 };
 
 /**
@@ -368,41 +497,50 @@ var uploadFile = function(req, res) {
  * @description
  * 
  * A function to asynchronously handle serving files
- * (i.e. downloads). Currently, it gets the files from the filesystem
- * (see {@link nasaraCandyBasketBackend.controllers:uploadFile}). 
+ * (i.e. downloads). Currently, it first downloads the files from the
+ * ownCloud service, stores it on the file system before serving to
+ * the frontend. Related to {@link
+ * nasaraCandyBasketBackend.controllers:uploadFile}.
  * 
- * When files will be uploaded to a ownCloud shared folder they can be
- * first downloaded from the ownCloud account and then served here
- * with very little changed to this function (hopefully).
+ * This can be further optimize by streaming file from ownCloud ->
+ * ServerMemory -> Frontend. But should do for now.
  */
 var downloadFile = function(req, res) {
-
-  var options = {
-    root: __dirname + '/files/',
-    dotfiles: 'deny',
-    headers: {
-      'x-timestamp': Date.now(),
-      'x-sent': true
-    }
-  };
-
   var fileName = req.params.id;
-  res.sendFile(fileName, options, function (err) {
-    if (err) {
-      console.log(err);
-      res.status(err.status).end();
-    }
-    else {
-      console.log('Sent:', fileName);
-    }
-  });
+  var fileNameAndPath = path.join(__dirname, '/files/tmp/', fileName);
 
+  request
+    .get(ownCloudServer + ownCloudShare + fileName)
+    .ca(ownCloudCA)
+    .auth(ownCloudUser, ownCloudPassword)
+    .parse(_binaryParser)
+    .buffer()
+    .end(function(ownCloudErr, ownCloudRes) {
+      if (ownCloudErr) {
+        console.error('Error retrieving file from ownCloud: ', ownCloudErr);
+        res.status(503).send(ownCloudErr);
+      } else {
+        console.log('Retrieved file from ownCloud: ', ownCloudRes.status);
+        fs.writeFile(fileNameAndPath, ownCloudRes.body, function (fsErr) {
+          if (fsErr) {console.error('Filesystem error: ', fsErr);}
+          // Send file to frontend here
+          res.download(fileNameAndPath, function (err) {
+            if (err) {
+              console.error('Sending to frontend error: ', err);
+              res.status(err.status).end();
+            }
+            else {
+              console.log('Sent to frontent: ', fileName);
+            }
+          });
+        });
+      }
+    });
 };
 
 var serve404 = function(req, res) {
-  res.send(404);
+  res.status(404).end();
 };
-
 
 exports.dbName = dbName;
 exports.couchServer = couchServer;

@@ -24,7 +24,9 @@ api.use(cors(conf.corsOptions));
 api.use(favicon(path.join(__dirname, '/public/icons/favicon.ico')));
 api.use(logger('dev'));
 api.use(bodyParser.json());
-api.use(multer({ dest: path.join(__dirname,'/files/')}));
+api.use(multer({ 
+  dest: path.join(__dirname,'/files/') 
+}));
 if (process.env.NODE_ENV === 'development') {
   api.use(errorHandler());
 }
