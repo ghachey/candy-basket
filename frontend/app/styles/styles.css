@@ -334,3 +334,8 @@ input.ng-valid.ng-dirty {
   margin-left: -40px;
   list-style: none;
 }
+
+/* Needed to properly display progress bars (override bootstraps's min */
+.progress-bar[aria-valuenow="0"] {
+  min-width: 0px;
+}
