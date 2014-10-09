@@ -14,8 +14,10 @@
     "cors": "^2.4.1",
     "express": "^4.9.5",
     "iz": "^0.5.1",
+    "mmmagic": "^0.3.8",
     "morgan": "~1.1.1",
     "multer": "^0.1.4",
+    "multimethod": "^0.1.0",
     "nano": "^5.10.0",
     "sanitizer": "^0.1.2",
     "serve-favicon": "~2.0.1",
@@ -42,6 +44,7 @@
     "jshint-stylish": "^0.4.0",
     "load-grunt-tasks": "~0.6.0",
     "mocha": "^1.21.4",
+    "superagent-proxy": "^0.3.1",
     "supertest": "^0.13.0",
     "time-grunt": "~0.3.2"
   }
