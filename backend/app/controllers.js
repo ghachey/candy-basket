@@ -2,11 +2,18 @@
 
 /**
  * This contains the controller logic for the website RESTful API.
- * The API is consumed *only* by the website application frontend.
- * 
- * At the moment, code here directly talks to the CouchDB RESTful 
- * API.
- * 
+ * The API is consumed *only* by the website application frontend. The
+ * backend implementation is actually quite simple and most of the
+ * work is done here. There is an Express route defined for each of
+ * the REST end point {@link
+ * nasaraCandyBasketBackend.app}. `backend/app/app.js` implemented as
+ * Javascript async functions right here. Interaction with the CouchDB
+ * persistent store is done inside those functions.
+ *
+ * Data validation is also done right here. It does basic checks on
+ * all fields and HTML sanitization before approving and sending to
+ * persist in CouchDB.
+ *
  * @see ./models.js for more details
  */
 
