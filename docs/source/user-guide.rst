@@ -14,10 +14,10 @@ incorporated into subsequent releases of the software.
 
 Mnemoniq has been developed by Dan McGarry and Derek Brien of the
 Pacific Institute for Public Policy (PiPP), Ghislain Hachey of
-Computer and Network Services, and Louise Shaxson of ODI.  Feedback on
-the software, and on this manual, will be welcomed: we are keen to
-improve it based on people's experience of using Mnemoniq, and
-developers' ideas about what it could do better.
+Nuzusys, and Louise Shaxson of ODI.  Feedback on the software, and on
+this manual, will be welcomed: we are keen to improve it based on
+people's experience of using Mnemoniq, and developers' ideas about
+what it could do better.
 
 Introduction
 ============

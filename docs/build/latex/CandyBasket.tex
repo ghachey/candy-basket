@@ -14,7 +14,7 @@
 
 
 \title{Candy Basket Documentation}
-\date{August 31, 2014}
+\date{November 03, 2014}
 \release{1.0}
 \author{Ghislain Hachey, Maya Goldman and Dan McGarry}
 \newcommand{\sphinxlogo}{}
@@ -114,6 +114,8 @@
 \def\PYGZrb{]}
 \makeatother
 
+\renewcommand\PYGZsq{\textquotesingle}
+
 \begin{document}
 
 \maketitle
@@ -138,10 +140,10 @@ incorporated into subsequent releases of the software.
 
 Mnemoniq has been developed by Dan McGarry and Derek Brien of the
 Pacific Institute for Public Policy (PiPP), Ghislain Hachey of
-Computer and Network Services, and Louise Shaxson of ODI.  Feedback on
-the software, and on this manual, will be welcomed: we are keen to
-improve it based on people's experience of using Mnemoniq, and
-developers' ideas about what it could do better.
+Nuzusys, and Louise Shaxson of ODI.  Feedback on the software, and on
+this manual, will be welcomed: we are keen to improve it based on
+people's experience of using Mnemoniq, and developers' ideas about
+what it could do better.
 
 
 \section{Introduction}
@@ -1350,11 +1352,9 @@ prompt to enter credentials.
 
 \section{Introduction}
 \label{developer-guide:introduction}\label{developer-guide:intro}
-The idea is to develop a very user friendly tool to help people dump
-thoughts in a flexible database for later use. It works in a similar
-fashion as Delicious. The tool is called Candy Basket hereafter
-referred to as CB. This service was built using a number of modern
-technologies which are described herein.
+This guide documents high level development standards, policies and
+procedures without going into lower level details of the source code
+and APIs.
 
 
 \subsection{Programming Language}
@@ -1403,10 +1403,9 @@ you started. Essentially, the following subsections can be followed in
 order and everything should work.
 
 The latest NodeJS will need to be installed on your operating system
-(OS), binaries are available for all popular OSes. Instructions for
-devleopers are given in a platform-agnostic fashion to the extent that
-it is possible. However, instructions for systems administrators will
-aims at being more specific in the administrator's guide.
+(OS); binaries are available for all popular OSes. Instructions are
+given in a platform-agnostic fashion to the extent that it is
+possible.
 
 
 \subsection{Development Tools}
@@ -1414,7 +1413,7 @@ aims at being more specific in the administrator's guide.
 You will need you typical development tools: a command line, a text
 editor or IDE, a web browser with good development plugins such as the
 Google Chrome Javascript console or Firefox's web developer extension
-and firebug. It does not matter much which tool; choose the ones
+and firebug. It does not matter much which tool, choose the ones
 you're most confortable with.
 
 
@@ -1426,22 +1425,22 @@ package is locally to whatever software you are developing as opposed
 to globally on your operating system. Therefore, use:
 
 \begin{Verbatim}[commandchars=\\\{\}]
-\PYGZdl{} npm install express
+[user]\PYGZdl{} npm install express
 \end{Verbatim}
 
 and not:
 
 \begin{Verbatim}[commandchars=\\\{\}]
-\PYGZdl{} npm install \PYGZhy{}g express
+[user]\PYGZdl{} npm install \PYGZhy{}g express
 \end{Verbatim}
 
-There are a couple of exception to this. Once you have NodeJS
+There are a couple of exceptions to this. Once you have NodeJS
 installed on your machine you should install bower and grunt-cli
 globally:
 
 \begin{Verbatim}[commandchars=\\\{\}]
-\PYGZdl{} npm install \PYGZhy{}b bower
-\PYGZdl{} npm install \PYGZhy{}b grunt\PYGZhy{}cli
+[user]\PYGZdl{} npm install \PYGZhy{}b bower
+[user]\PYGZdl{} npm install \PYGZhy{}b grunt\PYGZhy{}cli
 \end{Verbatim}
 
 This is all that should be needed as a foundation development setup.
@@ -1453,21 +1452,81 @@ CouchDB is used as the database for this tool. The easiest way to
 install CouchDB is to use the OS' package manager (Debian's apt-get,
 Mac OS X's brew, Red Hat's yum). CB makes use of three databases:
 \emph{candy\_basket\_test}, \emph{candy\_basket\_development}, \emph{candy\_basket} (for
-production). On the development machine onle the
+production). On the development machine only the
 candy\_basket\_development must be created in advanced. The tests will
 create and destroy the \emph{candy\_basket\_test} database automatically, in
 fact, tests will fail if this database is already present.
 
-In the development database sample data can be included in a number of
-ways, either programmatically importing old candies or manually
-entering some sample data using the running development
-application. The views will have to be created manually at the moment.
+Sample data must be added to the development database. This can be
+done in a number of ways, either programmatically importing old
+candies or manually entering some sample data using the running
+development application. The views have to be created manually at the
+moment. You can easily just copy and paste the views definition from
+the integration tests (i.e. \emph{backend/test/specs/controllers.js}) in
+the CouchDB admin web UI.
 
 In the test database sample data is automatically generated as part of
-unit tests and the views are also programmatically created before
-used. The code in unit tests to create the views also serve as
-specifications of the design views and can simply be copy pasted in
-the CouchDB admin web UI.
+unit tests and the views are also programmatically created before they
+are used.
+
+
+\subsection{Dependencies}
+\label{developer-guide:dependencies}
+This application has a number of dependencies but they can all easily
+be installed from within the root of your own clone repository and
+from the \emph{backend} and \emph{frontend} directories. The production backend
+libraries and the development and test libraries are typically always
+npm packages with the dependencies clearly defined the \emph{packages.json}
+files, one in the backend, one in the frontend and one in the root
+directory. In other words, everywhere you see a package.json file you
+must change to that directory and install dependencies like this:
+
+\begin{Verbatim}[commandchars=\\\{\}]
+[user]\PYGZdl{} npm install
+\end{Verbatim}
+
+Frontend dependencies, those that will run in the client browser
+powering the web UI are installed using the Bower package management
+tool. From within the frontend directory you can simply do:
+
+\begin{Verbatim}[commandchars=\\\{\}]
+[user]\PYGZdl{} bower install
+\end{Verbatim}
+
+Those commands are idempotent and it does not matter how often you
+execute them. Installing new dependencies for development can be done
+with the same tool.
+
+Backend dependencies and frontend development and test libraries:
+
+\begin{Verbatim}[commandchars=\\\{\}]
+[user]\PYGZdl{} npm install new\PYGZhy{}grunt\PYGZhy{}plugin new\PYGZhy{}backend\PYGZhy{}library
+\end{Verbatim}
+
+Though to save the dependency in the package.json you would do:
+
+\begin{Verbatim}[commandchars=\\\{\}]
+[user]\PYGZdl{} npm install \PYGZhy{}\PYGZhy{}save\PYGZhy{}dev new\PYGZhy{}grunt\PYGZhy{}plugin new\PYGZhy{}backend\PYGZhy{}library
+\end{Verbatim}
+
+Frontend dependencies:
+
+\begin{Verbatim}[commandchars=\\\{\}]
+[user]\PYGZdl{} bower install new\PYGZhy{}angular\PYGZhy{}third\PYGZhy{}party\PYGZhy{}directive
+\end{Verbatim}
+
+and the same to persist the dependency if you end up keeping it:
+
+\begin{Verbatim}[commandchars=\\\{\}]
+[user]\PYGZdl{} bower install \PYGZhy{}\PYGZhy{}save new\PYGZhy{}angular\PYGZhy{}third\PYGZhy{}party\PYGZhy{}directive
+\end{Verbatim}
+
+Some of the packages may have additional lower level dependencies of
+their own in which case you would typically have to install some
+package on your OS such as xml headers from the development
+package. This should be made clear from failures to install
+dependencies and is typically quickly addressed by installing from the
+OS' software repository (apt, yum, brew, etc.)
 
 
 \section{Development Work-flow}
@@ -1475,7 +1534,7 @@ the CouchDB admin web UI.
 The CB project constantly strives to improve its development
 operations in order to produce software of higher quality at a more
 efficient rate. This part of the developer guide will constantly
-evolved and should be kept close at hand when developing on the CB
+evolve and should be kept close at hand when developing on the CB
 project.
 
 
@@ -1490,11 +1549,12 @@ can retrieve your own full local clone of the project with Git
 installed on your machine:
 
 \begin{Verbatim}[commandchars=\\\{\}]
-\PYGZdl{} git clone git@github.com:ghachey/candy\PYGZhy{}basket.git
+[user]\PYGZdl{} git clone git@github.com:ghachey/candy\PYGZhy{}basket.git
 \end{Verbatim}
 
-However, never publish work to master. The following section describes
-the procedures to develop on CB.
+However, never publish work to master (at least as rarely as
+possible). The following section describes the procedures to develop
+on CB.
 
 
 \subsection{On-going Development}
@@ -1508,7 +1568,7 @@ Issues, etc.) you should \href{http://www.git-scm.com/book/en/Git-Branching-Basi
 like this {\hyperref[developer-guide:pro-git]{{[}PRO-GIT{]}}}:
 
 \begin{Verbatim}[commandchars=\\\{\}]
-\PYGZdl{} git checkout \PYGZhy{}b issue3
+[user]\PYGZdl{} git checkout \PYGZhy{}b issue3
 \end{Verbatim}
 
 Work on the issue, add relevant tests so it does not occur again, all
@@ -1522,17 +1582,15 @@ It is desirable to keep the history of master's commits as clean as
 possible for more effective code review. The established way of
 achieving this is to squash all your local commits from your \emph{issue3}
 branch into a single properly formatted commit before publishing
-changes. \href{http://www.git-scm.com/book/en/Git-Tools-Rewriting-History\#Squashing-Commits}{Squashing commits}
+changes and doing a pull request to master.
+
+\href{http://www.git-scm.com/book/en/Git-Tools-Rewriting-History\#Squashing-Commits}{Squashing commits}
 in git is straight forward {\hyperref[developer-guide:pro-git]{{[}PRO-GIT{]}}}. However, the consolidated
 commit must follow the following conventions adapted from \href{https://docs.google.com/document/d/1QrDFcIiPjSLDn3EL15IJygNPiHORgU1\_OOAqWjiDU5Y/edit\#}{Google
 project AngularJS}
 which will greatly enhanced the historical information on master and
-allow for automatic generation of the changelog.
-
-
-\subsubsection{Squashed commit format}
-\label{developer-guide:squashed-commit-format}
-The format of the commit message must follow the following convention:
+allow for automatic generation of the changelog. The format of the
+commit message must follow the following convention:
 
 \begin{Verbatim}[commandchars=\\\{\}]
 \PYGZlt{}type\PYGZgt{}(\PYGZlt{}scope\PYGZgt{}): \PYGZlt{}subject\PYGZgt{}
@@ -1542,9 +1600,9 @@ The format of the commit message must follow the following convention:
 \PYGZlt{}footer\PYGZgt{}
 \end{Verbatim}
 
-Any line of the commit message must not be longer 100 characters. This
-allows the message to be easier to read on github as well as in
-various git tools.
+Any line of the commit message must not be longer than 100
+characters. This allows the message to be easier to read on github as
+well as in various git tools.
 
 \textbf{\textless{}type\textgreater{}}
 
@@ -1716,24 +1774,127 @@ scope: \PYGZob{}
 The removed {}`inject{}` wasn\PYGZsq{}t generaly useful for directives so there should be no code using it.
 \end{Verbatim}
 
+For example, you've been working on your branch and made three commit
+with vague non-useful messages such as ``Work in progress'', ``Small
+fix'', etc. You want to wrap up the work with a nice single squashed
+commit following the above format. You can use Git's rebase tool:
 
-\section{Candy Basket Application}
-\label{developer-guide:candy-basket-application}
-Briefly, the Candy Basket application is composed of two main parts: a
-computer consumable service on the backend (i.e. run on the server)
-and a human consumable service on the frontend (i.e. runs in the
+\begin{Verbatim}[commandchars=\\\{\}]
+[user]\PYGZdl{} git rebase \PYGZhy{}i HEAD\PYGZti{}3
+\end{Verbatim}
+
+This will pull open an editor with something like the following:
+
+\begin{Verbatim}[commandchars=\\\{\}]
+pick f7f3f6d Work on docs
+pick 310154e Work in progress
+pick a5f4a0d Small fix
+
+\PYGZsh{} Rebase 710f0f8..a5f4a0d onto 710f0f8
+\PYGZsh{}
+\PYGZsh{} Commands:
+\PYGZsh{}  p, pick = use commit
+\PYGZsh{}  r, reword = use commit, but edit the commit message
+\PYGZsh{}  e, edit = use commit, but stop for amending
+\PYGZsh{}  s, squash = use commit, but meld into previous commit
+\PYGZsh{}  f, fixup = like \PYGZdq{}squash\PYGZdq{}, but discard this commit\PYGZsq{}s log message
+\PYGZsh{}  x, exec = run command (the rest of the line) using shell
+\PYGZsh{}
+\PYGZsh{} These lines can be re\PYGZhy{}ordered; they are executed from top to bottom.
+\PYGZsh{}
+\PYGZsh{} If you remove a line here THAT COMMIT WILL BE LOST.
+\PYGZsh{}
+\PYGZsh{} However, if you remove everything, the rebase will be aborted.
+\PYGZsh{}
+\PYGZsh{} Note that empty commits are commented out
+\end{Verbatim}
+
+To squash the three commits into one you would edit the script to look
+like this:
+
+\begin{Verbatim}[commandchars=\\\{\}]
+pick f7f3f6d Work on docs
+squash 310154e Work in progress
+squash a5f4a0d Small fix
+
+\PYGZsh{} Rebase 710f0f8..a5f4a0d onto 710f0f8
+\PYGZsh{}
+\PYGZsh{} Commands:
+\PYGZsh{}  p, pick = use commit
+\PYGZsh{}  r, reword = use commit, but edit the commit message
+\PYGZsh{}  e, edit = use commit, but stop for amending
+\PYGZsh{}  s, squash = use commit, but meld into previous commit
+\PYGZsh{}  f, fixup = like \PYGZdq{}squash\PYGZdq{}, but discard this commit\PYGZsq{}s log message
+\PYGZsh{}  x, exec = run command (the rest of the line) using shell
+\PYGZsh{}
+\PYGZsh{} These lines can be re\PYGZhy{}ordered; they are executed from top to bottom.
+\PYGZsh{}
+\PYGZsh{} If you remove a line here THAT COMMIT WILL BE LOST.
+\PYGZsh{}
+\PYGZsh{} However, if you remove everything, the rebase will be aborted.
+\PYGZsh{}
+\PYGZsh{} Note that empty commits are commented out
+\end{Verbatim}
+
+When saving this you will return to a text editor where you can merge
+the commit messages seeying something like this
+
+\begin{Verbatim}[commandchars=\\\{\}]
+\PYGZsh{} This is a combination of 3 commits.
+\PYGZsh{} The first commit\PYGZsq{}s message is:
+Work on docs
+
+\PYGZsh{} This is the 2nd commit message:
+
+Work in progress
+
+\PYGZsh{} This is the 3rd commit message:
+
+Small fix
+\end{Verbatim}
+
+Those commits are practically useless in the grand scheme of
+things. You want to replace it with a single properly formatted
+message following above conventions. In this case you would remove the
+above from the text editor and replace it with something like the
+following:
+
+\begin{Verbatim}[commandchars=\\\{\}]
+docs(developer\PYGZhy{}guide.rst): update docs with new code base refactory
+
+What\PYGZsq{}s changed in details:
+* Change backend section to reflect migration to NodeJS
+* Refactor various part of guide with new content
+* Introduce new conventions and standards
+\end{Verbatim}
+
+Save this nicely formatted commit and then you're ready to publish
+your work and do a pull request:
+
+\begin{Verbatim}[commandchars=\\\{\}]
+[user]\PYGZdl{} git push
+\end{Verbatim}
+
+Do the pull request from github and use the last commit as the message.
+
+
+\section{High Level Architecture}
+\label{developer-guide:high-level-architecture}
+Briefly, this application is composed of two main parts: a computer
+consumable service on the backend (i.e. runs on the server) and a
+human consumable service on the frontend (i.e. runs in the
 browser). The backend is a NodeJS powered RESTful service and the
 frontend is an HTML, CSS and Javascript Web User Interface (UI)
 capable of talking to the backend.
 \begin{itemize}
 \item {} 
-README.rm -- TODO - A brief introduction and pointers
+README.md -- A brief introduction and pointers
 
 \item {} 
-LICENSE.md -- TODO - Add license
+LICENSE.md -- GNU General Public License version 3
 
 \item {} 
-CHANGELOG.md -- TODO - Add automatically generated change logs
+CHANGELOG.md -- Automatically generated change logs
 
 \item {} 
 backend -- The NodeJS RESTful service
@@ -1744,73 +1905,32 @@ frontend -- The AngularJS Web application
 \item {} 
 docs -- The documentation for this project
 
+\item {} 
+package.json -- Root meta data JSON file
+
+\item {} 
+Gruntfile.js -- Grunt task automation file common to backend and frontend
+
 \end{itemize}
-
-
-\subsection{Dependencies}
-\label{developer-guide:dependencies}
-Candy Basket has a number of dependencies but they can all easily be
-installed from with the root of your own clone repository. The
-production backend libraries and the development and test libraries
-are typically always npm packages with the dependencies clearly
-defines in a \emph{packages.json} file, one in the backend and one in the
-frontend directory. From the backend \textbf{and} then from the frontend you
-can simply install server side dependencies like this:
-
-\begin{Verbatim}[commandchars=\\\{\}]
-\PYGZdl{} npm install
-\end{Verbatim}
-
-Frontend dependencies, those that will run in the client browser
-powering the web UI are installed using the Bower package management
-tool. From within the frontend directory you can simply do:
-
-\begin{Verbatim}[commandchars=\\\{\}]
-\PYGZdl{} bower install
-\end{Verbatim}
-
-Those command are idempotent and is does not matter how often you
-execute them. Installing new dependencies for development can be done
-with the same tool.
-
-Backend dependencies and frontend development and test libraries:
-
-\begin{Verbatim}[commandchars=\\\{\}]
-\PYGZdl{} npm install new\PYGZhy{}grunt\PYGZhy{}plugin new\PYGZhy{}backend\PYGZhy{}library
-\end{Verbatim}
-
-Frontend dependencies:
-
-\begin{Verbatim}[commandchars=\\\{\}]
-\PYGZdl{} bower install new\PYGZhy{}angular\PYGZhy{}third\PYGZhy{}party\PYGZhy{}directive
-\end{Verbatim}
-
-Some of the packages may have additional lower level dependencies of
-their own in which case you would typically have to install some
-package on your OS such as xml headers from the development package.
 
 
 \subsection{Backend -- The RESTful Service}
 \label{developer-guide:rest-service}\label{developer-guide:backend-the-restful-service}
 The backend is written entirely in the Javascript programming language
-implementing a simple RESTful service.
+implementing a simple RESTful service. The backend is a RESTful
+service following a Resource Oriented Architecture (ROA) as defined in
+{\hyperref[developer-guide:rest-serv]{{[}REST-SERV{]}}}. The following tables describe its service. Note that no
+API version number is included in the URI; it will be included in the
+host as \href{http://candy-restapi-v1.pacificpolicy.org.vu/}{http://candy-restapi-v1.pacificpolicy.org.vu/}.
 
 
-\subsubsection{High Level Architecture}
-\label{developer-guide:high-level-architecture}
-The Candy Basket backend is a RESTful service following a Resource
-Oriented Architecture (ROA) as defined in {\hyperref[developer-guide:rest-serv]{{[}REST-SERV{]}}}. The following
-tables describe its service. Note that no API version number is
-included in the URI; it will be included in the host as
-\href{http://candy-restapi-v1.pacificpolicy.org.vu/}{http://candy-restapi-v1.pacificpolicy.org.vu/}.
-
-\emph{User Account Service}
-
+\subsubsection{User Account Service}
+\label{developer-guide:user-account-service}
 Each organisation can have a number of users using the tool. However,
 user management is usually done using an external service such as
-Active Directory or another LDAP service like OpenLDAP. However, the
-users are used in the candy basket service: every source ``belongs'' to a
-user.
+Active Directory or another LDAP service like OpenLDAP. Candies do not
+yet have ownership and are globally accessible by the organisation
+once authenticated.
 
 The URI design goes like this. A ``basket'' refers to the whole
 organisation. In other words, organisations have their private basket
@@ -1824,14 +1944,14 @@ The services offer no CRUD operations on users at the moment as this
 is considered to be done using an external service (Active Directory,
 OpenLDAP).
 
-\emph{Source (Candies) Service}
 
+\subsubsection{Source (Candies) Service}
+\label{developer-guide:source-candies-service}
 This is the main service of candy basket: users can add ``source(s)''
-and tag them. A source is typically a URL but eventually could be
-other things such as a document, an hyperlink or an email. In the
-technical world of Candy Basket (such as in the source code) sources
-are typically referred to as candies; they are exactly the same
-thing. In the UI the term source is used.
+and tag them. A source can have a URL, file(s), title description and
+tags. In the technical world of Candy Basket (such as in the source
+code) sources are typically referred to as candies; they are exactly
+the same thing. In the UI the term source is used.
 
 \begin{tabulary}{\linewidth}{|L|L|}
 \hline
@@ -1863,8 +1983,9 @@ DELETE /basket/candies/\{uuid\}
 \hline\end{tabulary}
 
 
-\emph{Utilities Service}
 
+\subsubsection{Utilities Service}
+\label{developer-guide:utilities-service}
 Only a couple of utility aggregates are needed at the moment.
 
 \begin{tabulary}{\linewidth}{|L|L|}
@@ -1880,63 +2001,18 @@ Fetch all sources
 GET /basket/candies
 \\
 
-Fetch all candies and their tags
+Fetch all tags
+ & 
+GET /basket/candies/tags
+\\
+
+Fetch all tags by candies
  & 
 GET /basket/candies/tags-by-candies
 \\
 \hline\end{tabulary}
 
 
-
-\subsubsection{Implementation Details}
-\label{developer-guide:implementation-details}
-Express and some additional express middleware libraries are glued
-together to implement the RESTful service described in {\hyperref[developer-guide:rest-service]{rest-service}}.
-
-\emph{Controllers}
-
-The backend implementation is actually quite simple and most of the
-work in done here, in controllers. There is a Express route defined
-for each of the REST points detailed above. All those routes are
-defined in \emph{backend/app/controllers.js} and are implemented as
-Javascript async functions. Interaction with the CouchDB persistent
-store is done inside those functions.
-
-Data validation is done inside a single Javascript function also in
-\emph{backend/app/controllers.js}. It does basic checks on all fields and
-HTML sanitization before approving and sending to persist in CouchDB.
-
-\emph{Models}
-
-The is currently no \emph{models} as the primary data object travels in
-JSON and also is persisted in JSON with no impedance mispatch between
-code and data layer.  For this reason there is currently no model
-layer and data is directly persisted from the controller layer.
-
-\emph{Views}
-\begin{description}
-\item[{There is also no views and this is a backend API service only, views}] \leavevmode
-are handled in the frontend.
-
-\end{description}
-
-\emph{Middleware}
-
-In Express additional functionalities is often added through
-middleware, small re-usable pieces of software can gets inserted
-inside a request/response cycle. Functionalities such as CORS support,
-error handling, logging, headers modification, data validation and
-just about everything else that enriches a web application can be done
-using middleware. The rule here is the same, when it is possible to
-find acceptable solutions from the community this is the preferred
-approach, otherwise we need to develop our own. Community contributed
-middleware is typically installed through npm and configured following
-their own respective documentation. Our own custom middleware is
-currently in \emph{backend/app/middlewares.js}.
-
-
-\subsubsection{Experimenting with API}
-\label{developer-guide:experimenting-with-api}
 When developing it is often useful to use the RESTful API
 directly. Here are some example usage.
 
@@ -1976,7 +2052,7 @@ something like this:
 \PYG{p}{\PYGZcb{}}
 \end{Verbatim}
 
-Or an invalid JSON:
+Or an invalid candy (dangeous scripts):
 
 \begin{Verbatim}[commandchars=\\\{\}]
 \PYG{p}{\PYGZob{}}
@@ -1990,26 +2066,22 @@ Or an invalid JSON:
 \PYG{p}{\PYGZcb{}}
 \end{Verbatim}
 
-Or creating a candy with an attachment (note that not the whole base64
-encoded string is shown):
+If you want to test uploading the easiest is to use the frontend
+directly. Otherwise, you could build a request yourself with curl by
+setting the \emph{Content-Type} to \emph{multipart/form-data} and the additional
+JSON data which would be something like this:
 
 \begin{Verbatim}[commandchars=\\\{\}]
-\PYG{p}{\PYGZob{}}
-  \PYG{l+s}{\PYGZdq{}}\PYG{l+s}{source}\PYG{l+s}{\PYGZdq{}}\PYG{p}{:} \PYG{l+s}{\PYGZdq{}}\PYG{l+s}{http://www.ghachey.info}\PYG{l+s}{\PYGZdq{}}\PYG{p}{,}
-  \PYG{l+s}{\PYGZdq{}}\PYG{l+s}{title}\PYG{l+s}{\PYGZdq{}}\PYG{p}{:} \PYG{l+s}{\PYGZdq{}}\PYG{l+s}{Ghislain Website}\PYG{l+s}{\PYGZdq{}}\PYG{p}{,}
-  \PYG{l+s}{\PYGZdq{}}\PYG{l+s}{description}\PYG{l+s}{\PYGZdq{}}\PYG{p}{:} \PYG{l+s}{\PYGZdq{}}\PYG{l+s}{\PYGZlt{}script\PYGZgt{}alert(}\PYG{l+s+se}{\PYGZbs{}\PYGZdq{}}\PYG{l+s}{Hacked onced, shame on you.}\PYG{l+s+se}{\PYGZbs{}\PYGZdq{}}\PYG{l+s}{);\PYGZlt{}/script\PYGZgt{}}\PYG{l+s}{\PYGZdq{}}\PYG{p}{,}
-  \PYG{l+s}{\PYGZdq{}}\PYG{l+s}{tags}\PYG{l+s}{\PYGZdq{}}\PYG{p}{:} \PYG{p}{[}
-    \PYG{l+s}{\PYGZdq{}}\PYG{l+s}{Website}\PYG{l+s}{\PYGZdq{}}\PYG{p}{,}
-    \PYG{l+s}{\PYGZdq{}}\PYG{l+s}{Ghislain Hachey}\PYG{l+s}{\PYGZdq{}}
-  \PYG{p}{]}\PYG{p}{,}
-  \PYG{l+s}{\PYGZdq{}}\PYG{l+s}{attachment\PYGZus{}filename}\PYG{l+s}{\PYGZdq{}}\PYG{p}{:} \PYG{l+s}{\PYGZdq{}}\PYG{l+s}{file.json}\PYG{l+s}{\PYGZdq{}}\PYG{p}{,}
-  \PYG{l+s}{\PYGZdq{}}\PYG{l+s}{attachment}\PYG{l+s}{\PYGZdq{}} \PYG{p}{:}\PYG{l+s}{\PYGZdq{}}\PYG{l+s}{ewogICJzb3VyY2UiOiAiaHR0cDovL3d3dy5naGFjaGV5LmluZm8iLAogICJ0aXRsZSI6ICJHaGlzbGFpbiBIYWNoZXkgV2Vic2l0ZSIsCiAgImRlc2NyaXB0aW9uIjogIkEgYml0IHVwZGF0ZWQiLAogICJ0YWdzIjogWyJnaCIsImljdCIsIndlYnNpdGUiXQp9Cg==}\PYG{l+s}{\PYGZdq{}}
-\PYG{p}{\PYGZcb{}}
+\PYGZdq{}files\PYGZdq{}:[\PYGZob{}\PYGZdq{}name\PYGZdq{}:\PYGZdq{}0bf6198aac462ddbb12add63fff0d8c2.pdf\PYGZdq{},
+          \PYGZdq{}originalName\PYGZdq{}:\PYGZdq{}Artificial Intelligence Search Algorithms.pdf\PYGZdq{}\PYGZcb{},
+         \PYGZob{}\PYGZdq{}name\PYGZdq{}:\PYGZdq{}7fde008c066d3ed6226d5a88b2f1e7ef.png\PYGZdq{},
+          \PYGZdq{}originalName\PYGZdq{}:\PYGZdq{}linkedin.png\PYGZdq{}\PYGZcb{}]
 \end{Verbatim}
 
-where the attachment\_filename field contains the filename and will be
-used to reconstruct the file before uploading to the ownCloud server
-which is base64 encoded in the attachment field.
+Where the name is a UUID generated by the frontend upload code and the
+original name is also kept. The file would be sent to the ownCloud
+with the unique name but could be listed and retrived using the
+original name.
 
 Updating a candy:
 
@@ -2018,7 +2090,7 @@ Updating a candy:
              \PYGZhy{}H \PYGZdq{}Accept: application/json\PYGZdq{}  \PYGZbs{}
              \PYGZhy{}H \PYGZdq{}Content\PYGZhy{}Type: application/json\PYGZdq{} \PYGZbs{}
              \PYGZhy{}d @candy\PYGZhy{}update.json \PYGZbs{}
-             http://localhost:5000/basket/candies/id\PYGZhy{}of\PYGZhy{}candy\PYGZhy{}in\PYGZhy{}couchdb
+             http://localhost:3003/basket/candies/id\PYGZhy{}of\PYGZhy{}candy\PYGZhy{}in\PYGZhy{}couchdb
 \end{Verbatim}
 
 Where id-of-candy-in-couchdb is the id automatically created on POST
@@ -2027,35 +2099,55 @@ retrieved in a number of ways. Looking at data in the DB is fairly
 easy and quick. The newly updated candy could look like this:
 
 \begin{Verbatim}[commandchars=\\\{\}]
-\PYG{p}{\PYGZob{}}
-  \PYG{l+s}{\PYGZdq{}}\PYG{l+s}{source}\PYG{l+s}{\PYGZdq{}}\PYG{p}{:} \PYG{l+s}{\PYGZdq{}}\PYG{l+s}{http://www.ghachey.info}\PYG{l+s}{\PYGZdq{}}\PYG{p}{,}
-  \PYG{l+s}{\PYGZdq{}}\PYG{l+s}{title}\PYG{l+s}{\PYGZdq{}}\PYG{p}{:} \PYG{l+s}{\PYGZdq{}}\PYG{l+s}{Ghislain Hachey Website}\PYG{l+s}{\PYGZdq{}}\PYG{p}{,}
-  \PYG{l+s}{\PYGZdq{}}\PYG{l+s}{description}\PYG{l+s}{\PYGZdq{}}\PYG{p}{:} \PYG{l+s}{\PYGZdq{}}\PYG{l+s}{A bit updated\PYGZhy{}\PYGZhy{}oups, I meant a bit outdated}\PYG{l+s}{\PYGZdq{}}\PYG{p}{,}
-  \PYG{l+s}{\PYGZdq{}}\PYG{l+s}{tags}\PYG{l+s}{\PYGZdq{}}\PYG{p}{:} \PYG{p}{[}\PYG{l+s}{\PYGZdq{}}\PYG{l+s}{gh}\PYG{l+s}{\PYGZdq{}}\PYG{p}{,}\PYG{l+s}{\PYGZdq{}}\PYG{l+s}{ict}\PYG{l+s}{\PYGZdq{}}\PYG{p}{,}\PYG{l+s}{\PYGZdq{}}\PYG{l+s}{website}\PYG{l+s}{\PYGZdq{}}\PYG{p}{]}
-\PYG{p}{\PYGZcb{}}
+\PYGZob{}
+  \PYGZdq{}\PYGZus{}id\PYGZdq{}: \PYGZdq{}id\PYGZhy{}of\PYGZhy{}candy\PYGZhy{}in\PYGZhy{}couchdb\PYGZdq{}
+  \PYGZdq{}source\PYGZdq{}: \PYGZdq{}http://www.ghachey.info\PYGZdq{},
+  \PYGZdq{}title\PYGZdq{}: \PYGZdq{}Ghislain Hachey Website\PYGZdq{},
+  \PYGZdq{}description\PYGZdq{}: \PYGZdq{}A bit updated\PYGZhy{}\PYGZhy{}oups, I meant a bit outdated\PYGZdq{},
+  \PYGZdq{}tags\PYGZdq{}: [\PYGZdq{}gh\PYGZdq{},\PYGZdq{}ict\PYGZdq{},\PYGZdq{}website\PYGZdq{}]
+\PYGZcb{}
+\end{Verbatim}
+
+This would completely replace the previous document. For example, if
+you had a \emph{files} data in the JSON document and none in the update
+then that data would no longer be present. A complete update on a
+document containing also files could be achieved with a minimum couple
+of async curl requests. First the file upload(s):
+
+\begin{Verbatim}[commandchars=\\\{\}]
+[user]\PYGZdl{} curl \PYGZhy{}X POST \PYGZbs{}
+             \PYGZhy{}H \PYGZdq{}Content\PYGZhy{}Type: multipart/form\PYGZhy{}data; boundary=\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}11936647625814307171179269292\PYGZdq{} \PYGZbs{}
+             \PYGZhy{}\PYGZhy{}data\PYGZhy{}binary @test.txt \PYGZbs{}
+             http://localhost:3003/files
+\end{Verbatim}
+
+And then the actual candy:
+
+\begin{Verbatim}[commandchars=\\\{\}]
+[user]\PYGZdl{} curl \PYGZhy{}X PUT \PYGZbs{}
+             \PYGZhy{}H \PYGZdq{}Accept: application/json\PYGZdq{}  \PYGZbs{}
+             \PYGZhy{}H \PYGZdq{}Content\PYGZhy{}Type: application/json\PYGZdq{} \PYGZbs{}
+             \PYGZhy{}d @candy\PYGZhy{}update.json \PYGZbs{}
+             http://localhost:3003/basket/candies/id\PYGZhy{}of\PYGZhy{}candy\PYGZhy{}in\PYGZhy{}couchdb
 \end{Verbatim}
 
 
 \subsection{Frontend -- Web UI Application}
 \label{developer-guide:frontend-web-ui-application}
-The Frontend is developed using the AngularJS web
-framework with community Angular modules and our own code.
-
-
-\subsubsection{High Level Architecture}
-\label{developer-guide:id5}
-The frontend code based is organised following Angular community best
-practices.
+The Frontend is developed using the AngularJS web framework with
+community Angular modules and our own code. The frontend code based is
+organised following Angular community best practices.
 \begin{itemize}
 \item {} 
 \emph{frontend/app/scripts/app.js}: this is where the application is bootstrapped. It contains
 some configuration and some routes definitions.
 
 \item {} 
-\emph{frontend/app/services/}: this directory contains application services.
+\emph{frontend/app/scripts/services/}: this directory contains application services.
 
 \item {} 
-controllers/: this is where the business logic resides; no DOM manipulation should happen here.
+\emph{frontend/app/scripts/controllers/}: this is where the business
+logic resides; no DOM manipulation should happen here.
 
 \item {} 
 \emph{frontend/app/scripts/filters/}: this where filters are stored often used has a final
@@ -2088,12 +2180,17 @@ mirrors the content of the \emph{frontend/app/scripts/}
 \end{itemize}
 
 
-\subsubsection{Implementation Details}
-\label{developer-guide:id6}
-TODO
+\section{Low Level Documentation and API}
+\label{developer-guide:low-level-documentation-and-api}
+The lower level documentation about software design, application
+programming interfaces, small gotchas and all other nitty-gritty
+details about the source code is written directly inside the source
+code. It can be extracted and exported to hard copy formats such as
+HTML or PDF and eventually may be integrated with this documentation
+also.
 
 
-\subsection{Documentation}
+\section{Documentation}
 \label{developer-guide:documentation}
 Documentation is prepared using an excellent tool developed in the
 Python world called Sphinx \href{http://sphinx-doc.org}{http://sphinx-doc.org} which uses the reStructuredText markup
@@ -2111,7 +2208,7 @@ the easiest way to install it is to install Python and \href{https://github.com/
 install globally:
 
 \begin{Verbatim}[commandchars=\\\{\}]
-\PYGZdl{} sudo pip install sphinx
+[user]\PYGZdl{} sudo pip install sphinx
 \end{Verbatim}
 
 Outputs are generated using a simple make command from within the
