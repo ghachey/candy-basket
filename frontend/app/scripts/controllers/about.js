@@ -4,7 +4,6 @@
  * @ngdoc function
  * @name nasaraCandyBasketApp.controller:About
  * @description
- * # About
  * Controller of the nasaraCandyBasketApp
  */
 angular.module('nasaraCandyBasketApp')

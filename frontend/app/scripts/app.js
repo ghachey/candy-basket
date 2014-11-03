@@ -31,6 +31,7 @@ angular
 		      controller: 'MainCtrl'})
       .when('/about', {templateUrl: 'views/about.html'})
       .when('/contact', {templateUrl: 'views/contact.html'})
+      .when('/api', {templateUrl: 'docs/index.html'})
       .when('/about-candy-service', {templateUrl: 'views/about-candy-service.html',
 			             controller: 'About'})
       .when('/candy-list-table', {templateUrl: 'views/candy-list-table.html',
