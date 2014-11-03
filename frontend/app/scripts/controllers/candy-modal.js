@@ -6,7 +6,6 @@
  * @ngdoc function
  * @name nasaraCandyBasketApp.controller:SaveCandyInstanceModal
  * @description
- * # SaveCandyInstanceModal
  * Controller of the nasaraCandyBasketApp controls how a a single instance
  * of a CandyModal works for saving (creating/updating) candies
  */
@@ -87,7 +86,6 @@ var SaveCandyInstanceModal = function ($scope, $modalInstance, operation, candyI
  * @ngdoc function
  * @name nasaraCandyBasketApp.controller:DeleteCandyInstanceModal
  * @description
- * # DeleteCandyInstanceModal
  * Controller of the nasaraCandyBasketApp controls how a a single instance
  * of a CandyModal works for deleting candies
  */
@@ -111,7 +109,6 @@ var DeleteCandyInstanceModal = function ($scope, $modalInstance, operation, cand
  * @ngdoc function
  * @name nasaraCandyBasketApp.controller:CandyModal
  * @description
- * # CandyModal
  * Controller of the nasaraCandyBasketApp. It controls all CRUD operations
  * of candies using a modal form. The modal form is powered by
  * angular-ui's ui.bootstrap module. It works in both candy list table

@@ -6,7 +6,6 @@
  * @ngdoc function
  * @name nasaraCandyBasketApp.controller:CandyListTable
  * @description
- * # CandyListTable
  * Controller of the nasaraCandyBasketApp logic to retrieve and display
  * candies in list table view mode.
  * 
@@ -39,14 +38,13 @@ angular.module('nasaraCandyBasketApp')
 
     /**
      * @ngdoc function
-     * @name nasaraCandyBasketApp.controller:CandyListTimeline.fetchData
-     * @description
-     * # CandyListTimeline.fetchData is an async function that fetches
-     * a fresh copy of data from the backend. It fetches both candies
-     * and tags data in parallel before returning results into a
-     * doneFetchingData callback. This function is currently execute
-     * on start of the application and on CRUD updates
-     * ($on('model-update')
+     * @name nasaraCandyBasketApp.controller:CandyListTimeline#fetchData
+     * @description 
+     * is an async function that fetches a fresh copy of
+     * data from the backend. It fetches both candies and tags data in
+     * parallel before returning results into a doneFetchingData
+     * callback. This function is currently execute on start of the
+     * application and on CRUD updates ($on('model-update')
      *
      * @param {Function} doneFetchingCallback a callback function used
      * to execute some work after fetchData is done
@@ -82,15 +80,14 @@ angular.module('nasaraCandyBasketApp')
 
     /**
      * @ngdoc function
-     * @name nasaraCandyBasketApp.controller:CandyListTimeline.filterData
+     * @name nasaraCandyBasketApp.controller:CandyListTimeline#filterData
      * @description 
-     * # CandyListTimeline.filterData is a synchronous
-     * function that merely groups a list of repeating operations to
-     * avoid duplicate code at various locations in the controller. It
-     * primarily filters that candy data set and can optionally set
-     * the slide index depending on what called this filtering
-     * operation in the first place (e.g. a model-update, a slide
-     * change, a tag search)
+     * is a synchronous function that merely groups a
+     * list of repeating operations to avoid duplicate code at various
+     * locations in the controller. It primarily filters that candy
+     * data set and can optionally set the slide index depending on
+     * what called this filtering operation in the first place (e.g. a
+     * model-update, a slide change, a tag search)
      */
     var filterData = function() {
       var tempCandies = filterByDates(candies, 

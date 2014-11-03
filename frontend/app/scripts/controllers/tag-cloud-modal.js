@@ -19,7 +19,6 @@ var tagCloudInstanceModal = function ($scope, $modalInstance, tagsViews) {
  * @ngdoc function
  * @name nasaraCandyBasketApp.controller:TagCloudModal
  * @description
- * # TagCloudModal
  * Controller of the nasaraCandyBasketApp
  */
 angular.module('nasaraCandyBasketApp')
