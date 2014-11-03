@@ -696,8 +696,13 @@ also.
 Documentation
 =============
 
-Documentation is prepared using an excellent tool developed in the
-Python world called Sphinx `http://sphinx-doc.org
+Documentation is currently prepared using two different tools which is
+not ideal but powerful and convenient for the time being. As this
+project progresses we'll look into more cleanly unify this if possible
+without too much investment. 
+
+Most documentation is prepared using an excellent tool developed in
+the Python world called Sphinx `http://sphinx-doc.org
 <http://sphinx-doc.org>`_ which uses the reStructuredText markup
 language `http://sphinx-doc.org/rest.html
 <http://sphinx-doc.org/rest.html>`_. Sphinx outputs to HTML and PDF
@@ -728,6 +733,22 @@ along with LaTeX, but this is optional. How to do this will largely
 depend on your OS. There is usually a very large all in one package
 available for popular OSes either packaged as binary or directly
 available through the OS' package manager.
+
+All source code including the application programming interface is
+documented in a modern Javascript fashion using a jsdoc style with
+AngularJS additional conventions. This has a number of advantages
+including keeping the documentation directly with the code and more in
+sync, preparation of AngularJS style documentation with the ability to
+add example usage, online discussions and a number of others things
+not readibly available when simply using Sphinx. When writting source
+code simply document it following `AngularJS
+<https://github.com/angular/angular.js>`_ and `jsdoc
+<http://usejsdoc.org/>`_ styles and the production of the online
+documentation is easy with grunt. From with the candy-basket directory
+simply run::
+
+  [user]$ grunt docs
+
 
 .. _security:
 Security Considerations
