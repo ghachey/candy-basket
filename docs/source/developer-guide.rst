@@ -6,11 +6,9 @@
 Introduction
 ============
 
-The idea is to develop a very user friendly tool to help people dump
-thoughts in a flexible database for later use. It works in a similar
-fashion as Delicious. The tool is called Candy Basket hereafter
-referred to as CB. This service was built using a number of modern
-technologies which are described herein.
+This guide documents high level development standards, policies and
+procedures without going into lower level details of the source code
+and APIs.
 
 Programming Language
 --------------------
@@ -63,10 +61,9 @@ you started. Essentially, the following subsections can be followed in
 order and everything should work.
 
 The latest NodeJS will need to be installed on your operating system
-(OS), binaries are available for all popular OSes. Instructions for
-devleopers are given in a platform-agnostic fashion to the extent that
-it is possible. However, instructions for systems administrators will
-aims at being more specific in the administrator's guide.
+(OS); binaries are available for all popular OSes. Instructions are
+given in a platform-agnostic fashion to the extent that it is
+possible.
 
 Development Tools
 -----------------
@@ -74,7 +71,7 @@ Development Tools
 You will need you typical development tools: a command line, a text
 editor or IDE, a web browser with good development plugins such as the
 Google Chrome Javascript console or Firefox's web developer extension
-and firebug. It does not matter much which tool; choose the ones
+and firebug. It does not matter much which tool, choose the ones
 you're most confortable with.
 
 .. _nodejs_npm:
@@ -94,7 +91,7 @@ and not::
 
   [user]$ npm install -g express
 
-There are a couple of exception to this. Once you have NodeJS
+There are a couple of exceptions to this. Once you have NodeJS
 installed on your machine you should install bower and grunt-cli
 globally::
 
@@ -111,22 +108,69 @@ CouchDB is used as the database for this tool. The easiest way to
 install CouchDB is to use the OS' package manager (Debian's apt-get,
 Mac OS X's brew, Red Hat's yum). CB makes use of three databases:
 `candy_basket_test`, `candy_basket_development`, `candy_basket` (for
-production). On the development machine onle the
+production). On the development machine only the
 candy_basket_development must be created in advanced. The tests will
 create and destroy the `candy_basket_test` database automatically, in
 fact, tests will fail if this database is already present.
 
-In the development database sample data can be included in a number of
-ways, either programmatically importing old candies or manually
-entering some sample data using the running development
-application. The views will have to be created manually at the moment.
-
-In the test database sample data is automatically generated as part of
-unit tests and the views are also programmatically created before
-used. The code in unit tests to create the views also serve as
-specifications of the design views and can simply be copy pasted in
+Sample data must be added to the development database. This can be
+done in a number of ways, either programmatically importing old
+candies or manually entering some sample data using the running
+development application. The views have to be created manually at the
+moment. You can easily just copy and paste the views definition from
+the integration tests (i.e. `backend/test/specs/controllers.js`) in
 the CouchDB admin web UI.
 
+In the test database sample data is automatically generated as part of
+unit tests and the views are also programmatically created before they
+are used.
+
+Dependencies
+------------
+
+This application has a number of dependencies but they can all easily
+be installed from within the root of your own clone repository and
+from the `backend` and `frontend` directories. The production backend
+libraries and the development and test libraries are typically always
+npm packages with the dependencies clearly defined the `packages.json`
+files, one in the backend, one in the frontend and one in the root
+directory. In other words, everywhere you see a package.json file you
+must change to that directory and install dependencies like this::
+
+  [user]$ npm install
+
+Frontend dependencies, those that will run in the client browser
+powering the web UI are installed using the Bower package management
+tool. From within the frontend directory you can simply do::
+
+  [user]$ bower install
+
+Those commands are idempotent and it does not matter how often you
+execute them. Installing new dependencies for development can be done
+with the same tool.
+
+Backend dependencies and frontend development and test libraries::
+
+  [user]$ npm install new-grunt-plugin new-backend-library
+
+Though to save the dependency in the package.json you would do::
+
+  [user]$ npm install --save-dev new-grunt-plugin new-backend-library
+
+Frontend dependencies::
+
+  [user]$ bower install new-angular-third-party-directive
+
+and the same to persist the dependency if you end up keeping it::
+
+  [user]$ bower install --save new-angular-third-party-directive
+
+Some of the packages may have additional lower level dependencies of
+their own in which case you would typically have to install some
+package on your OS such as xml headers from the development
+package. This should be made clear from failures to install
+dependencies and is typically quickly addressed by installing from the
+OS' software repository (apt, yum, brew, etc.)
 
 Development Work-flow
 =====================
@@ -134,7 +178,7 @@ Development Work-flow
 The CB project constantly strives to improve its development
 operations in order to produce software of higher quality at a more
 efficient rate. This part of the developer guide will constantly
-evolved and should be kept close at hand when developing on the CB
+evolve and should be kept close at hand when developing on the CB
 project.
 
 Software Configuration Management
@@ -151,8 +195,9 @@ installed on your machine::
 
   [user]$ git clone git@github.com:ghachey/candy-basket.git
 
-However, never publish work to master. The following section describes
-the procedures to develop on CB.
+However, never publish work to master (at least as rarely as
+possible). The following section describes the procedures to develop
+on CB.
 
 On-going Development
 --------------------
@@ -197,9 +242,9 @@ commit message must follow the following convention::
   <BLANK LINE>
   <footer>
 
-Any line of the commit message must not be longer 100 characters. This
-allows the message to be easier to read on github as well as in
-various git tools.
+Any line of the commit message must not be longer than 100
+characters. This allows the message to be easier to read on github as
+well as in various git tools.
 
 **<type>**
 
@@ -423,84 +468,45 @@ your work and do a pull request::
 
 Do the pull request from github and use the last commit as the message.
 
-Candy Basket Application
-========================
+High Level Architecture
+=======================
 
-Briefly, the Candy Basket application is composed of two main parts: a
-computer consumable service on the backend (i.e. run on the server)
-and a human consumable service on the frontend (i.e. runs in the
+Briefly, this application is composed of two main parts: a computer
+consumable service on the backend (i.e. runs on the server) and a
+human consumable service on the frontend (i.e. runs in the
 browser). The backend is a NodeJS powered RESTful service and the
 frontend is an HTML, CSS and Javascript Web User Interface (UI)
 capable of talking to the backend.
 
-* README.rm -- TODO - A brief introduction and pointers
-* LICENSE.md -- TODO - Add license
-* CHANGELOG.md -- TODO - Add automatically generated change logs
+* README.md -- A brief introduction and pointers
+* LICENSE.md -- GNU General Public License version 3
+* CHANGELOG.md -- Automatically generated change logs
 * backend -- The NodeJS RESTful service
 * frontend -- The AngularJS Web application
 * docs -- The documentation for this project 
-
-Dependencies
-------------
-
-Candy Basket has a number of dependencies but they can all easily be
-installed from with the root of your own clone repository. The
-production backend libraries and the development and test libraries
-are typically always npm packages with the dependencies clearly
-defines in a `packages.json` file, one in the backend and one in the
-frontend directory. From the backend **and** then from the frontend you
-can simply install server side dependencies like this::
-
-  [user]$ npm install
-
-Frontend dependencies, those that will run in the client browser
-powering the web UI are installed using the Bower package management
-tool. From within the frontend directory you can simply do::
-
-  [user]$ bower install
-
-Those command are idempotent and is does not matter how often you
-execute them. Installing new dependencies for development can be done
-with the same tool.
-
-Backend dependencies and frontend development and test libraries::
-
-  [user]$ npm install new-grunt-plugin new-backend-library
-
-Frontend dependencies::
-
-  [user]$ bower install new-angular-third-party-directive
-
-
-Some of the packages may have additional lower level dependencies of
-their own in which case you would typically have to install some
-package on your OS such as xml headers from the development package.
+* package.json -- Root meta data JSON file
+* Gruntfile.js -- Grunt task automation file common to backend and frontend 
 
 .. _rest-service:
 Backend -- The RESTful Service
 ------------------------------
 
 The backend is written entirely in the Javascript programming language
-implementing a simple RESTful service.
-
-
-High Level Architecture
-~~~~~~~~~~~~~~~~~~~~~~~
-
-The Candy Basket backend is a RESTful service following a Resource
-Oriented Architecture (ROA) as defined in [REST-SERV]_. The following
-tables describe its service. Note that no API version number is
-included in the URI; it will be included in the host as
-`http://candy-restapi-v1.pacificpolicy.org.vu/
+implementing a simple RESTful service. The backend is a RESTful
+service following a Resource Oriented Architecture (ROA) as defined in
+[REST-SERV]_. The following tables describe its service. Note that no
+API version number is included in the URI; it will be included in the
+host as `http://candy-restapi-v1.pacificpolicy.org.vu/
 <http://candy-restapi-v1.pacificpolicy.org.vu/>`_.
 
-*User Account Service*
+User Account Service
+~~~~~~~~~~~~~~~~~~~~
 
 Each organisation can have a number of users using the tool. However,
 user management is usually done using an external service such as
-Active Directory or another LDAP service like OpenLDAP. However, the
-users are used in the candy basket service: every source "belongs" to a
-user.
+Active Directory or another LDAP service like OpenLDAP. Candies do not
+yet have ownership and are globally accessible by the organisation
+once authenticated.
 
 The URI design goes like this. A "basket" refers to the whole
 organisation. In other words, organisations have their private basket
@@ -514,14 +520,14 @@ The services offer no CRUD operations on users at the moment as this
 is considered to be done using an external service (Active Directory,
 OpenLDAP).
 
-*Source (Candies) Service*
+Source (Candies) Service
+~~~~~~~~~~~~~~~~~~~~~~~~
 
 This is the main service of candy basket: users can add "source(s)"
-and tag them. A source is typically a URL but eventually could be
-other things such as a document, an hyperlink or an email. In the
-technical world of Candy Basket (such as in the source code) sources
-are typically referred to as candies; they are exactly the same
-thing. In the UI the term source is used.
+and tag them. A source can have a URL, file(s), title description and
+tags. In the technical world of Candy Basket (such as in the source
+code) sources are typically referred to as candies; they are exactly
+the same thing. In the UI the term source is used.
 
 +--------------------------+------------------------------------------------+
 | Operation                | HTTP Method and URI                            |
@@ -536,7 +542,8 @@ thing. In the UI the term source is used.
 +--------------------------+------------------------------------------------+
 
 
-*Utilities Service*
+Utilities Service
+~~~~~~~~~~~~~~~~~
 
 Only a couple of utility aggregates are needed at the moment.
 
@@ -545,57 +552,11 @@ Only a couple of utility aggregates are needed at the moment.
 +===================================+=========================================+
 | Fetch all sources                 | GET /basket/candies                     |
 +-----------------------------------+-----------------------------------------+
-| Fetch all candies and their tags  | GET /basket/candies/tags-by-candies     |
+| Fetch all tags                    | GET /basket/candies/tags                |
++-----------------------------------+-----------------------------------------+
+| Fetch all tags by candies         | GET /basket/candies/tags-by-candies     |
 +-----------------------------------+-----------------------------------------+
 
- 
-Implementation Details
-~~~~~~~~~~~~~~~~~~~~~~
-
-Express and some additional express middleware libraries are glued
-together to implement the RESTful service described in rest-service_.
-
-*Controllers*
-
-The backend implementation is actually quite simple and most of the
-work in done here, in controllers. There is a Express route defined
-for each of the REST points detailed above. All those routes are
-defined in `backend/app/controllers.js` and are implemented as
-Javascript async functions. Interaction with the CouchDB persistent
-store is done inside those functions.
-
-Data validation is done inside a single Javascript function also in
-`backend/app/controllers.js`. It does basic checks on all fields and
-HTML sanitization before approving and sending to persist in CouchDB.
-
-*Models*
-
-The is currently no *models* as the primary data object travels in
-JSON and also is persisted in JSON with no impedance mispatch between
-code and data layer.  For this reason there is currently no model
-layer and data is directly persisted from the controller layer. 
-
-*Views* 
-
-There is also no views and this is a backend API service only, views
- are handled in the frontend.
-
-*Middleware*
-
-In Express additional functionalities is often added through
-middleware, small re-usable pieces of software can gets inserted
-inside a request/response cycle. Functionalities such as CORS support,
-error handling, logging, headers modification, data validation and
-just about everything else that enriches a web application can be done
-using middleware. The rule here is the same, when it is possible to
-find acceptable solutions from the community this is the preferred
-approach, otherwise we need to develop our own. Community contributed
-middleware is typically installed through npm and configured following
-their own respective documentation. Our own custom middleware is
-currently in `backend/app/middlewares.js`.
-
-Experimenting with API
-~~~~~~~~~~~~~~~~~~~~~~
 
 When developing it is often useful to use the RESTful API
 directly. Here are some example usage.
@@ -628,7 +589,7 @@ something like this::
     "tags": ["gh","ict","website"]
   }
 
-Or an invalid JSON::
+Or an invalid candy (dangeous scripts)::
 
   {
     "source": "http://www.ghachey.info",
@@ -640,24 +601,20 @@ Or an invalid JSON::
     ]
   }
 
-Or creating a candy with an attachment (note that not the whole base64
-encoded string is shown)::
+If you want to test uploading the easiest is to use the frontend
+directly. Otherwise, you could build a request yourself with curl by
+setting the `Content-Type` to `multipart/form-data` and the additional
+JSON data which would be something like this::
 
-  {
-    "source": "http://www.ghachey.info",
-    "title": "Ghislain Website",
-    "description": "<script>alert(\"Hacked onced, shame on you.\");</script>",
-    "tags": [
-      "Website",
-      "Ghislain Hachey"
-    ],
-    "attachment_filename": "file.json",
-    "attachment" :"ewogICJzb3VyY2UiOiAiaHR0cDovL3d3dy5naGFjaGV5LmluZm8iLAogICJ0aXRsZSI6ICJHaGlzbGFpbiBIYWNoZXkgV2Vic2l0ZSIsCiAgImRlc2NyaXB0aW9uIjogIkEgYml0IHVwZGF0ZWQiLAogICJ0YWdzIjogWyJnaCIsImljdCIsIndlYnNpdGUiXQp9Cg=="
-  }
+  "files":[{"name":"0bf6198aac462ddbb12add63fff0d8c2.pdf",
+            "originalName":"Artificial Intelligence Search Algorithms.pdf"},
+           {"name":"7fde008c066d3ed6226d5a88b2f1e7ef.png",
+            "originalName":"linkedin.png"}]
 
-where the attachment_filename field contains the filename and will be
-used to reconstruct the file before uploading to the ownCloud server
-which is base64 encoded in the attachment field.
+Where the name is a UUID generated by the frontend upload code and the
+original name is also kept. The file would be sent to the ownCloud
+with the unique name but could be listed and retrived using the
+original name.
 
 Updating a candy::
 
@@ -665,7 +622,7 @@ Updating a candy::
                -H "Accept: application/json"  \
                -H "Content-Type: application/json" \
                -d @candy-update.json \
-               http://localhost:5000/basket/candies/id-of-candy-in-couchdb
+               http://localhost:3003/basket/candies/id-of-candy-in-couchdb
 
 Where id-of-candy-in-couchdb is the id automatically created on POST
 and returned in the Location header for latter retrieval. It can be
@@ -673,29 +630,44 @@ retrieved in a number of ways. Looking at data in the DB is fairly
 easy and quick. The newly updated candy could look like this::
 
   {
+    "_id": "id-of-candy-in-couchdb"
     "source": "http://www.ghachey.info",
     "title": "Ghislain Hachey Website",
     "description": "A bit updated--oups, I meant a bit outdated",
     "tags": ["gh","ict","website"]
   }
 
+This would completely replace the previous document. For example, if
+you had a `files` data in the JSON document and none in the update
+then that data would no longer be present. A complete update on a
+document containing also files could be achieved with a minimum couple
+of async curl requests. First the file upload(s)::
+
+  [user]$ curl -X POST \
+               -H "Content-Type: multipart/form-data; boundary=---------------------------11936647625814307171179269292" \
+               --data-binary @test.txt \
+               http://localhost:3003/files
+
+And then the actual candy::
+
+  [user]$ curl -X PUT \
+               -H "Accept: application/json"  \
+               -H "Content-Type: application/json" \
+               -d @candy-update.json \
+               http://localhost:3003/basket/candies/id-of-candy-in-couchdb
 
 Frontend -- Web UI Application
 ------------------------------
 
-The Frontend is developed using the AngularJS web
-framework with community Angular modules and our own code.
-
-High Level Architecture
-~~~~~~~~~~~~~~~~~~~~~~~
-
-The frontend code based is organised following Angular community best
-practices.
+The Frontend is developed using the AngularJS web framework with
+community Angular modules and our own code. The frontend code based is
+organised following Angular community best practices.
 
 * `frontend/app/scripts/app.js`: this is where the application is bootstrapped. It contains
   some configuration and some routes definitions.
-* `frontend/app/services/`: this directory contains application services.
-* controllers/: this is where the business logic resides; no DOM manipulation should happen here.
+* `frontend/app/scripts/services/`: this directory contains application services.
+* `frontend/app/scripts/controllers/`: this is where the business
+  logic resides; no DOM manipulation should happen here.
 * `frontend/app/scripts/filters/`: this where filters are stored often used has a final
   filtering step before presenting the data (e.g. money and date
   conversions formatters). It can also include data filtering code. 
@@ -711,13 +683,18 @@ practices.
 * `frontend/test/specs/`: where unit tests resides. Directories in there
   mirrors the content of the `frontend/app/scripts/`
 
-Implementation Details
-~~~~~~~~~~~~~~~~~~~~~~
+Low Level Documentation and API
+===============================
 
-TODO
+The lower level documentation about software design, application
+programming interfaces, small gotchas and all other nitty-gritty
+details about the source code is written directly inside the source
+code. It can be extracted and exported to hard copy formats such as
+HTML or PDF and eventually may be integrated with this documentation
+also.
 
 Documentation
--------------
+=============
 
 Documentation is prepared using an excellent tool developed in the
 Python world called Sphinx `http://sphinx-doc.org
@@ -1039,8 +1016,6 @@ should be documented here:
   array of Candies we would send something like {"data" : ["candy1",
   "candy2"...]} and transform the request in Angular to process the
   array.
-
-
 
 
 Integrated Penetration Testing
