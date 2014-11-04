@@ -6,9 +6,13 @@
  * @ngdoc overview
  * @name narasaCandyBasketApp
  * @description
- * # nasaraCandyBasketApp
  *
- * Main module of the application.
+ * Main module of the application. Here is where frontend routes are
+ * defined along with some configuration global to the application. It
+ * is also where all the dependencies and declared and
+ * injected. Services, filters, controllers and directives are added
+ * to this very module in their own respective files for
+ * organizational purposes only.
  */
 angular
   .module('nasaraCandyBasketApp', [
@@ -43,6 +47,11 @@ angular
     // http://stackoverflow.com/questions/17289195/angularjs-post-data-to-external-rest-api
     $httpProvider.defaults.useXDomain = true;
     delete $httpProvider.defaults.headers.common['X-Requested-With'];
+
+    // Authentication header is set for every single request on the backend API
+    // It currently only uses Basic Authentication and it is absolutely necessary to
+    // encrypt all communication for this in production
+    $httpProvider.defaults.headers.common.Authorization = 'Basic Y2FuZHk6UEA1NXdvcmQ=';
 
     // Default is application/json which is not handled by the Flask
     // form validation framework out-of-the-box

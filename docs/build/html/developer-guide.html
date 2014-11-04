@@ -516,6 +516,17 @@ authenticated staff.</p>
 is considered to be done using an external service (Active Directory,
 OpenLDAP).</p>
 </div>
+<div class="section" id="service-security">
+<h4>Service Security<a class="headerlink" href="#service-security" title="Permalink to this headline">¶</a></h4>
+<p>The backend currently supports only HTTP Basic Authentication on every
+single endpoint. It is critical to properly setup SSL/TLS to encrypt
+all communication between the client (frontend) and the server
+(backend). It makes use of a single user called <cite>candy</cite> to
+authenticate the frontend with the backend. Therefore, users
+authenticated to the frontend through some LDAP single sign-on
+mechanism will then automatically have access to data from backend. In
+other words, no access to frontend, no access to backend either.</p>
+</div>
 <div class="section" id="source-candies-service">
 <h4>Source (Candies) Service<a class="headerlink" href="#source-candies-service" title="Permalink to this headline">¶</a></h4>
 <p>This is the main service of candy basket: users can add &#8220;source(s)&#8221;
@@ -577,15 +588,16 @@ the same thing. In the UI the term source is used.</p>
 <p>When developing it is often useful to use the RESTful API
 directly. Here are some example usage.</p>
 <p>Fetching all candies:</p>
-<div class="highlight-python"><div class="highlight"><pre>[user]$ curl -X GET http://localhost:3003/basket/candies
+<div class="highlight-python"><div class="highlight"><pre>[user]$ curl --user candy:P@55word -X GET http://localhost:3003/basket/candies
 </pre></div>
 </div>
 <p>Fetching a candy:</p>
-<div class="highlight-python"><div class="highlight"><pre>[user]$ curl -X GET http://localhost:3003/basket/candies/03c0b670e5c56bfb461a76dcf7000d1c
+<div class="highlight-python"><div class="highlight"><pre>[user]$ curl --user candy:P@55word -X GET http://localhost:3003/basket/candies/03c0b670e5c56bfb461a76dcf7000d1c
 </pre></div>
 </div>
 <p>Creating a candy:</p>
-<div class="highlight-python"><div class="highlight"><pre>[user]$ curl -X POST \
+<div class="highlight-python"><div class="highlight"><pre>[user]$ curl --user candy:P@55word
+             -X POST \
              -H &quot;Accept: application/json&quot;  \
              -H &quot;Content-Type: application/json&quot; \
              -d @candy.json \
@@ -631,7 +643,8 @@ original name is also kept. The file would be sent to the ownCloud
 with the unique name but could be listed and retrived using the
 original name.</p>
 <p>Updating a candy:</p>
-<div class="highlight-python"><div class="highlight"><pre>[user]$ curl -X PUT \
+<div class="highlight-python"><div class="highlight"><pre>[user]$ curl --user candy:P@55word
+             -X PUT \
              -H &quot;Accept: application/json&quot;  \
              -H &quot;Content-Type: application/json&quot; \
              -d @candy-update.json \
@@ -656,14 +669,16 @@ you had a <cite>files</cite> data in the JSON document and none in the update
 then that data would no longer be present. A complete update on a
 document containing also files could be achieved with a minimum couple
 of async curl requests. First the file upload(s):</p>
-<div class="highlight-python"><div class="highlight"><pre>[user]$ curl -X POST \
+<div class="highlight-python"><div class="highlight"><pre>[user]$ curl --user candy:P@55word
+             -X POST \
              -H &quot;Content-Type: multipart/form-data; boundary=---------------------------11936647625814307171179269292&quot; \
              --data-binary @test.txt \
              http://localhost:3003/files
 </pre></div>
 </div>
 <p>And then the actual candy:</p>
-<div class="highlight-python"><div class="highlight"><pre>[user]$ curl -X PUT \
+<div class="highlight-python"><div class="highlight"><pre>[user]$ curl --user candy:P@55word
+             -X PUT \
              -H &quot;Accept: application/json&quot;  \
              -H &quot;Content-Type: application/json&quot; \
              -d @candy-update.json \
@@ -678,17 +693,20 @@ of async curl requests. First the file upload(s):</p>
 community Angular modules and our own code. The frontend code based is
 organised following Angular community best practices.</p>
 <ul class="simple">
-<li><cite>frontend/app/scripts/app.js</cite>: this is where the application is bootstrapped. It contains
-some configuration and some routes definitions.</li>
-<li><cite>frontend/app/scripts/services/</cite>: this directory contains application services.</li>
+<li><cite>frontend/app/scripts/app.js</cite>: this is where the application is
+bootstrapped. It contains some configuration and some routes
+definitions.</li>
+<li><cite>frontend/app/scripts/services/</cite>: this directory contains
+application services.</li>
 <li><cite>frontend/app/scripts/controllers/</cite>: this is where the business
 logic resides; no DOM manipulation should happen here.</li>
-<li><cite>frontend/app/scripts/filters/</cite>: this where filters are stored often used has a final
-filtering step before presenting the data (e.g. money and date
-conversions formatters). It can also include data filtering code.</li>
-<li><cite>frontend/app/scripts/directives/</cite>: this is where you can manipulate the DOM as you
-wish. Think of directives as a means to extend HTML and browser
-capabilities for web <em>applications</em>.</li>
+<li><cite>frontend/app/scripts/filters/</cite>: this where filters are stored often
+used has a final filtering step before presenting the data
+(e.g. money and date conversions formatters). It can also include
+data filtering code.</li>
+<li><cite>frontend/app/scripts/directives/</cite>: this is where you can manipulate
+the DOM as you wish. Think of directives as a means to extend HTML
+and browser capabilities for web <em>applications</em>.</li>
 <li><cite>frontend/app/index.html</cite>: is the base HTML file for the whole
 application</li>
 <li><cite>frontend/app/views/</cite>: contains all the other HTML partials that
@@ -711,8 +729,12 @@ also.</p>
 </div>
 <div class="section" id="documentation">
 <h2>Documentation<a class="headerlink" href="#documentation" title="Permalink to this headline">¶</a></h2>
-<p>Documentation is prepared using an excellent tool developed in the
-Python world called Sphinx <a class="reference external" href="http://sphinx-doc.org">http://sphinx-doc.org</a> which uses the reStructuredText markup
+<p>Documentation is currently prepared using two different tools which is
+not ideal but powerful and convenient for the time being. As this
+project progresses we&#8217;ll look into more cleanly unify this if possible
+without too much investment.</p>
+<p>Most documentation is prepared using an excellent tool developed in
+the Python world called Sphinx <a class="reference external" href="http://sphinx-doc.org">http://sphinx-doc.org</a> which uses the reStructuredText markup
 language <a class="reference external" href="http://sphinx-doc.org/rest.html">http://sphinx-doc.org/rest.html</a>. Sphinx outputs to HTML and PDF
 but could also output to other formats.</p>
 <p>In the docs folder there is a <tt class="docutils literal"><span class="pre">source</span></tt> directory which contains the
@@ -738,6 +760,19 @@ along with LaTeX, but this is optional. How to do this will largely
 depend on your OS. There is usually a very large all in one package
 available for popular OSes either packaged as binary or directly
 available through the OS&#8217; package manager.</p>
+<p>All source code including the application programming interface is
+documented in a modern Javascript fashion using a jsdoc style with
+AngularJS additional conventions. This has a number of advantages
+including keeping the documentation directly with the code and more in
+sync, preparation of AngularJS style documentation with the ability to
+add example usage, online discussions and a number of others things
+not readibly available when simply using Sphinx. When writting source
+code simply document it following <a class="reference external" href="https://github.com/angular/angular.js">AngularJS</a> and <a class="reference external" href="http://usejsdoc.org/">jsdoc</a> styles and the production of the online
+documentation is easy with grunt. From with the candy-basket directory
+simply run:</p>
+<div class="highlight-python"><div class="highlight"><pre>[user]$ grunt docs
+</pre></div>
+</div>
 </div>
 <div class="section" id="security-considerations">
 <h2>Security Considerations<a class="headerlink" href="#security-considerations" title="Permalink to this headline">¶</a></h2>
@@ -1074,6 +1109,7 @@ tools.</p>
 <li><a class="reference internal" href="#high-level-architecture">High Level Architecture</a><ul>
 <li><a class="reference internal" href="#backend-the-restful-service">Backend &#8211; The RESTful Service</a><ul>
 <li><a class="reference internal" href="#user-account-service">User Account Service</a></li>
+<li><a class="reference internal" href="#service-security">Service Security</a></li>
 <li><a class="reference internal" href="#source-candies-service">Source (Candies) Service</a></li>
 <li><a class="reference internal" href="#utilities-service">Utilities Service</a></li>
 </ul>

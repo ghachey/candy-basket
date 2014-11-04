@@ -1,3 +1,5 @@
+'use strict';
+
 var express = require('express');
 var http = require('http');
 var path = require('path');
@@ -7,11 +9,12 @@ var bodyParser = require('body-parser');
 var errorHandler = require('errorhandler');
 var cors = require('cors');
 var multer  = require('multer');
+var passport = require('passport');
 
 var conf = require('../config');
 var middlewares = require('./middlewares');
 var controllers = require('./controllers');
-
+var auth = require('./auth');
 
 /********************************************/
 /* The RESTFul API of Nasara's Candy Basket */
@@ -27,22 +30,23 @@ api.use(bodyParser.json());
 api.use(multer({ 
   dest: path.join(__dirname,'/files/') 
 }));
+api.use(passport.initialize());
 if (process.env.NODE_ENV === 'development') {
   api.use(errorHandler());
 }
 
 // Routes
-api.get('/', controllers.getMeta);
-api.get('/basket/candies', controllers.getCandies);
-api.get('/basket/candies/tags', controllers.getTags);
-api.get('/basket/candies/tags-by-candies', controllers.getTagsByCandies);
-api.post('/basket/candies', controllers.createCandy);
-api.get('/basket/candies/:uuid', controllers.getCandy);
-api.put('/basket/candies/:uuid', controllers.updateCandy);
-api.delete('/basket/candies/:uuid', controllers.deleteCandy);
-api.post('/files', controllers.uploadFile);
-api.get('/files/:id', controllers.downloadFile);
-api.use(controllers.serve404);
+api.get('/', auth.isAuthenticated, controllers.getMeta);
+api.get('/basket/candies', auth.isAuthenticated, controllers.getCandies);
+api.get('/basket/candies/tags', auth.isAuthenticated, controllers.getTags);
+api.get('/basket/candies/tags-by-candies', auth.isAuthenticated, controllers.getTagsByCandies);
+api.post('/basket/candies', auth.isAuthenticated, controllers.createCandy);
+api.get('/basket/candies/:uuid', auth.isAuthenticated, controllers.getCandy);
+api.put('/basket/candies/:uuid', auth.isAuthenticated, controllers.updateCandy);
+api.delete('/basket/candies/:uuid', auth.isAuthenticated, controllers.deleteCandy);
+api.post('/files', auth.isAuthenticated, controllers.uploadFile);
+api.get('/files/:id', auth.isAuthenticated, controllers.downloadFile);
+api.use(auth.isAuthenticated, controllers.serve404); // Auth?
 
 // Server
 http.createServer(api).listen(conf.port);
