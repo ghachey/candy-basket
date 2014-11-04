@@ -16,8 +16,5 @@
     "grunt-conventional-changelog": "^1.1.0",
     "grunt-ngdocs": "^0.2.6"
   },
-  "dependencies": {
-    "bcrypt": "^0.8.0",
-    "passport-http": "^0.2.2"
-  }
+  "dependencies": {}
 }
