@@ -14,7 +14,7 @@
 
 
 \title{Candy Basket Documentation}
-\date{November 03, 2014}
+\date{November 04, 2014}
 \release{1.0}
 \author{Ghislain Hachey, Maya Goldman and Dan McGarry}
 \newcommand{\sphinxlogo}{}
@@ -1945,6 +1945,18 @@ is considered to be done using an external service (Active Directory,
 OpenLDAP).
 
 
+\subsubsection{Service Security}
+\label{developer-guide:service-security}
+The backend currently supports only HTTP Basic Authentication on every
+single endpoint. It is critical to properly setup SSL/TLS to encrypt
+all communication between the client (frontend) and the server
+(backend). It makes use of a single user called \emph{candy} to
+authenticate the frontend with the backend. Therefore, users
+authenticated to the frontend through some LDAP single sign-on
+mechanism will then automatically have access to data from backend. In
+other words, no access to frontend, no access to backend either.
+
+
 \subsubsection{Source (Candies) Service}
 \label{developer-guide:source-candies-service}
 This is the main service of candy basket: users can add ``source(s)''
@@ -2019,19 +2031,20 @@ directly. Here are some example usage.
 Fetching all candies:
 
 \begin{Verbatim}[commandchars=\\\{\}]
-[user]\PYGZdl{} curl \PYGZhy{}X GET http://localhost:3003/basket/candies
+[user]\PYGZdl{} curl \PYGZhy{}\PYGZhy{}user candy:P@55word \PYGZhy{}X GET http://localhost:3003/basket/candies
 \end{Verbatim}
 
 Fetching a candy:
 
 \begin{Verbatim}[commandchars=\\\{\}]
-[user]\PYGZdl{} curl \PYGZhy{}X GET http://localhost:3003/basket/candies/03c0b670e5c56bfb461a76dcf7000d1c
+[user]\PYGZdl{} curl \PYGZhy{}\PYGZhy{}user candy:P@55word \PYGZhy{}X GET http://localhost:3003/basket/candies/03c0b670e5c56bfb461a76dcf7000d1c
 \end{Verbatim}
 
 Creating a candy:
 
 \begin{Verbatim}[commandchars=\\\{\}]
-[user]\PYGZdl{} curl \PYGZhy{}X POST \PYGZbs{}
+[user]\PYGZdl{} curl \PYGZhy{}\PYGZhy{}user candy:P@55word
+             \PYGZhy{}X POST \PYGZbs{}
              \PYGZhy{}H \PYGZdq{}Accept: application/json\PYGZdq{}  \PYGZbs{}
              \PYGZhy{}H \PYGZdq{}Content\PYGZhy{}Type: application/json\PYGZdq{} \PYGZbs{}
              \PYGZhy{}d @candy.json \PYGZbs{}
@@ -2086,7 +2099,8 @@ original name.
 Updating a candy:
 
 \begin{Verbatim}[commandchars=\\\{\}]
-[user]\PYGZdl{} curl \PYGZhy{}X PUT \PYGZbs{}
+[user]\PYGZdl{} curl \PYGZhy{}\PYGZhy{}user candy:P@55word
+             \PYGZhy{}X PUT \PYGZbs{}
              \PYGZhy{}H \PYGZdq{}Accept: application/json\PYGZdq{}  \PYGZbs{}
              \PYGZhy{}H \PYGZdq{}Content\PYGZhy{}Type: application/json\PYGZdq{} \PYGZbs{}
              \PYGZhy{}d @candy\PYGZhy{}update.json \PYGZbs{}
@@ -2115,7 +2129,8 @@ document containing also files could be achieved with a minimum couple
 of async curl requests. First the file upload(s):
 
 \begin{Verbatim}[commandchars=\\\{\}]
-[user]\PYGZdl{} curl \PYGZhy{}X POST \PYGZbs{}
+[user]\PYGZdl{} curl \PYGZhy{}\PYGZhy{}user candy:P@55word
+             \PYGZhy{}X POST \PYGZbs{}
              \PYGZhy{}H \PYGZdq{}Content\PYGZhy{}Type: multipart/form\PYGZhy{}data; boundary=\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}11936647625814307171179269292\PYGZdq{} \PYGZbs{}
              \PYGZhy{}\PYGZhy{}data\PYGZhy{}binary @test.txt \PYGZbs{}
              http://localhost:3003/files
@@ -2124,7 +2139,8 @@ of async curl requests. First the file upload(s):
 And then the actual candy:
 
 \begin{Verbatim}[commandchars=\\\{\}]
-[user]\PYGZdl{} curl \PYGZhy{}X PUT \PYGZbs{}
+[user]\PYGZdl{} curl \PYGZhy{}\PYGZhy{}user candy:P@55word
+             \PYGZhy{}X PUT \PYGZbs{}
              \PYGZhy{}H \PYGZdq{}Accept: application/json\PYGZdq{}  \PYGZbs{}
              \PYGZhy{}H \PYGZdq{}Content\PYGZhy{}Type: application/json\PYGZdq{} \PYGZbs{}
              \PYGZhy{}d @candy\PYGZhy{}update.json \PYGZbs{}
@@ -2139,25 +2155,28 @@ community Angular modules and our own code. The frontend code based is
 organised following Angular community best practices.
 \begin{itemize}
 \item {} 
-\emph{frontend/app/scripts/app.js}: this is where the application is bootstrapped. It contains
-some configuration and some routes definitions.
+\emph{frontend/app/scripts/app.js}: this is where the application is
+bootstrapped. It contains some configuration and some routes
+definitions.
 
 \item {} 
-\emph{frontend/app/scripts/services/}: this directory contains application services.
+\emph{frontend/app/scripts/services/}: this directory contains
+application services.
 
 \item {} 
 \emph{frontend/app/scripts/controllers/}: this is where the business
 logic resides; no DOM manipulation should happen here.
 
 \item {} 
-\emph{frontend/app/scripts/filters/}: this where filters are stored often used has a final
-filtering step before presenting the data (e.g. money and date
-conversions formatters). It can also include data filtering code.
+\emph{frontend/app/scripts/filters/}: this where filters are stored often
+used has a final filtering step before presenting the data
+(e.g. money and date conversions formatters). It can also include
+data filtering code.
 
 \item {} 
-\emph{frontend/app/scripts/directives/}: this is where you can manipulate the DOM as you
-wish. Think of directives as a means to extend HTML and browser
-capabilities for web \emph{applications}.
+\emph{frontend/app/scripts/directives/}: this is where you can manipulate
+the DOM as you wish. Think of directives as a means to extend HTML
+and browser capabilities for web \emph{applications}.
 
 \item {} 
 \emph{frontend/app/index.html}: is the base HTML file for the whole
@@ -2192,8 +2211,13 @@ also.
 
 \section{Documentation}
 \label{developer-guide:documentation}
-Documentation is prepared using an excellent tool developed in the
-Python world called Sphinx \href{http://sphinx-doc.org}{http://sphinx-doc.org} which uses the reStructuredText markup
+Documentation is currently prepared using two different tools which is
+not ideal but powerful and convenient for the time being. As this
+project progresses we'll look into more cleanly unify this if possible
+without too much investment.
+
+Most documentation is prepared using an excellent tool developed in
+the Python world called Sphinx \href{http://sphinx-doc.org}{http://sphinx-doc.org} which uses the reStructuredText markup
 language \href{http://sphinx-doc.org/rest.html}{http://sphinx-doc.org/rest.html}. Sphinx outputs to HTML and PDF
 but could also output to other formats.
 
@@ -2225,6 +2249,21 @@ along with LaTeX, but this is optional. How to do this will largely
 depend on your OS. There is usually a very large all in one package
 available for popular OSes either packaged as binary or directly
 available through the OS' package manager.
+
+All source code including the application programming interface is
+documented in a modern Javascript fashion using a jsdoc style with
+AngularJS additional conventions. This has a number of advantages
+including keeping the documentation directly with the code and more in
+sync, preparation of AngularJS style documentation with the ability to
+add example usage, online discussions and a number of others things
+not readibly available when simply using Sphinx. When writting source
+code simply document it following \href{https://github.com/angular/angular.js}{AngularJS} and \href{http://usejsdoc.org/}{jsdoc} styles and the production of the online
+documentation is easy with grunt. From with the candy-basket directory
+simply run:
+
+\begin{Verbatim}[commandchars=\\\{\}]
+[user]\PYGZdl{} grunt docs
+\end{Verbatim}
 
 
 \section{Security Considerations}

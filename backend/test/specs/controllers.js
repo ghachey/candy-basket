@@ -16,7 +16,9 @@ describe('The whole controller API', function(){
   // Candy data needed across various test scopes
   var candy1, candy2, candy3, candy4, candy5;
   var candyId1, candyId2, candyId3, candyId4, candyId5;
-  
+  var user = 'candy';
+  var pass = 'P@55word';
+
   before(function (next) {
     // The app needs to be started manually at the moment, I currently find
     // it easier to see logging in separate console from tests
@@ -73,11 +75,23 @@ describe('The whole controller API', function(){
   });
   
   describe('GET /', function(){
+    it('should respond with 401 unauthorized with no credentials', function(done){
+      request
+        .get('/')
+        .set('Accept', 'application/json')
+        .expect(401)
+        .end(function(err, res){
+          if (err) {return done(err);}
+          res.body.should.eql({});
+          return done();
+        });
+    });
     it('should respond with JSON meta data about the service', function(done){
       var expectedResponse = {'name': 'Candy Basket', 'version': 0.3};
       request
         .get('/')
         .set('Accept', 'application/json')
+        .auth(user, pass)
         .expect('Content-Type', /json/)
         .expect(200)
         .end(function(err, res){
@@ -90,6 +104,22 @@ describe('The whole controller API', function(){
 
   describe('POST /basket/candies', function(){
 
+    it('should respond with 401 unauthorized with no credentials', function(done){
+      var candy = {'source': 'htp://ghachey.info', 'title': 'Ghislain Hachey Website', 
+                   'description': 'Ghislain Hachey website personal stuff and all',
+                   'tags': ['Website', 'Personal']};
+      request
+        .post('/basket/candies')
+        .set('Content-Type', 'application/json')
+        .expect(401)
+        .send(candy)
+        .end(function(err, res){
+          if (err) {return done(err);}
+          res.body.should.eql({});
+          return done();
+        });
+    });
+
     it('should respond with 400 Bad Request for invalid source input', function(done){
       var candy = {'source': 'htp://ghachey.info', 'title': 'Ghislain Hachey Website', 
                    'description': 'Ghislain Hachey website personal stuff and all',
@@ -97,6 +127,7 @@ describe('The whole controller API', function(){
       request
         .post('/basket/candies')
         .set('Content-Type', 'application/json')
+        .auth(user, pass)
         .send(candy)
         .expect(400)
         .end(function(err, res){
@@ -112,6 +143,7 @@ describe('The whole controller API', function(){
       request
         .post('/basket/candies')
         .set('Content-Type', 'application/json')
+        .auth(user, pass)
         .send(candy)
         .expect(400)
         .end(function(err, res){
@@ -126,6 +158,7 @@ describe('The whole controller API', function(){
       request
         .post('/basket/candies')
         .set('Content-Type', 'application/json')
+        .auth(user, pass)
         .send(candy)
         .expect(400)
         .end(function(err, res){
@@ -140,6 +173,7 @@ describe('The whole controller API', function(){
       request
         .post('/basket/candies')
         .set('Content-Type', 'application/json')
+        .auth(user, pass)
         .send(candy)
         .expect(400)
         .end(function(err, res){
@@ -157,6 +191,7 @@ describe('The whole controller API', function(){
       request
         .post('/basket/candies')
         .set('Accept', 'application/json')
+        .auth(user, pass)
         .send(candy)
         .expect(400)
         .end(function(err, res){
@@ -174,6 +209,7 @@ describe('The whole controller API', function(){
       request
         .post('/basket/candies')
         .set('Accept', 'application/json')
+        .auth(user, pass)
         .send(candy)
         .expect(400)
         .end(function(err, res){
@@ -227,6 +263,7 @@ describe('The whole controller API', function(){
       request
         .post('/basket/candies')
         .set('Accept', 'application/json')
+        .auth(user, pass)
         .send(candy1)
         .expect('Location', /[a-f0-9]{12}/)
         .expect(201)
@@ -247,6 +284,7 @@ describe('The whole controller API', function(){
       request
         .post('/basket/candies')
         .set('Accept', 'application/json')
+        .auth(user, pass)
         .send(candy2)
         .expect('Location', /[a-f0-9]{12}/)
         .expect(201)
@@ -268,6 +306,7 @@ describe('The whole controller API', function(){
       request
         .post('/basket/candies')
         .set('Content-Type', 'application/json')
+        .auth(user, pass)
         .send(candy3)
         .expect('Location', /[a-f0-9]{12}/)
         .expect(201)
@@ -277,6 +316,7 @@ describe('The whole controller API', function(){
           // Retrieve this candy and check to see if description was sanitized
           request
             .get('/basket/candies/'+candyId3)
+            .auth(user, pass)
             .end(function(err, res) {
               res.body.description.should.not.equal(candy3.description);
               return done();
@@ -288,6 +328,19 @@ describe('The whole controller API', function(){
 
 
   describe('GET /basket/candies/:uuid', function() {
+
+    it('should respond with 401 unauthorized with no credentials', function(done){
+      var nonExistantCandy = '8fd818a4f18e49d6abbc2dfa064bbd22';
+      request
+        .get('/basket/candies/'+nonExistantCandy)
+        .set('Content-Type', 'application/json')
+        .expect(401)
+        .end(function(err, res){
+          if (err) {return done(err);}
+          res.body.should.eql({});
+          return done();
+        });
+    });
     
     // it('should respond 500 when problem retrieving CouchDB', function(done){
     //   // Simulate a connection problem with CouchDB
@@ -319,6 +372,7 @@ describe('The whole controller API', function(){
       var nonExistantCandy = '8fd818a4f18e49d6abbc2dfa064bbd22';
       request
         .get('/basket/candies/'+nonExistantCandy)
+        .auth(user, pass)
         .expect(404)
         .end(function(err, res){
           if (err) {return done(err);}
@@ -330,6 +384,7 @@ describe('The whole controller API', function(){
       request
         .get('/basket/candies/'+candyId1)
         .set('Accept', 'application/json')
+        .auth(user, pass)
         .expect('Content-Type', /json/)
         .expect(200)
         .end(function(err, res){
@@ -351,6 +406,7 @@ describe('The whole controller API', function(){
       request
         .get('/basket/candies/'+candyId2)
         .set('Accept', 'application/json')
+        .auth(user, pass)
         .expect('Content-Type', /json/)
         .expect(200)
         .end(function(err, res){
@@ -374,6 +430,22 @@ describe('The whole controller API', function(){
 
   describe('PUT /basket/candies/:uuid', function() {
 
+    it('should respond with 401 unauthorized with no credentials', function(done){
+      var candy = {'source': 'htp://ghachey.info', 'title': 'Ghislain Hachey Website', 
+                   'description': 'Ghislain Hachey website personal stuff and all',
+                   'tags': ['Website', 'Personal']};
+      request
+        .put('/basket/candies'+candyId1)
+        .set('Content-Type', 'application/json')
+        .expect(401)
+        .send(candy)
+        .end(function(err, res){
+          if (err) {return done(err);}
+          res.body.should.eql({});
+          return done();
+        });
+    });
+
     it('should respond with 400 Bad Request for invalid source input', function(done){
       var candy = {'source': 'htp://ghachey.info', 
                    'title': 'Ghislain Hachey Website Updated', 
@@ -382,6 +454,7 @@ describe('The whole controller API', function(){
       request
         .put('/basket/candies/'+candyId1)
         .set('Accept', 'application/json')
+        .auth(user, pass)
         .send(candy)
         .expect(400)
         .end(function(err, res){
@@ -397,6 +470,7 @@ describe('The whole controller API', function(){
       request
         .put('/basket/candies/'+candyId1)
         .set('Accept', 'application/json')
+        .auth(user, pass)
         .send(candy)
         .expect(400)
         .end(function(err, res){
@@ -412,6 +486,7 @@ describe('The whole controller API', function(){
       request
         .post('/basket/candies')
         .set('Accept', 'application/json')
+        .auth(user, pass)
         .send(candy)
         .expect(400)
         .end(function(err, res){
@@ -430,6 +505,7 @@ describe('The whole controller API', function(){
       request
         .put('/basket/candies/'+candyId1)
         .set('Accept', 'application/json')
+        .auth(user, pass)
         .send(candy1Updated)
         .expect(400)
         .end(function(err, res){
@@ -474,6 +550,7 @@ describe('The whole controller API', function(){
       request
         .put('/basket/candies/'+candyId1)
         .set('Accept', 'application/json')
+        .auth(user, pass)
         .send(candy1Updated)
         .expect('Location', /[a-f0-9]{12}/)
         .expect(200)
@@ -482,6 +559,7 @@ describe('The whole controller API', function(){
           // Retrieve updated candy and verify updation :)
           request
             .get('/basket/candies/'+candyId1)
+            .auth(user, pass)
             .end(function(err, res) {
               res.body._id.should.equal(candyId1);
               res.body.source.should.equal(candy1Updated.source);
@@ -508,6 +586,7 @@ describe('The whole controller API', function(){
       request
         .put('/basket/candies/'+candyId2)
         .set('Accept', 'application/json')
+        .auth(user, pass)
         .expect('Location', /[a-f0-9]{12}/)
         .send(candy2Updated)
         .expect(200)
@@ -516,6 +595,7 @@ describe('The whole controller API', function(){
           // Retrieve updated candy and verify updation :)
           request
             .get('/basket/candies/'+candyId2)
+            .auth(user, pass)
             .end(function(err, res) {
               res.body._id.should.equal(candyId2);
               res.body.source.should.equal(candy2Updated.source);
@@ -536,6 +616,17 @@ describe('The whole controller API', function(){
 
   describe('DELETE /basket/candies/:uuid', function() {
 
+    it('should respond with 401 unauthorized with no credentials', function(done){
+      request
+        .delete('/basket/candies'+candyId1)
+        .expect(401)
+        .end(function(err, res){
+          if (err) {return done(err);}
+          res.body.should.eql({});
+          return done();
+        });
+    });
+
     // it('should respond 500 when problem retrieving CouchDB', function(done){
     //   // Simulate a connection problem with CouchDB
     //   request
@@ -554,6 +645,7 @@ describe('The whole controller API', function(){
       request
         .delete('/basket/candies/'+nonExistantCandy)
         .set('Accept', 'application/json')
+        .auth(user, pass)
         .expect(404)
         .end(function(err, res){
           if (err) {return done(err);}
@@ -564,6 +656,7 @@ describe('The whole controller API', function(){
     it('should respond 200 if resource is deleted', function(done){
       request
         .delete('/basket/candies/'+candyId1)
+        .auth(user, pass)
         .expect(200)
         .end(function(err, res){
           if (err) {return done(err);}
@@ -574,6 +667,7 @@ describe('The whole controller API', function(){
     it('should respond 404 when trying to retrieve previously deleted resource', function(done){
       request
         .get('/basket/candies/'+candyId1)
+        .auth(user, pass)
         .expect(404)
         .end(function(err, res){
           if (err) {return done(err);}
@@ -584,6 +678,18 @@ describe('The whole controller API', function(){
   });
 
   describe('GET /basket/candies', function() {
+
+    it('should respond with 401 unauthorized with no credentials', function(done){
+      request
+        .get('/basket/candies')
+        .set('Accept', 'application/json')
+        .expect(401)
+        .end(function(err, res){
+          if (err) {return done(err);}
+          res.body.should.eql({});
+          return done();
+        });
+    });
 
     // it('should respond 500 when problem retrieving candies from CouchDB', function(done){
     //   // Simulate a connection problem with CouchDB
@@ -617,6 +723,7 @@ describe('The whole controller API', function(){
       request
         .get('/basket/candies')
         .set('Accept', 'application/json')
+        .auth(user, pass)
         .expect('Content-Type', /json/)
         .expect(200)
         .end(function(err, res){
@@ -657,6 +764,18 @@ describe('The whole controller API', function(){
 
   describe('GET /basket/candies/tags', function() {
 
+    it('should respond with 401 unauthorized with no credentials', function(done){
+      request
+        .get('/basket/candies/tags')
+        .set('Accept', 'application/json')
+        .expect(401)
+        .end(function(err, res){
+          if (err) {return done(err);}
+          res.body.should.eql({});
+          return done();
+        });
+    });
+
     // it('should respond 500 when problem retrieving tags from CouchDB', function(done){
     //   // Simulate a connection problem with CouchDB
     //   request
@@ -685,6 +804,7 @@ describe('The whole controller API', function(){
       request
         .get('/basket/candies/tags')
         .set('Accept', 'application/json')
+        .auth(user, pass)
         .expect('Content-Type', /json/)
         .expect(200)
         .end(function(err, res){
@@ -698,6 +818,18 @@ describe('The whole controller API', function(){
   });
 
   describe('GET /basket/candies/tags-by-candies', function() {
+
+    it('should respond with 401 unauthorized with no credentials', function(done){
+      request
+        .get('/basket/candies/tags-by-candies')
+        .set('Accept', 'application/json')
+        .expect(401)
+        .end(function(err, res){
+          if (err) {return done(err);}
+          res.body.should.eql({});
+          return done();
+        });
+    });
 
     // it('should respond 500 when problem retrieving tags by candy ids from CouchDB', function(done){
     //   // Simulate a connection problem with CouchDB
@@ -730,6 +862,7 @@ describe('The whole controller API', function(){
       request
         .get('/basket/candies/tags-by-candies')
         .set('Accept', 'application/json')
+        .auth(user, pass)
         .expect('Content-Type', /json/)
         .expect(200)
         .end(function(err, res){
