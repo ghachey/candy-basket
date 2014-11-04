@@ -12,7 +12,7 @@
 #### Features
 
 * **backend:**
-  * support for HTTP basic authentication ([99015a97](https://github.com/ghachey/candy-basket/commit/99015a970c3a94fd99f726029d76026de92e25a2))
+  * support for HTTP basic authentication ([00c313c9](https://github.com/ghachey/candy-basket/commit/00c313c9fdf0b1a072f4d9f220a42889d9861654))
   * support for upload/download to ownCloud server ([49ea803e](https://github.com/ghachey/candy-basket/commit/49ea803e1a24a62cbbde0fa411667fa703c4073a))
 
 
