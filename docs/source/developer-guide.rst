@@ -520,6 +520,18 @@ The services offer no CRUD operations on users at the moment as this
 is considered to be done using an external service (Active Directory,
 OpenLDAP).
 
+Service Security
+~~~~~~~~~~~~~~~~
+
+The backend currently supports only HTTP Basic Authentication on every
+single endpoint. It is critical to properly setup SSL/TLS to encrypt
+all communication between the client (frontend) and the server
+(backend). It makes use of a single user called `candy` to
+authenticate the frontend with the backend. Therefore, users
+authenticated to the frontend through some LDAP single sign-on
+mechanism will then automatically have access to data from backend. In
+other words, no access to frontend, no access to backend either.
+
 Source (Candies) Service
 ~~~~~~~~~~~~~~~~~~~~~~~~
 
@@ -563,15 +575,16 @@ directly. Here are some example usage.
 
 Fetching all candies::
 
-  [user]$ curl -X GET http://localhost:3003/basket/candies
+  [user]$ curl --user candy:P@55word -X GET http://localhost:3003/basket/candies
 
 Fetching a candy::
 
-  [user]$ curl -X GET http://localhost:3003/basket/candies/03c0b670e5c56bfb461a76dcf7000d1c
+  [user]$ curl --user candy:P@55word -X GET http://localhost:3003/basket/candies/03c0b670e5c56bfb461a76dcf7000d1c
 
 Creating a candy::
 
-  [user]$ curl -X POST \
+  [user]$ curl --user candy:P@55word
+               -X POST \
                -H "Accept: application/json"  \
                -H "Content-Type: application/json" \
                -d @candy.json \
@@ -618,7 +631,8 @@ original name.
 
 Updating a candy::
 
-  [user]$ curl -X PUT \
+  [user]$ curl --user candy:P@55word
+               -X PUT \
                -H "Accept: application/json"  \
                -H "Content-Type: application/json" \
                -d @candy-update.json \
@@ -643,14 +657,16 @@ then that data would no longer be present. A complete update on a
 document containing also files could be achieved with a minimum couple
 of async curl requests. First the file upload(s)::
 
-  [user]$ curl -X POST \
+  [user]$ curl --user candy:P@55word
+               -X POST \
                -H "Content-Type: multipart/form-data; boundary=---------------------------11936647625814307171179269292" \
                --data-binary @test.txt \
                http://localhost:3003/files
 
 And then the actual candy::
 
-  [user]$ curl -X PUT \
+  [user]$ curl --user candy:P@55word
+               -X PUT \
                -H "Accept: application/json"  \
                -H "Content-Type: application/json" \
                -d @candy-update.json \
@@ -663,17 +679,20 @@ The Frontend is developed using the AngularJS web framework with
 community Angular modules and our own code. The frontend code based is
 organised following Angular community best practices.
 
-* `frontend/app/scripts/app.js`: this is where the application is bootstrapped. It contains
-  some configuration and some routes definitions.
-* `frontend/app/scripts/services/`: this directory contains application services.
+* `frontend/app/scripts/app.js`: this is where the application is
+  bootstrapped. It contains some configuration and some routes
+  definitions.
+* `frontend/app/scripts/services/`: this directory contains
+  application services.
 * `frontend/app/scripts/controllers/`: this is where the business
   logic resides; no DOM manipulation should happen here.
-* `frontend/app/scripts/filters/`: this where filters are stored often used has a final
-  filtering step before presenting the data (e.g. money and date
-  conversions formatters). It can also include data filtering code. 
-* `frontend/app/scripts/directives/`: this is where you can manipulate the DOM as you
-  wish. Think of directives as a means to extend HTML and browser
-  capabilities for web *applications*.
+* `frontend/app/scripts/filters/`: this where filters are stored often
+  used has a final filtering step before presenting the data
+  (e.g. money and date conversions formatters). It can also include
+  data filtering code.
+* `frontend/app/scripts/directives/`: this is where you can manipulate
+  the DOM as you wish. Think of directives as a means to extend HTML
+  and browser capabilities for web *applications*.
 * `frontend/app/index.html`: is the base HTML file for the whole
   application
 * `frontend/app/views/`: contains all the other HTML partials that

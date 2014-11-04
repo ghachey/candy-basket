@@ -54,23 +54,24 @@
 \contentsline {section}{\numberline {3.4}High Level Architecture}{32}{section.3.4}
 \contentsline {subsection}{\numberline {3.4.1}Backend -- The RESTful Service}{32}{subsection.3.4.1}
 \contentsline {subsubsection}{User Account Service}{32}{subsubsection*.3}
-\contentsline {subsubsection}{Source (Candies) Service}{32}{subsubsection*.4}
-\contentsline {subsubsection}{Utilities Service}{33}{subsubsection*.5}
-\contentsline {subsection}{\numberline {3.4.2}Frontend -- Web UI Application}{34}{subsection.3.4.2}
+\contentsline {subsubsection}{Service Security}{32}{subsubsection*.4}
+\contentsline {subsubsection}{Source (Candies) Service}{33}{subsubsection*.5}
+\contentsline {subsubsection}{Utilities Service}{33}{subsubsection*.6}
+\contentsline {subsection}{\numberline {3.4.2}Frontend -- Web UI Application}{35}{subsection.3.4.2}
 \contentsline {section}{\numberline {3.5}Low Level Documentation and API}{35}{section.3.5}
 \contentsline {section}{\numberline {3.6}Documentation}{35}{section.3.6}
-\contentsline {section}{\numberline {3.7}Security Considerations}{35}{section.3.7}
+\contentsline {section}{\numberline {3.7}Security Considerations}{36}{section.3.7}
 \contentsline {subsection}{\numberline {3.7.1}Latest Top 10 Security Risks}{36}{subsection.3.7.1}
-\contentsline {subsubsection}{Injection}{36}{subsubsection*.6}
-\contentsline {subsubsection}{Broken Authentication and Session Management}{36}{subsubsection*.7}
-\contentsline {subsubsection}{XSS}{36}{subsubsection*.8}
-\contentsline {subsubsection}{Security Misconfiguration}{36}{subsubsection*.9}
-\contentsline {subsubsection}{Sensitive Data Exposure}{37}{subsubsection*.10}
-\contentsline {subsubsection}{Missing Function Level Access Control}{37}{subsubsection*.11}
-\contentsline {subsubsection}{Cross-Site Request Forgery (CSRF aka. XSRF)}{37}{subsubsection*.12}
-\contentsline {subsubsection}{Using Components with Known Vulnerabilities}{38}{subsubsection*.13}
-\contentsline {subsubsection}{Unvalidated Redirects and Forwards}{39}{subsubsection*.14}
-\contentsline {subsubsection}{Miscellaneous and Application Specific}{39}{subsubsection*.15}
-\contentsline {subsection}{\numberline {3.7.2}Integrated Penetration Testing}{39}{subsection.3.7.2}
+\contentsline {subsubsection}{Injection}{36}{subsubsection*.7}
+\contentsline {subsubsection}{Broken Authentication and Session Management}{36}{subsubsection*.8}
+\contentsline {subsubsection}{XSS}{37}{subsubsection*.9}
+\contentsline {subsubsection}{Security Misconfiguration}{37}{subsubsection*.10}
+\contentsline {subsubsection}{Sensitive Data Exposure}{37}{subsubsection*.11}
+\contentsline {subsubsection}{Missing Function Level Access Control}{37}{subsubsection*.12}
+\contentsline {subsubsection}{Cross-Site Request Forgery (CSRF aka. XSRF)}{37}{subsubsection*.13}
+\contentsline {subsubsection}{Using Components with Known Vulnerabilities}{39}{subsubsection*.14}
+\contentsline {subsubsection}{Unvalidated Redirects and Forwards}{39}{subsubsection*.15}
+\contentsline {subsubsection}{Miscellaneous and Application Specific}{40}{subsubsection*.16}
+\contentsline {subsection}{\numberline {3.7.2}Integrated Penetration Testing}{40}{subsection.3.7.2}
 \contentsline {chapter}{\numberline {4}Indices and tables}{41}{chapter.4}
-\contentsline {chapter}{Bibliography}{43}{chapter*.17}
+\contentsline {chapter}{Bibliography}{43}{chapter*.18}
