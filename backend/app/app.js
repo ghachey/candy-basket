@@ -1,7 +1,7 @@
 'use strict';
 
 var express = require('express');
-var http = require('http');
+var https = require('https');
 var path = require('path');
 var favicon = require('serve-favicon');
 var logger = require('morgan');
@@ -49,4 +49,9 @@ api.get('/files/:id', auth.isAuthenticated, controllers.downloadFile);
 api.use(auth.isAuthenticated, controllers.serve404); // Auth?
 
 // Server
-http.createServer(api).listen(conf.port);
+var options = {
+  key: conf.key,
+  cert: conf.cert
+};
+
+https.createServer(options, api).listen(conf.port);

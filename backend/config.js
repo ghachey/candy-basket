@@ -10,8 +10,12 @@ var config = {
     app: {
       name: 'nasaraCandyBasketApi'
     },
-    url: 'http://localhost',
+    url: 'https://localhost',
     port: 3003,
+    key: fs.readFileSync('certificates/nasara-backend-development.key'),
+    cert: fs.readFileSync('certificates/nasara-backend-development.crt'),
+    backendUser: 'candy',
+    backendPassword: 'P@55word',
     reloadPort: 35733,
     dbUrl: 'http://localhost:5984/',
     dbName: 'candy_basket_development',
@@ -19,7 +23,7 @@ var config = {
     // Can take exact strings and regexes
     // DO NOT INCLUDE TRAILING SLASH
     corsOptions: {
-      origin: '*' //'http://localhost:9003' // frontend
+      origin: 'http://localhost:9003' //'http://localhost:9003' // frontend
     },
     webdavServer : { // ownCloud test instance
         'host' : 'arc.ghachey.info',
@@ -37,8 +41,12 @@ var config = {
     app: {
       name: 'nasaraCandyBasketApi'
     },
-    url: 'http://localhost',
+    url: 'https://localhost',
     port: 3003,
+    key: fs.readFileSync('certificates/nasara-backend-development.key'),
+    cert: fs.readFileSync('certificates/nasara-backend-development.crt'),
+    backendUser: 'candy',
+    backendPassword: 'P@55word',
     reloadPort: 35733,
     dbUrl: 'http://localhost:5984/',
     dbName: 'candy_basket_test',
@@ -58,8 +66,12 @@ var config = {
     app: {
       name: 'nasaraCandyBasketApi'
     },
-    url: 'http://localhost',
-    port: 3003,
+    url: 'https://localhost',
+    port: 443,
+//    key: fs.readFileSync('path/to/production/key'),
+//    cert: fs.readFileSync('path/to/production/cert'),
+    backendUser: 'candy',
+    backendPassword: 'P@55word',
     dbUrl: 'http://localhost:5984/',
     dbName: 'candy_basket',
     // Configure which host is allowed cross origin access to the backend

@@ -520,17 +520,6 @@ The services offer no CRUD operations on users at the moment as this
 is considered to be done using an external service (Active Directory,
 OpenLDAP).
 
-Service Security
-~~~~~~~~~~~~~~~~
-
-The backend currently supports only HTTP Basic Authentication on every
-single endpoint. It is critical to properly setup SSL/TLS to encrypt
-all communication between the client (frontend) and the server
-(backend). It makes use of a single user called `candy` to
-authenticate the frontend with the backend. Therefore, users
-authenticated to the frontend through some LDAP single sign-on
-mechanism will then automatically have access to data from backend. In
-other words, no access to frontend, no access to backend either.
 
 Source (Candies) Service
 ~~~~~~~~~~~~~~~~~~~~~~~~
@@ -781,6 +770,63 @@ constantly improving its security status quo.
 If you are interested in helping contribute code to Candy Basket we
 provide some mininum security related recommendations, guidelines and
 procedures to follow.
+
+Authentication
+--------------
+
+The backend currently supports only HTTP Basic Authentication on every
+single endpoint. It is critical to properly setup SSL/TLS to encrypt
+all communication between the client (frontend) and the server
+(backend). It makes use of a single user called `candy` to
+authenticate the frontend with the backend which is configurable in
+`backend/config.js`. Therefore, users authenticated to the frontend
+through some LDAP single sign-on mechanism will then automatically
+have access to data from backend. In other words, no access to
+frontend, no access to backend either.
+
+SSL/TLS Encryption
+------------------
+
+This application is moving towards a strict and mandatory use of
+encryption throughout all its the various components .  Self-signed
+keys and certificates are used for development and test and the
+equivalent of curl's --insecure flag is set when executing requests in
+those modes. This insecure flag is off by default in production. 
+
+ownCloud
+~~~~~~~~
+ 
+Candy Basket uses ownCloud as file storage. Connections to ownCloud
+must be encrypted. Developers can use their own local ownCloud server
+for development and test though will have to include their own
+certificate in the `backend/certificates` directory and change the
+config.js. The certificate to make use of the pacificpolicy.org
+ownCloud server is also included. Casre must be taken with the
+configuration of the ownCloud server to enforce secure connections at
+all times.
+
+Nasara backend
+~~~~~~~~~~~~~~
+
+The backend now also supports encryption. In fact, it only listens on
+https, period (port 3003 for test and development and 443 for
+production). A set of development keys was generated which can be use
+for just development and test without change in the
+`backend/config.js`. Both the private key and public certificate are
+committed to the repo for development and test convenience. Needless
+to say they should not be used in production. A new set should be
+used, either self signed or both from a CA depending on the context
+and target users.
+
+Nasara frontend
+~~~~~~~~~~~~~~~
+
+To access the backend with the self-signed certificate in development
+from AngularJS the browser needs to confirm the insecure connection
+(like curl's --insecure or NodeJS's
+process.env.NODE_TLS_REJECT_UNAUTHORIZED = '0'). Only once you will
+have to point the browser directly to the backend by putting the
+address `https://localhost:3003/` in the URL address bar.
 
 Latest Top 10 Security Risks
 ----------------------------

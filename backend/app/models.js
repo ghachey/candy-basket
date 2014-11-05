@@ -14,6 +14,8 @@
 
 var bcrypt = require('bcrypt');
 
+var conf = require('../config');
+
 // DB of users containing a single user
 var users = [];
 
@@ -110,7 +112,7 @@ User.addToDB = function(user, fn) {
   });
 };
 
-var candy = new User('candy', 'P@55word');
+var candy = new User(conf.backendUser, conf.backendPassword);
 users.push(candy);
 
 exports.User = User;
