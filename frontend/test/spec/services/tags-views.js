@@ -7,10 +7,10 @@ describe('Service: tagsViews', function () {
 
   // instantiate service with mocked http backend
   var tagsViews, wsUrl, mockedBackend;
-  beforeEach(inject(function (_tagsViews_, $httpBackend, config) {
+  beforeEach(inject(function (_tagsViews_, $httpBackend, ENV) {
     tagsViews = _tagsViews_;
     mockedBackend = $httpBackend;
-    wsUrl = config.backendUrl;
+    wsUrl = ENV.backendUrl;
   }));
 
   // cleanup

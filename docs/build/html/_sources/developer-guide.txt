@@ -125,6 +125,89 @@ In the test database sample data is automatically generated as part of
 unit tests and the views are also programmatically created before they
 are used.
 
+Grunt
+-----
+
+`Grunt <http://gruntjs.com/>`_ is use to automate a number of time
+consuming tasks. It takes a while to learn but is well worth the
+efforts. Included here is a short list of things you will use grunt
+for.
+
+Grunt on the backend
+~~~~~~~~~~~~~~~~~~~~
+
+First, from the `backend` directory you can execute tests and serve
+the backend application.
+
+To run the tests from the backend you will need two terminals since
+these contain also integration tests in addition to unit tests. In
+both terminals you should set the NODE_ENV to 'test' like this::
+
+  [user]$ export NODE_ENV=test
+
+In one terminal serve the test backend::
+
+  [user]$ grunt serve
+
+And the other terminal you run the tests. Those tests will run against
+a test environment (with a test database as configured in
+`backend/config.js`)::
+
+  [user]$ grunt test
+
+When simply developing you should only need one terminal to serve the
+backend application. But you need to switch the environment to
+development wih the following::
+
+  [user]$ export NODE_ENV=development
+
+And then you can server the backend for development with this::
+
+  [user]$ grunt serve
+
+Grunt on the frontend
+~~~~~~~~~~~~~~~~~~~~~
+
+In the frontend, things are very similar. But currently you can only
+switch from development to production environments (the test
+environment will work equally in both since they are only unit tests
+not dependent on external database and other variants). And not only
+that, the switching between production and development environment is
+automatic whether you tell grunt to test, serve or deploy. So, all you
+reall need in the frontend currently is to run a development web
+server::
+
+  [user]$ grunt serve
+
+To run your tests you can::
+
+  [user]$ grunt test
+
+To build the frontend for production (this is only currently available
+for frontend where it is more important)::
+
+  [user]$ grunt
+
+The build will first make sure jshint and tests all pass and then do
+an impressive number of optimisations to the application and package
+it in `frontend/dist`.
+
+Grunt globally in app root
+~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+Finally, work as also commenced on automating some other tasks in the
+root of the candy-basket application. Currently, it only generates a
+CHANGELOG.md file automatically and build some Angular documents with
+the following commands respectively::
+
+  [user]$ grunt
+  [user]$ grunt docs
+
+But this grunt section will eventually properly build all
+documentation (frontend, backend, user docs), package them for
+production builds, runs tests, jshints and build both backend and
+frontend in a uniform and fully automated way. 
+
 Dependencies
 ------------
 
@@ -520,17 +603,6 @@ The services offer no CRUD operations on users at the moment as this
 is considered to be done using an external service (Active Directory,
 OpenLDAP).
 
-Service Security
-~~~~~~~~~~~~~~~~
-
-The backend currently supports only HTTP Basic Authentication on every
-single endpoint. It is critical to properly setup SSL/TLS to encrypt
-all communication between the client (frontend) and the server
-(backend). It makes use of a single user called `candy` to
-authenticate the frontend with the backend. Therefore, users
-authenticated to the frontend through some LDAP single sign-on
-mechanism will then automatically have access to data from backend. In
-other words, no access to frontend, no access to backend either.
 
 Source (Candies) Service
 ~~~~~~~~~~~~~~~~~~~~~~~~
@@ -781,6 +853,63 @@ constantly improving its security status quo.
 If you are interested in helping contribute code to Candy Basket we
 provide some mininum security related recommendations, guidelines and
 procedures to follow.
+
+Authentication
+--------------
+
+The backend currently supports only HTTP Basic Authentication on every
+single endpoint. It is critical to properly setup SSL/TLS to encrypt
+all communication between the client (frontend) and the server
+(backend). It makes use of a single user called `candy` to
+authenticate the frontend with the backend which is configurable in
+`backend/config.js`. Therefore, users authenticated to the frontend
+through some LDAP single sign-on mechanism will then automatically
+have access to data from backend. In other words, no access to
+frontend, no access to backend either.
+
+SSL/TLS Encryption
+------------------
+
+This application is moving towards a strict and mandatory use of
+encryption throughout all its the various components .  Self-signed
+keys and certificates are used for development and test and the
+equivalent of curl's --insecure flag is set when executing requests in
+those modes. This insecure flag is off by default in production. 
+
+ownCloud
+~~~~~~~~
+ 
+Candy Basket uses ownCloud as file storage. Connections to ownCloud
+must be encrypted. Developers can use their own local ownCloud server
+for development and test though will have to include their own
+certificate in the `backend/certificates` directory and change the
+config.js. The certificate to make use of the pacificpolicy.org
+ownCloud server is also included. Casre must be taken with the
+configuration of the ownCloud server to enforce secure connections at
+all times.
+
+Nasara backend
+~~~~~~~~~~~~~~
+
+The backend now also supports encryption. In fact, it only listens on
+https, period (port 3003 for test and development and 443 for
+production). A set of development keys was generated which can be use
+for just development and test without change in the
+`backend/config.js`. Both the private key and public certificate are
+committed to the repo for development and test convenience. Needless
+to say they should not be used in production. A new set should be
+used, either self signed or both from a CA depending on the context
+and target users.
+
+Nasara frontend
+~~~~~~~~~~~~~~~
+
+To access the backend with the self-signed certificate in development
+from AngularJS the browser needs to confirm the insecure connection
+(like curl's --insecure or NodeJS's
+process.env.NODE_TLS_REJECT_UNAUTHORIZED = '0'). Only once you will
+have to point the browser directly to the backend by putting the
+address `https://localhost:3003/` in the URL address bar.
 
 Latest Top 10 Security Risks
 ----------------------------

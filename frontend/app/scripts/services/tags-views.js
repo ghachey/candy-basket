@@ -8,8 +8,8 @@
  * Factory in the nasaraCandyBasketApp.
  */
 angular.module('nasaraCandyBasketApp')
-  .factory('tagsViews', function ($http, config) {
-    var wsUrl = config.backendUrl;
+  .factory('tagsViews', function ($http, ENV) {
+    var wsUrl = ENV.backendUrl;
 
     // Public API here
     return {

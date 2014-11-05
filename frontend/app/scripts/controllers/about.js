@@ -18,5 +18,4 @@ angular.module('nasaraCandyBasketApp')
     $scope.getStarted = function () {
       $location.path('/candy-list-timeline');
     };
-
   });

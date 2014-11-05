@@ -9,10 +9,10 @@ describe('Service: CandyResource', function () {
 
   // instantiate service with mocked http backend
   var CandyResource, candyResourceWs, mockedBackend;
-  beforeEach(inject(function (_CandyResource_, $httpBackend, config) {
+  beforeEach(inject(function (_CandyResource_, $httpBackend, ENV) {
     CandyResource = _CandyResource_;
     mockedBackend = $httpBackend;
-    candyResourceWs = config.backendUrl;
+    candyResourceWs = ENV.backendUrl;
   }));
 
   // cleanup

@@ -9,21 +9,14 @@
     <!-- build:css(.) styles/vendor.css -->
     <!-- bower:css -->
     <link rel="stylesheet" href="bower_components/bootstrap/dist/css/bootstrap.css" />
+    <link rel="stylesheet" href="bower_components/jquery-ui/themes/blitzer/jquery-ui.css" />
+    <link rel="stylesheet" href="bower_components/TimelineJS/build/css/timeline.css" />
+    <link rel="stylesheet" href="bower_components/TimelineJS/build/css/themes/font/Helvetica.css" />
     <!-- endbower -->
     <!-- endbuild -->
     <!-- build:css(.tmp) styles/main.css -->
     <link rel="stylesheet" href="styles/main.css">
     <!-- endbuild -->
-
-    <!-- Added not automatically by build, TODO - improve this -->
-    <link rel="stylesheet" href="bower_components/jquery-ui/themes/blitzer/jquery-ui.css">
-    <link rel="stylesheet"
-    href="styles/angular-taglist-directive.css">
-    <link href="bower_components/TimelineJS/build/css/timeline.css" rel="stylesheet">
-    <link
-    href="bower_components/TimelineJS/build/css/themes/font/Helvetica.css"
-    rel="stylesheet">
-    <link rel="stylesheet" href="styles/styles.css">
 
   </head>
   <body ng-app="nasaraCandyBasketApp">
@@ -72,43 +65,38 @@
     <!-- build:js(.) scripts/oldieshim.js -->
     <!--[if lt IE 9]>
     <script src="bower_components/es5-shim/es5-shim.js"></script>
-    <script src="bower_components/json3/lib/json3.min.js"></script>
+    <script src="bower_components/json3/lib/json3.js"></script>
     <![endif]-->
     <!-- endbuild -->
-
-    <!-- Net yet added by build tool -->
-    <!-- Effectively managing deps is getting problematic -->
-    <script src="bower_components/tinymce/tinymce.min.js"></script>
     
     <!-- build:js(.) scripts/vendor.js -->
     <!-- bower:js -->
     <script src="bower_components/jquery/dist/jquery.js"></script>
     <script src="bower_components/angular/angular.js"></script>
-    <script src="bower_components/json3/lib/json3.js"></script>
     <script src="bower_components/bootstrap/dist/js/bootstrap.js"></script>
-    <script src="bower_components/angular-resource/angular-resource.js"></script>
-    <script src="bower_components/angular-cookies/angular-cookies.js"></script>
-    <script src="bower_components/angular-sanitize/angular-sanitize.js"></script>
     <script src="bower_components/angular-animate/angular-animate.js"></script>
-    <script src="bower_components/angular-touch/angular-touch.js"></script>
+    <script src="bower_components/angular-cookies/angular-cookies.js"></script>
+    <script src="bower_components/angular-resource/angular-resource.js"></script>
     <script src="bower_components/angular-route/angular-route.js"></script>
+    <script src="bower_components/angular-sanitize/angular-sanitize.js"></script>
+    <script src="bower_components/angular-touch/angular-touch.js"></script>
     <script src="bower_components/jquery-ui/jquery-ui.js"></script>
     <script src="bower_components/angular-bootstrap/ui-bootstrap-tpls.js"></script>
     <script src="bower_components/momentjs/moment.js"></script>
     <script src="bower_components/underscore/underscore.js"></script>
     <script src="bower_components/d3/d3.js"></script>
+    <script src="bower_components/d3-cloud/d3.layout.cloud.js"></script>
     <script src="bower_components/angular-ui-slider/src/slider.js"></script>
+    <script src="bower_components/TimelineJS/build/js/timeline.js"></script>
     <script src="bower_components/angular-timelinejs/build/angular-timelinejs.js"></script>
+    <script src="bower_components/tinymce/tinymce.min.js"></script>
     <script src="bower_components/angular-ui-tinymce/src/tinymce.js"></script>
     <script src="bower_components/angular-file-upload/angular-file-upload.js"></script>
+    <script src="bower_components/async/lib/async.js"></script>
     <!-- endbower -->
     <!-- endbuild -->
 
-    <!-- Net yet added by build tool -->
-    <!-- Effectively managing deps is getting problematic -->
-    <script src="bower_components/TimelineJS/build/js/timeline.js"></script>
-    <script src="bower_components/d3-cloud/d3.layout.cloud.js"></script>
-    <script src="bower_components/async/lib/async.js"></script>
+    <script src="scripts/config.js"></script>
 
     <!-- build:js({.tmp,app}) scripts/scripts.js -->
     <script src="scripts/app.js"></script>
@@ -118,13 +106,11 @@
     <script src="scripts/controllers/candy-list-table.js"></script>
     <script src="scripts/controllers/candy-list-timeline.js"></script>
     <script src="scripts/controllers/tag-cloud-modal.js"></script>
-    <script src="scripts/services/config.js"></script>
     <script src="scripts/services/meta.js"></script>
     <script src="scripts/services/state-tracker.js"></script>
     <script src="scripts/services/tags-views.js"></script>
     <script src="scripts/services/candy-resource.js"></script>
     <script src="scripts/services/utilities.js"></script>
-    <script src="scripts/filters/filters.js"></script>
     <script src="scripts/filters/filter-tags-string.js"></script>
     <script src="scripts/filters/candies-after-date.js"></script>
     <script src="scripts/filters/candies-by-tags.js"></script>

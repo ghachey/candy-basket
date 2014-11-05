@@ -125,6 +125,89 @@ In the test database sample data is automatically generated as part of
 unit tests and the views are also programmatically created before they
 are used.
 
+Grunt
+-----
+
+`Grunt <http://gruntjs.com/>`_ is use to automate a number of time
+consuming tasks. It takes a while to learn but is well worth the
+efforts. Included here is a short list of things you will use grunt
+for.
+
+Grunt on the backend
+~~~~~~~~~~~~~~~~~~~~
+
+First, from the `backend` directory you can execute tests and serve
+the backend application.
+
+To run the tests from the backend you will need two terminals since
+these contain also integration tests in addition to unit tests. In
+both terminals you should set the NODE_ENV to 'test' like this::
+
+  [user]$ export NODE_ENV=test
+
+In one terminal serve the test backend::
+
+  [user]$ grunt serve
+
+And the other terminal you run the tests. Those tests will run against
+a test environment (with a test database as configured in
+`backend/config.js`)::
+
+  [user]$ grunt test
+
+When simply developing you should only need one terminal to serve the
+backend application. But you need to switch the environment to
+development wih the following::
+
+  [user]$ export NODE_ENV=development
+
+And then you can server the backend for development with this::
+
+  [user]$ grunt serve
+
+Grunt on the frontend
+~~~~~~~~~~~~~~~~~~~~~
+
+In the frontend, things are very similar. But currently you can only
+switch from development to production environments (the test
+environment will work equally in both since they are only unit tests
+not dependent on external database and other variants). And not only
+that, the switching between production and development environment is
+automatic whether you tell grunt to test, serve or deploy. So, all you
+reall need in the frontend currently is to run a development web
+server::
+
+  [user]$ grunt serve
+
+To run your tests you can::
+
+  [user]$ grunt test
+
+To build the frontend for production (this is only currently available
+for frontend where it is more important)::
+
+  [user]$ grunt
+
+The build will first make sure jshint and tests all pass and then do
+an impressive number of optimisations to the application and package
+it in `frontend/dist`.
+
+Grunt globally in app root
+~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+Finally, work as also commenced on automating some other tasks in the
+root of the candy-basket application. Currently, it only generates a
+CHANGELOG.md file automatically and build some Angular documents with
+the following commands respectively::
+
+  [user]$ grunt
+  [user]$ grunt docs
+
+But this grunt section will eventually properly build all
+documentation (frontend, backend, user docs), package them for
+production builds, runs tests, jshints and build both backend and
+frontend in a uniform and fully automated way. 
+
 Dependencies
 ------------
 
