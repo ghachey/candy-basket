@@ -9,6 +9,12 @@ var _ = require('underscore');
 var conf = require('../../config');
 var controllers = require('../../app/controllers');
 
+if (process.env.NODE_ENV === 'development' || 
+    process.env.NODE_ENV === 'test') {
+  console.log('TEST');
+  process.env.NODE_TLS_REJECT_UNAUTHORIZED = '0';
+}
+
 request = request(conf.url+':'+conf.port);
 
 describe('The whole controller API', function(){
@@ -16,8 +22,8 @@ describe('The whole controller API', function(){
   // Candy data needed across various test scopes
   var candy1, candy2, candy3, candy4, candy5;
   var candyId1, candyId2, candyId3, candyId4, candyId5;
-  var user = 'candy';
-  var pass = 'P@55word';
+  var user = conf.backendUser;
+  var pass = conf.backendPassword;
 
   before(function (next) {
     // The app needs to be started manually at the moment, I currently find

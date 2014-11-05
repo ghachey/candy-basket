@@ -30,7 +30,10 @@ module.exports = function(grunt) {
       },
       server: {}
     },
-    clean: ['frontend/app/docs']
+    clean: {
+      ngdocs: ['frontend/app/docs'],
+      changelog: ['CHANGELOG.md']
+    }
   });
 
   // These plugins provide necessary tasks.
@@ -40,8 +43,8 @@ module.exports = function(grunt) {
   grunt.loadNpmTasks('grunt-contrib-connect');
 
   // Tasks.
-  grunt.registerTask('docs', ['clean', 'ngdocs']);
-  grunt.registerTask('serve-docs', ['clean', 'ngdocs', 'connect']);
-  grunt.registerTask('default', ['changelog']);
+  grunt.registerTask('docs', ['clean:ngdocs', 'ngdocs']);
+  grunt.registerTask('serve-docs', ['clean:ngdocs', 'ngdocs', 'connect']);
+  grunt.registerTask('default', ['clean:changelog', 'changelog']);
 
 };

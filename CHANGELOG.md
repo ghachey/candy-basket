@@ -1,5 +1,5 @@
 <a name="0.3.0"></a>
-## 0.3.0 (2014-11-04)
+## 0.3.0 (2014-11-05)
 
 
 #### Bug Fixes
@@ -14,5 +14,4 @@
 * **backend:**
   * support for HTTP basic authentication ([00c313c9](https://github.com/ghachey/candy-basket/commit/00c313c9fdf0b1a072f4d9f220a42889d9861654))
   * support for upload/download to ownCloud server ([49ea803e](https://github.com/ghachey/candy-basket/commit/49ea803e1a24a62cbbde0fa411667fa703c4073a))
-
 

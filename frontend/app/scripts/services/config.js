@@ -20,6 +20,6 @@ angular.module('nasaraCandyBasketApp')
     
     // Public API here
     return {
-      backendUrl: 'http://localhost:3003'
+      backendUrl: 'https://localhost:3003'
     };
   });
