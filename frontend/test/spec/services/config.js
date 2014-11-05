@@ -12,7 +12,7 @@ describe('Service: config', function () {
   }));
 
   it('should contain the backendUrl value', function () {
-    expect(config.backendUrl).toEqual('http://localhost:3003');
+    expect(config.backendUrl).toEqual('https://localhost:3003');
   });
 
 });
