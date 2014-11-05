@@ -54,4 +54,9 @@ developer documentation.
 Licence
 -------
 
-See LICENSE.
+See LICENSE.md.
+
+History
+-------
+
+See CHANGELOG.md
