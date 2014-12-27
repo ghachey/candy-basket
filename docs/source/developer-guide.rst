@@ -549,6 +549,11 @@ your work and do a pull request::
 
   [user]$ git push
 
+Although if you were working entirely on a detached local branch like
+I do you would need to push like this instead::
+
+  [user]$ git push --set-upstream origin replace-this-with-branch-name
+
 Do the pull request from github and use the last commit as the message.
 
 High Level Architecture

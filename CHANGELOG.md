@@ -22,4 +22,20 @@
 * **docs:**
   * automatic API generation from jsdoc ([96102508](https://github.com/ghachey/candy-basket/commit/9610250853fe883e728828c413d2f6c329326736))
   * documentation and automatic release history support ([da399885](https://github.com/ghachey/candy-basket/commit/da399885468f99925cea1c55732cdc1cdd2038c0))
+* **frontend:** support for automated build ([64f68eb4](https://github.com/ghachey/candy-basket/commit/64f68eb4dd634e788e92d6ea1b5568771ca18133))
+
+
+#### Breaking Changes
+
+* Since several of the development packages were updated
+and code updated as a consequence it will be necessary to re-install all
+bower and npm packages. This is easily done by removing
+
+frontend/bower_components
+frontend/node_modules
+
+and then executing:
+
+bower install & npm install
+ ([64f68eb4](https://github.com/ghachey/candy-basket/commit/64f68eb4dd634e788e92d6ea1b5568771ca18133))
 
