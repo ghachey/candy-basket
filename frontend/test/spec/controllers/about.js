@@ -22,7 +22,7 @@ describe('Controller: About', function () {
       $scope = $rootScope.$new();
       $timeout = _$timeout_;
       $location = _$location_;
-      metaMock.getMeta.andReturn($q.when(mockedMetaData));
+      metaMock.getMeta.and.returnValue($q.when(mockedMetaData));
 
       About = $controller('About', {
         $scope: $scope,

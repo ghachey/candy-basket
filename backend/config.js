@@ -67,9 +67,9 @@ var config = {
       name: 'nasaraCandyBasketApi'
     },
     url: 'https://localhost',
-    port: 443,
-//    key: fs.readFileSync('path/to/production/key'),
-//    cert: fs.readFileSync('path/to/production/cert'),
+    port: 4443,
+    key: fs.readFileSync('certificates/nasara-backend-development.key'), // change
+    cert: fs.readFileSync('certificates/nasara-backend-development.crt'), // change
     backendUser: 'candy',
     backendPassword: 'P@55word',
     dbUrl: 'http://localhost:5984/',
@@ -78,7 +78,7 @@ var config = {
     // Can take exact strings and regexes
     // DO NOT INCLUDE TRAILING SLASH
     corsOptions: {
-      'origin': 'https://candy.pacificpolicy.org' // production frontend
+      'origin': 'https://candy.pacificpolicy.org.ph' // production frontend
     },
     webdavServer : { // ownCloud test instance
         'host' : 'arc.ghachey.info',

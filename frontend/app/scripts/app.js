@@ -17,17 +17,20 @@
 angular
   .module('nasaraCandyBasketApp', [
     /* Angular modules */
-    'ngAnimate', 
-    'ngRoute', 
+    'ngAnimate',
+    'ngCookies',
     'ngResource', 
+    'ngRoute', 
     'ngSanitize',
+    'ngTouch',
     /* Third party modules */
     'ui.bootstrap', 
     'ui.tinymce', 
     'ui.slider',
     'angularFileUpload',
     /* Our own reusable modules */
-    'pippTimelineDirectives'
+    'pippTimelineDirectives',
+    'config'
   ])
   .config(['$routeProvider', '$httpProvider', function ($routeProvider, $httpProvider) {
     $routeProvider
@@ -42,6 +45,10 @@ angular
 			          controller: 'CandyListTable'})
       .when('/candy-list-timeline', {templateUrl: 'views/candy-list-timeline.html',
 				     controller: 'CandyListTimeline'})
+      .when('/about', {
+        templateUrl: 'views/about.html',
+        controller: 'AboutCtrl'
+      })
       .otherwise({redirectTo: '/candy-list-timeline'});
 
     // http://stackoverflow.com/questions/17289195/angularjs-post-data-to-external-rest-api

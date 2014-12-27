@@ -37,7 +37,7 @@ describe('Controller: CandyModal', function () {
                      $q, _$timeout_) {
       $scope = $rootScope.$new();
       $timeout = _$timeout_;
-      stateTrackerMock.state.andReturn($q.when(mockedStateTrackerData));
+      stateTrackerMock.state.and.returnValue($q.when(mockedStateTrackerData));
 
       CandyModal = $controller('CandyModal', {
         $scope: $scope,

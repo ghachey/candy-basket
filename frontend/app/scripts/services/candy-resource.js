@@ -8,8 +8,8 @@
  * Factory in the nasaraCandyBasketApp.
  */
 angular.module('nasaraCandyBasketApp')
-  .factory('CandyResource', function ($resource, config) {
-    var candyResourceWs = config.backendUrl + '/basket/candies/:_id';
+  .factory('CandyResource', function ($resource, ENV) {
+    var candyResourceWs = ENV.backendUrl + '/basket/candies/:_id';
 
     /* Return a resource ready for RESTful CRUD operations */
     return $resource(candyResourceWs, {}, {

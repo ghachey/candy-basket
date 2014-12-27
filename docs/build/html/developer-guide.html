@@ -148,6 +148,85 @@ the CouchDB admin web UI.</p>
 unit tests and the views are also programmatically created before they
 are used.</p>
 </div>
+<div class="section" id="grunt">
+<h3>Grunt<a class="headerlink" href="#grunt" title="Permalink to this headline">¶</a></h3>
+<p><a class="reference external" href="http://gruntjs.com/">Grunt</a> is use to automate a number of time
+consuming tasks. It takes a while to learn but is well worth the
+efforts. Included here is a short list of things you will use grunt
+for.</p>
+<div class="section" id="grunt-on-the-backend">
+<h4>Grunt on the backend<a class="headerlink" href="#grunt-on-the-backend" title="Permalink to this headline">¶</a></h4>
+<p>First, from the <cite>backend</cite> directory you can execute tests and serve
+the backend application.</p>
+<p>To run the tests from the backend you will need two terminals since
+these contain also integration tests in addition to unit tests. In
+both terminals you should set the NODE_ENV to &#8216;test&#8217; like this:</p>
+<div class="highlight-python"><div class="highlight"><pre>[user]$ export NODE_ENV=test
+</pre></div>
+</div>
+<p>In one terminal serve the test backend:</p>
+<div class="highlight-python"><div class="highlight"><pre>[user]$ grunt serve
+</pre></div>
+</div>
+<p>And the other terminal you run the tests. Those tests will run against
+a test environment (with a test database as configured in
+<cite>backend/config.js</cite>):</p>
+<div class="highlight-python"><div class="highlight"><pre>[user]$ grunt test
+</pre></div>
+</div>
+<p>When simply developing you should only need one terminal to serve the
+backend application. But you need to switch the environment to
+development wih the following:</p>
+<div class="highlight-python"><div class="highlight"><pre>[user]$ export NODE_ENV=development
+</pre></div>
+</div>
+<p>And then you can server the backend for development with this:</p>
+<div class="highlight-python"><div class="highlight"><pre>[user]$ grunt serve
+</pre></div>
+</div>
+</div>
+<div class="section" id="grunt-on-the-frontend">
+<h4>Grunt on the frontend<a class="headerlink" href="#grunt-on-the-frontend" title="Permalink to this headline">¶</a></h4>
+<p>In the frontend, things are very similar. But currently you can only
+switch from development to production environments (the test
+environment will work equally in both since they are only unit tests
+not dependent on external database and other variants). And not only
+that, the switching between production and development environment is
+automatic whether you tell grunt to test, serve or deploy. So, all you
+reall need in the frontend currently is to run a development web
+server:</p>
+<div class="highlight-python"><div class="highlight"><pre>[user]$ grunt serve
+</pre></div>
+</div>
+<p>To run your tests you can:</p>
+<div class="highlight-python"><div class="highlight"><pre>[user]$ grunt test
+</pre></div>
+</div>
+<p>To build the frontend for production (this is only currently available
+for frontend where it is more important):</p>
+<div class="highlight-python"><div class="highlight"><pre>[user]$ grunt
+</pre></div>
+</div>
+<p>The build will first make sure jshint and tests all pass and then do
+an impressive number of optimisations to the application and package
+it in <cite>frontend/dist</cite>.</p>
+</div>
+<div class="section" id="grunt-globally-in-app-root">
+<h4>Grunt globally in app root<a class="headerlink" href="#grunt-globally-in-app-root" title="Permalink to this headline">¶</a></h4>
+<p>Finally, work as also commenced on automating some other tasks in the
+root of the candy-basket application. Currently, it only generates a
+CHANGELOG.md file automatically and build some Angular documents with
+the following commands respectively:</p>
+<div class="highlight-python"><div class="highlight"><pre>[user]$ grunt
+[user]$ grunt docs
+</pre></div>
+</div>
+<p>But this grunt section will eventually properly build all
+documentation (frontend, backend, user docs), package them for
+production builds, runs tests, jshints and build both backend and
+frontend in a uniform and fully automated way.</p>
+</div>
+</div>
 <div class="section" id="dependencies">
 <h3>Dependencies<a class="headerlink" href="#dependencies" title="Permalink to this headline">¶</a></h3>
 <p>This application has a number of dependencies but they can all easily
@@ -225,7 +304,7 @@ on CB.</p>
 should be done in a branch, not on master. For example, let&#8217;s say
 we&#8217;re tackling issue #3 from the issue tracking system (Trac, Github
 Issues, etc.) you should <a class="reference external" href="http://www.git-scm.com/book/en/Git-Branching-Basic-Branching-and-Merging">create a branch</a>
-like this <a class="reference internal" href="#pro-git" id="id2">[PRO-GIT]</a>:</p>
+like this <a class="reference internal" href="#pro-git" id="id3">[PRO-GIT]</a>:</p>
 <div class="highlight-python"><div class="highlight"><pre>[user]$ git checkout -b issue3
 </pre></div>
 </div>
@@ -241,7 +320,7 @@ achieving this is to squash all your local commits from your <em>issue3</em>
 branch into a single properly formatted commit before publishing
 changes and doing a pull request to master.</p>
 <p><a class="reference external" href="http://www.git-scm.com/book/en/Git-Tools-Rewriting-History#Squashing-Commits">Squashing commits</a>
-in git is straight forward <a class="reference internal" href="#pro-git" id="id3">[PRO-GIT]</a>. However, the consolidated
+in git is straight forward <a class="reference internal" href="#pro-git" id="id4">[PRO-GIT]</a>. However, the consolidated
 commit must follow the following conventions adapted from <a class="reference external" href="https://docs.google.com/document/d/1QrDFcIiPjSLDn3EL15IJygNPiHORgU1_OOAqWjiDU5Y/edit#">Google
 project AngularJS</a>
 which will greatly enhanced the historical information on master and
@@ -495,7 +574,7 @@ capable of talking to the backend.</p>
 <p>The backend is written entirely in the Javascript programming language
 implementing a simple RESTful service. The backend is a RESTful
 service following a Resource Oriented Architecture (ROA) as defined in
-<a class="reference internal" href="#rest-serv" id="id4">[REST-SERV]</a>. The following tables describe its service. Note that no
+<a class="reference internal" href="#rest-serv" id="id5">[REST-SERV]</a>. The following tables describe its service. Note that no
 API version number is included in the URI; it will be included in the
 host as <a class="reference external" href="http://candy-restapi-v1.pacificpolicy.org.vu/">http://candy-restapi-v1.pacificpolicy.org.vu/</a>.</p>
 <div class="section" id="user-account-service">
@@ -515,17 +594,6 @@ authenticated staff.</p>
 <p>The services offer no CRUD operations on users at the moment as this
 is considered to be done using an external service (Active Directory,
 OpenLDAP).</p>
-</div>
-<div class="section" id="service-security">
-<h4>Service Security<a class="headerlink" href="#service-security" title="Permalink to this headline">¶</a></h4>
-<p>The backend currently supports only HTTP Basic Authentication on every
-single endpoint. It is critical to properly setup SSL/TLS to encrypt
-all communication between the client (frontend) and the server
-(backend). It makes use of a single user called <cite>candy</cite> to
-authenticate the frontend with the backend. Therefore, users
-authenticated to the frontend through some LDAP single sign-on
-mechanism will then automatically have access to data from backend. In
-other words, no access to frontend, no access to backend either.</p>
 </div>
 <div class="section" id="source-candies-service">
 <h4>Source (Candies) Service<a class="headerlink" href="#source-candies-service" title="Permalink to this headline">¶</a></h4>
@@ -783,6 +851,58 @@ constantly improving its security status quo.</p>
 <p>If you are interested in helping contribute code to Candy Basket we
 provide some mininum security related recommendations, guidelines and
 procedures to follow.</p>
+<div class="section" id="authentication">
+<h3>Authentication<a class="headerlink" href="#authentication" title="Permalink to this headline">¶</a></h3>
+<p>The backend currently supports only HTTP Basic Authentication on every
+single endpoint. It is critical to properly setup SSL/TLS to encrypt
+all communication between the client (frontend) and the server
+(backend). It makes use of a single user called <cite>candy</cite> to
+authenticate the frontend with the backend which is configurable in
+<cite>backend/config.js</cite>. Therefore, users authenticated to the frontend
+through some LDAP single sign-on mechanism will then automatically
+have access to data from backend. In other words, no access to
+frontend, no access to backend either.</p>
+</div>
+<div class="section" id="ssl-tls-encryption">
+<h3>SSL/TLS Encryption<a class="headerlink" href="#ssl-tls-encryption" title="Permalink to this headline">¶</a></h3>
+<p>This application is moving towards a strict and mandatory use of
+encryption throughout all its the various components .  Self-signed
+keys and certificates are used for development and test and the
+equivalent of curl&#8217;s &#8211;insecure flag is set when executing requests in
+those modes. This insecure flag is off by default in production.</p>
+<div class="section" id="owncloud">
+<h4>ownCloud<a class="headerlink" href="#owncloud" title="Permalink to this headline">¶</a></h4>
+<p>Candy Basket uses ownCloud as file storage. Connections to ownCloud
+must be encrypted. Developers can use their own local ownCloud server
+for development and test though will have to include their own
+certificate in the <cite>backend/certificates</cite> directory and change the
+config.js. The certificate to make use of the pacificpolicy.org
+ownCloud server is also included. Casre must be taken with the
+configuration of the ownCloud server to enforce secure connections at
+all times.</p>
+</div>
+<div class="section" id="nasara-backend">
+<h4>Nasara backend<a class="headerlink" href="#nasara-backend" title="Permalink to this headline">¶</a></h4>
+<p>The backend now also supports encryption. In fact, it only listens on
+https, period (port 3003 for test and development and 443 for
+production). A set of development keys was generated which can be use
+for just development and test without change in the
+<cite>backend/config.js</cite>. Both the private key and public certificate are
+committed to the repo for development and test convenience. Needless
+to say they should not be used in production. A new set should be
+used, either self signed or both from a CA depending on the context
+and target users.</p>
+</div>
+<div class="section" id="nasara-frontend">
+<h4>Nasara frontend<a class="headerlink" href="#nasara-frontend" title="Permalink to this headline">¶</a></h4>
+<p>To access the backend with the self-signed certificate in development
+from AngularJS the browser needs to confirm the insecure connection
+(like curl&#8217;s &#8211;insecure or NodeJS&#8217;s
+process.env.NODE_TLS_REJECT_UNAUTHORIZED = &#8216;0&#8217;). Only once you will
+have to point the browser directly to the backend by putting the
+address <cite>https://localhost:3003/</cite> in the URL address bar.</p>
+</div>
+</div>
 <div class="section" id="latest-top-10-security-risks">
 <h3>Latest Top 10 Security Risks<a class="headerlink" href="#latest-top-10-security-risks" title="Permalink to this headline">¶</a></h3>
 <p>An initial security assessment determined that this application was
@@ -1059,7 +1179,7 @@ tools.</p>
 <table class="docutils citation" frame="void" id="rest-serv" rules="none">
 <colgroup><col class="label" /><col /></colgroup>
 <tbody valign="top">
-<tr><td class="label"><a class="fn-backref" href="#id4">[REST-SERV]</a></td><td>Leonard Richardson and Sam Ruby, RESTful Web Services, O’Reilly, May 2007.</td></tr>
+<tr><td class="label"><a class="fn-backref" href="#id5">[REST-SERV]</a></td><td>Leonard Richardson and Sam Ruby, RESTful Web Services, O’Reilly, May 2007.</td></tr>
 </tbody>
 </table>
 <table class="docutils citation" frame="void" id="fhs" rules="none">
@@ -1071,7 +1191,7 @@ tools.</p>
 <table class="docutils citation" frame="void" id="pro-git" rules="none">
 <colgroup><col class="label" /><col /></colgroup>
 <tbody valign="top">
-<tr><td class="label">[PRO-GIT]</td><td><em>(<a class="fn-backref" href="#id2">1</a>, <a class="fn-backref" href="#id3">2</a>)</em> Scott Chacon, Pro Git,Available at <a class="reference external" href="http://www.git-scm.com/book">http://www.git-scm.com/book</a>,</td></tr>
+<tr><td class="label">[PRO-GIT]</td><td><em>(<a class="fn-backref" href="#id3">1</a>, <a class="fn-backref" href="#id4">2</a>)</em> Scott Chacon, Pro Git,Available at <a class="reference external" href="http://www.git-scm.com/book">http://www.git-scm.com/book</a>,</td></tr>
 </tbody>
 </table>
 <p>Apress.</p>
@@ -1098,6 +1218,12 @@ tools.</p>
 <li><a class="reference internal" href="#development-tools">Development Tools</a></li>
 <li><a class="reference internal" href="#nodejs-and-npm">NodeJS and NPM</a></li>
 <li><a class="reference internal" href="#id1">CouchDB</a></li>
+<li><a class="reference internal" href="#grunt">Grunt</a><ul>
+<li><a class="reference internal" href="#grunt-on-the-backend">Grunt on the backend</a></li>
+<li><a class="reference internal" href="#grunt-on-the-frontend">Grunt on the frontend</a></li>
+<li><a class="reference internal" href="#grunt-globally-in-app-root">Grunt globally in app root</a></li>
+</ul>
+</li>
 <li><a class="reference internal" href="#dependencies">Dependencies</a></li>
 </ul>
 </li>
@@ -1109,7 +1235,6 @@ tools.</p>
 <li><a class="reference internal" href="#high-level-architecture">High Level Architecture</a><ul>
 <li><a class="reference internal" href="#backend-the-restful-service">Backend &#8211; The RESTful Service</a><ul>
 <li><a class="reference internal" href="#user-account-service">User Account Service</a></li>
-<li><a class="reference internal" href="#service-security">Service Security</a></li>
 <li><a class="reference internal" href="#source-candies-service">Source (Candies) Service</a></li>
 <li><a class="reference internal" href="#utilities-service">Utilities Service</a></li>
 </ul>
@@ -1120,6 +1245,13 @@ tools.</p>
 <li><a class="reference internal" href="#low-level-documentation-and-api">Low Level Documentation and API</a></li>
 <li><a class="reference internal" href="#documentation">Documentation</a></li>
 <li><a class="reference internal" href="#security-considerations">Security Considerations</a><ul>
+<li><a class="reference internal" href="#authentication">Authentication</a></li>
+<li><a class="reference internal" href="#ssl-tls-encryption">SSL/TLS Encryption</a><ul>
+<li><a class="reference internal" href="#owncloud">ownCloud</a></li>
+<li><a class="reference internal" href="#nasara-backend">Nasara backend</a></li>
+<li><a class="reference internal" href="#nasara-frontend">Nasara frontend</a></li>
+</ul>
+</li>
 <li><a class="reference internal" href="#latest-top-10-security-risks">Latest Top 10 Security Risks</a><ul>
 <li><a class="reference internal" href="#injection">Injection</a></li>
 <li><a class="reference internal" href="#broken-authentication-and-session-management">Broken Authentication and Session Management</a></li>
@@ -1179,7 +1311,7 @@ tools.</p>
     </div>
     <div class="footer">
         &copy; Copyright 2013, Ghislain Hachey and Dan McGarry.
-      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.2.3.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.2.2.
     </div>
   </body>
 </html>

@@ -1,4 +1,4 @@
-// Generated on 2014-08-19 using generator-angular 0.9.5
+// Generated on 2014-12-27 using generator-angular 0.10.0
 'use strict';
 
 // # Globbing
@@ -26,6 +26,39 @@ module.exports = function (grunt) {
 
     // Project settings
     yeoman: appConfig,
+
+    // Used to define environment variables in test, development and production
+    ngconstant: {
+      // Options for all targets
+      options: {
+        space: '  ',
+        wrap: '\'use strict\';\n\n {%= __ngModule %}',
+        name: 'config'
+      },
+      // Environment targets
+      development: {
+        options: {
+          dest: '<%= yeoman.app %>/scripts/config.js'
+        },
+        constants: {
+          ENV: {
+            name: 'development',
+            backendUrl: 'https://localhost:3003'
+          }
+        }
+      },
+      production: {
+        options: {
+          dest: '<%= yeoman.dist %>/scripts/config.js'
+        },
+        constants: {
+          ENV: {
+            name: 'production',
+            backendUrl: 'https://localhost:4443'
+          }
+        }
+      }
+    },
 
     // Watches files for changes and runs tasks based on the changed files
     watch: {
@@ -138,7 +171,7 @@ module.exports = function (grunt) {
           src: [
             '.tmp',
             '<%= yeoman.dist %>/{,*/}*',
-            '!<%= yeoman.dist %>/.git*'
+            '!<%= yeoman.dist %>/.git{,*/}*'
           ]
         }]
       },
@@ -205,6 +238,14 @@ module.exports = function (grunt) {
       css: ['<%= yeoman.dist %>/styles/{,*/}*.css'],
       options: {
         assetsDirs: ['<%= yeoman.dist %>','<%= yeoman.dist %>/images']
+        // blockReplacements: {
+        //   css: function (block) {
+        //     grunt.log.debug('block.dest: ' + JSON.stringify(block.dest));
+        //     grunt.log.debug('filerev.sum: ' + JSON.stringify(grunt.filerev.summary));
+
+        //     return '<script src="'+block.dest+'"></script>';
+        //   }
+        // }
       }
     },
 
@@ -274,15 +315,14 @@ module.exports = function (grunt) {
       }
     },
 
-    // ngmin tries to make the code safe for minification automatically by
-    // using the Angular long form for dependency injection. It doesn't work on
-    // things like resolve or inject so those have to be done manually.
-    ngmin: {
+    // ng-annotate tries to make the code safe for minification automatically
+    // by using the Angular long form for dependency injection.
+    ngAnnotate: {
       dist: {
         files: [{
           expand: true,
           cwd: '.tmp/concat/scripts',
-          src: '*.js',
+          src: ['*.js', '!oldieshim.js'],
           dest: '.tmp/concat/scripts'
         }]
       }
@@ -298,30 +338,64 @@ module.exports = function (grunt) {
     // Copies remaining files to places other tasks can use
     copy: {
       dist: {
-        files: [{
-          expand: true,
-          dot: true,
-          cwd: '<%= yeoman.app %>',
-          dest: '<%= yeoman.dist %>',
-          src: [
-            '*.{ico,png,txt}',
-            '.htaccess',
-            '*.html',
-            'views/{,*/}*.html',
-            'images/{,*/}*.{webp}',
-            'fonts/*'
-          ]
-        }, {
-          expand: true,
-          cwd: '.tmp/images',
-          dest: '<%= yeoman.dist %>/images',
-          src: ['generated/*']
-        }, {
-          expand: true,
-          cwd: 'bower_components/bootstrap/dist',
-          src: 'fonts/*',
-          dest: '<%= yeoman.dist %>'
-        }]
+        files: [
+          {
+            expand: true,
+            dot: true,
+            cwd: '<%= yeoman.app %>',
+            dest: '<%= yeoman.dist %>',
+            src: [
+              '*.{ico,png,txt}',
+              '.htaccess',
+              '*.html',
+              'views/{,*/}*.html',
+              'images/{,*/}*.{webp}',
+              'fonts/{,*/}*.*'
+            ]
+          }, 
+          {
+            expand: true,
+            cwd: '.tmp/images',
+            dest: '<%= yeoman.dist %>/images',
+            src: ['generated/*']
+          }, 
+          {
+            expand: true,
+            cwd: 'bower_components/bootstrap/dist',
+            src: 'fonts/*',
+            dest: '<%= yeoman.dist %>'
+          }, 
+          // Starting here some custom extras. I am copying some
+          // files (and wait for it, check this coming) where
+          // they are expected to be on the generated build. I
+          // would prefer to dump all of them in proper places
+          // (e.g. images/) and *properly* re-referencing them
+          // in the concatenated and minified vendor.HASH.css
+          // file. But see, grunt-usemin uses regexes to parse
+          // HTML and this is just wrong and was making me very
+          // upset as I had to go down a rabbit whole I did not
+          // want to. Instead of going down that rabbit whole I
+          // decided I would make an ugly compromise with this
+          // note and with hope that grunt-usemin will be killed
+          // and replaced by some HTML parser-based solution
+          // instead of regexes. Then I'll make this build stuff
+          // pretty.
+          // 
+          // --
+          // GH
+          { 
+            expand: true,
+            cwd: 'bower_components/jquery-ui/themes/blitzer',
+            src: 'images/*',
+            dest: '<%= yeoman.dist %>/styles'
+          },
+          { 
+            expand: true,
+            cwd: 'bower_components/TimelineJS/build/css',
+            src: '*.{gif,png}',
+            dest: '<%= yeoman.dist %>/styles'
+          }
+        ]
       },
       styles: {
         expand: true,
@@ -363,6 +437,7 @@ module.exports = function (grunt) {
 
     grunt.task.run([
       'clean:server',
+      'ngconstant:development',
       'wiredep',
       'concurrent:server',
       'autoprefixer',
@@ -378,6 +453,7 @@ module.exports = function (grunt) {
 
   grunt.registerTask('test', [
     'clean:server',
+    'ngconstant:development', // Add testing environment?
     'concurrent:test',
     'autoprefixer',
     'connect:test',
@@ -386,12 +462,13 @@ module.exports = function (grunt) {
 
   grunt.registerTask('build', [
     'clean:dist',
+    'ngconstant:production',
     'wiredep',
     'useminPrepare',
     'concurrent:dist',
     'autoprefixer',
     'concat',
-    'ngmin',
+    'ngAnnotate',
     'copy:dist',
     'cdnify',
     'cssmin',

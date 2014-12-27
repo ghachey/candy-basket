@@ -7,10 +7,10 @@ describe('Service: meta', function () {
 
   // instantiate service with a mocked HTTP backend
   var meta, wsUrl, mockedBackend;
-  beforeEach(inject(function (_meta_, $httpBackend, config) {
+  beforeEach(inject(function (_meta_, $httpBackend, ENV) {
     meta = _meta_;
     mockedBackend = $httpBackend;
-    wsUrl = config.backendUrl;
+    wsUrl = ENV.backendUrl;
   }));
 
   // cleanup
