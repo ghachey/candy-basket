@@ -69,7 +69,8 @@ var validateCandy = function(candy) {
     protocols: ['http','https','ftp'], 
     require_tld: false, 
     require_protocol: false, 
-    allow_underscores: false 
+    allow_underscores: false,
+    allow_trailing_dot: true
   };
   /* jshint ignore:end */
 
