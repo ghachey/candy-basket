@@ -1,6 +1,6 @@
 {
-  "name": "nasaracandybasket",
-  "version": "0.3.0",
+  "name": "nasara-candy-basket-frontend-dev",
+  "version": "0.3.1",
   "dependencies": {},
   "devDependencies": {
     "grunt": "^0.4.1",

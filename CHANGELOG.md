@@ -1,11 +1,12 @@
 <a name="0.3.0"></a>
-## 0.3.0 (2014-12-27)
+## 0.3.0 (2014-12-28)
 
 
 #### Bug Fixes
 
 * **CandyListTimeline:** Fix bug when deleting and then updating candies ([b552abf8](https://github.com/ghachey/candy-basket/commit/b552abf8c185ccb498636908e8d7328d51af34eb), closes [#3](https://github.com/ghachey/candy-basket/issues/3))
 * **candyListController:** fix slide index issue when using go to end ([b14ab57d](https://github.com/ghachey/candy-basket/commit/b14ab57dfaa330edc5c9267ab65285d323e27a35), closes [#9](https://github.com/ghachey/candy-basket/issues/9))
+* **controllers.js:** relax backend URL validation to match frontend ([c8378790](https://github.com/ghachey/candy-basket/commit/c83787907ce97970f8bc0b57abdaae852b83dcdf), closes [#1](https://github.com/ghachey/candy-basket/issues/1))
 * **styles:** progress bars display problem ([80f56b7a](https://github.com/ghachey/candy-basket/commit/80f56b7a35b5e6485d6dd1ea92e42f8fb837273f), closes [#17](https://github.com/ghachey/candy-basket/issues/17))
 
 
