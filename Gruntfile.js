@@ -6,10 +6,10 @@ module.exports = function(grunt) {
 
     changelog: {
       options: {
-        repository: 'https://github.com/ghachey/candy-basket',
+        repository: 'https://github.com/ghachey/candy-basket'
         //grep: '^feat|^fix|^docs|^style|^refactor|^test|^chore|BREAKING', // not supported
-        from: 'be0b17a329e53d9613554c402b08a0be36f45528',
-        to: 'HEAD'
+        // from: 'be0b17a329e53d9613554c402b08a0be36f45528',
+        // to: 'HEAD'
       }
     },
 
@@ -77,10 +77,10 @@ module.exports = function(grunt) {
   // Tasks.
   grunt.registerTask('docs', ['clean:ngdocs', 'ngdocs']);
   grunt.registerTask('serve-docs', ['clean:ngdocs', 'ngdocs', 'connect']);
-  grunt.registerTask('history', ['clean:changelog', 'changelog']);
+  grunt.registerTask('history', ['changelog']);
   
   // Other tasks used from grunt-release (https://github.com/geddski/grunt-release)
-  // grunt release:path
+  // grunt release:patch
   // grunt release:minor
   // grunt release:major
   // grunt release:prerelease

@@ -32,11 +32,11 @@
 and code updated as a consequence it will be necessary to re-install all
 bower and npm packages. This is easily done by removing
 
-frontend/bower_components
-frontend/node_modules
+  frontend/bower_components
+  frontend/node_modules
 
 and then executing:
 
-bower install & npm install
+  bower install & npm install
  ([64f68eb4](https://github.com/ghachey/candy-basket/commit/64f68eb4dd634e788e92d6ea1b5568771ca18133))
 
