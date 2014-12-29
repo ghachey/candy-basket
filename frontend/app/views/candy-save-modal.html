@@ -4,22 +4,22 @@
       <h3>{{operation}} source</h3>
     </div>
     <div class="modal-body">
-      <form class="form-horizontal" name="candyform" novalidate="novalidate" role="form">
+      <form class="form-horizontal" name="candyform" novalidate role="form">
 	<div class="form-group">
 	  <label class="col-md-2 control-label" for="inputSource">Source:</label>
 	  <div class="col-md-10">
             <div class="input-group">
-	      <input class="form-control" type="url" id="inputSource" name="source"
+	      <input class="form-control" type="url" id="inputSource" name="cSource"
 		     ng-model="candy.source" required />
-	      <div class="input-group-addon" ng-show="candyform.source.$invalid || (candyform.source.$dirty && candyform.source.$invalid)">
-                <span class="required" ng-show="candyform.source.$invalid || candyform.source.$error.required">✗</span>
+	      <div class="input-group-addon" ng-show="candyform.cSource.$invalid || (candyform.cSource.$dirty && candyform.cSource.$invalid)">
+                <span class="required" ng-show="candyform.cSource.$invalid || candyform.cSource.$error.required">✗</span>
               </div>
-	      <div class="input-group-addon ok" ng-show="candyform.source.$valid">
+	      <div class="input-group-addon ok" ng-show="candyform.cSource.$valid">
                 ✔
               </div>
             </div>
-	    <div ng-show="candyform.source.$dirty && candyform.source.$invalid">
-              <span class="help-block error" ng-show="candyform.source.$error.url">Not a valid url</span>
+	    <div ng-show="candyform.cSource.$dirty && candyform.cSource.$invalid">
+              <span class="help-block error" ng-show="candyform.cSource.$error.url">Not a valid url</span>
             </div>
 	  </div>
 	</div>
@@ -128,12 +128,12 @@
 	  <label class="col-md-2 control-label" for="inputTitle">Title:</label>
 	  <div class="col-md-10">
             <div class="input-group">
-	      <input class="form-control" type="text" id="inputTitle" name="title"
+	      <input class="form-control" type="text" id="inputTitle" name="cTitle"
 		     ng-model="candy.title" required/>
-	      <div class="input-group-addon" ng-show="candyform.title.$invalid">
-                <span class="required" ng-show="candyform.title.$error.required">✗</span>
+	      <div class="input-group-addon" ng-show="candyform.cTitle.$invalid">
+                <span class="required" ng-show="candyform.cTitle.$error.required">✗</span>
 	      </div>
-	      <div class="input-group-addon ok" ng-show="candyform.title.$valid">
+	      <div class="input-group-addon ok" ng-show="candyform.cTitle.$valid">
                 ✔
               </div>
             </div>
@@ -143,13 +143,13 @@
 	  <label class="col-md-2 control-label" for="inputDescription">Description:</label>
 	  <div class="col-md-10">
             <div class="input-group">
-	      <textarea ui-tinymce="tinymceOptions" name="description" rows="8" style="width: 80%;" id="inputDescription"
+	      <textarea ui-tinymce="tinymceOptions" name="cDescription" rows="8" style="width: 80%;" id="inputDescription"
 		        ng-model="candy.description" required></textarea>
 	      <div>{{tinymce}}</div>
-	      <div class="input-group-addon" ng-show="candyform.description.$invalid">
-                <span class="required" ng-show="candyform.description.$error.required">✗</span>
+	      <div class="input-group-addon" ng-show="candyform.cDescription.$invalid">
+                <span class="required" ng-show="candyform.cDescription.$error.required">✗</span>
 	      </div>
-	      <div class="input-group-addon ok" ng-show="candyform.description.$valid">
+	      <div class="input-group-addon ok" ng-show="candyform.cDescription.$valid">
                 ✔
               </div>
             </div>
@@ -158,10 +158,16 @@
 	<div class="form-group">
 	  <label class="col-md-2 control-label" for="inputTags">Tags:</label>
 	  <div class="col-md-10">
-            <div class="input-group">
-	      <taglist tag-data="candy.tags" taglist-blur-timeout="250" required>
-       	        <input class="form-control" ng-model="selected1" typeahead="tag for tag in tagsData.tags | filter:$viewValue"/>
+            <div class="input-group taglist-in-modal">
+	      <taglist tag-data="candy.tags" taglist-blur-timeout="250">
+       	        <input class="form-control" name="cTags" ng-model="selected1" type="text" typeahead="tag for tag in tagsData.tags | filter:$viewValue" has-tags />
 	      </taglist>
+	      <div class="input-group-addon" ng-show="candyform.cTags.$invalid">
+                <span class="required" ng-show="candyform.cTags.$error.hasTags">✗</span>
+	      </div>
+	      <div class="input-group-addon ok" ng-show="candyform.cTags.$valid">
+                ✔
+              </div>
             </div>
 	  </div>
 	</div>
@@ -178,6 +184,7 @@
       </div>
 
       <button class="btn btn-primary" title="Save this candy"
+              ng-disabled="candyform.$invalid"
 	      ng-click="saveCandy()">Save</button>
       <button class="btn btn-default"
 	      ng-click="cancel()">Cancel</button>

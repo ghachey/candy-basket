@@ -110,7 +110,7 @@ describe('Filter: candiesAfterDate', function () {
     var cutoff1 = new Date(2013,11,4);
     var cutoff2 = new Date(2013,11,9);
     expect(candiesAfterDate(candiesSample, cutoff1)).toEqual(candiesSample.slice(2,6));
-    expect(candiesAfterDate(candiesSample, cutoff2)).toEqual(candiesSample.slice(4,6));
+    expect(candiesAfterDate(candiesSample, cutoff2)).toEqual(candiesSample.slice(3,6));
   });
 
 });
