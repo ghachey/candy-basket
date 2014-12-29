@@ -5,10 +5,11 @@
 #### Bug Fixes
 
 * **Gruntfile:** fix Grunt release work-flow ([ba478d73](https://github.com/ghachey/candy-basket/commit/ba478d735df2d071cc293a92c7e85a0499a97337))
+* **frontend:** fix and enhance candy modal tags input box ([21f232d7](https://github.com/ghachey/candy-basket/commit/21f232d7696483660f6cf1c4517ff703f70bbaa1), closes [#12](https://github.com/ghachey/candy-basket/issues/12))
 
 
-<a name="0.3.1"></a>
-### 0.3.1 (2014-12-28)
+<a name="0.3.2"></a>
+### 0.3.2 (2014-12-29)
 
 
 #### Bug Fixes

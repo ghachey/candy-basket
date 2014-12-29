@@ -6,10 +6,12 @@ module.exports = function(grunt) {
 
     changelog: {
       options: {
-        repository: 'https://github.com/ghachey/candy-basket'
+        repository: 'https://github.com/ghachey/candy-basket',
         //grep: '^feat|^fix|^docs|^style|^refactor|^test|^chore|BREAKING', // not supported
-        // from: 'be0b17a329e53d9613554c402b08a0be36f45528',
-        // to: 'HEAD'
+        // Change from to previous tag (not the last release but the one before)
+        from: 'f9a573e8a335d8d9b48896cca38571d023c6fcf3',
+        // Keep this to HEAD or change as needed
+        to: 'HEAD'
       }
     },
 
