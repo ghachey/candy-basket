@@ -1,3 +1,12 @@
+<a name="0.3.2"></a>
+### 0.3.2 (2014-12-29)
+
+
+#### Bug Fixes
+
+* **Gruntfile:** fix Grunt release work-flow ([ba478d73](https://github.com/ghachey/candy-basket/commit/ba478d735df2d071cc293a92c7e85a0499a97337))
+
+
 <a name="0.3.1"></a>
 ### 0.3.1 (2014-12-28)
 
