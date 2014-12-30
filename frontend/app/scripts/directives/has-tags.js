@@ -55,7 +55,7 @@ angular.module('nasaraCandyBasketApp')
           $timeout(function(){
             valid = (candy.tags === undefined) ? false : candy.tags.length !== 0;
             ctrl.$setValidity('hasTags', valid);
-          }, 500);
+          }, 1000);
 
           // return the value or nothing will be written to the DOM.
           return value;
