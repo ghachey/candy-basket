@@ -10,7 +10,8 @@
  * of a CandyModal works for saving (creating/updating) candies
  */
 var SaveCandyInstanceModal = function ($scope, $modalInstance, operation, candyId,
-                                       CandyResource, tagsViews, FileUploader) {
+                                       CandyResource, tagsViews, FileUploader,
+                                       ENV) {
   $scope.operation = operation;
   $scope.tinymceOptions = {
     menubar : false,
@@ -40,7 +41,10 @@ var SaveCandyInstanceModal = function ($scope, $modalInstance, operation, candyI
   var uploadedFiles = []; 
   // The Actual file upload service
   var uploader = $scope.uploader = new FileUploader({
-    url: 'http://localhost:3003/files' // Our own NodeJS backend
+    headers: {
+      'Authorization': 'Basic Y2FuZHk6UEA1NXdvcmQ='
+    },
+    url: ENV.backendUrl + '/files' // Our own NodeJS backend
   });
   // Filters can be added on allowed types of files
   uploader.filters.push({
@@ -57,6 +61,14 @@ var SaveCandyInstanceModal = function ($scope, $modalInstance, operation, candyI
   uploader.onCompleteItem = function(fileItem, response, status, headers) {
     console.info('onCompleteItem', fileItem, response, status, headers);
     uploadedFiles.push(response);
+  };
+
+  $scope.removeFile = function (filename) {
+    if ($scope.candy.files) {
+      $scope.candy.files = $scope.candy.files.filter(function(fileObject) {
+        return (fileObject.name !== filename);
+      });
+    }
   };
 
   $scope.saveCandy = function () {
