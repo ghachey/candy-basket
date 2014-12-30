@@ -117,12 +117,12 @@ var DeleteCandyInstanceModal = function ($scope, $modalInstance, operation, cand
  * @see http://angular-ui.github.io/bootstrap/  
  */
 angular.module('nasaraCandyBasketApp')
-  .controller('CandyModal', function ($scope, 
+  .controller('CandyModal', function ($scope,
+                                      stateTracker, 
                                       $rootScope, 
                                       $filter,
                                       $log, 
-                                      $modal,  
-                                      stateTracker) {
+                                      $modal) {
 
     $scope.open = function (operation, _id) {
 
@@ -132,7 +132,6 @@ angular.module('nasaraCandyBasketApp')
         var candies = [];
         var index = stateTracker.state.timelineValues.index;
         var candyIndex = index >= 1 ? index - 1 : 0;
-        //candies = $filter('candiesByTags')($scope.candies, $scope.tags, $scope.cutoff);
         candies = $filter('candiesByTags')($scope.candies, $scope.tags);
         candies = $filter('orderBy')(candies, 'date', false);
         _id = candies[candyIndex]._id;
@@ -142,7 +141,7 @@ angular.module('nasaraCandyBasketApp')
       
       var candyModalOperationCallback = function () {
         /* jshint ignore:start */
-        stateTracker.state.timelineValues['modal_open'] = false;
+        stateTracker.state.timelineValues.modal_open = false;
         /* jshint ignore:end */
         $log.info(logMsg + ' candy: ' + new Date());
         $rootScope.$broadcast('model-update');
@@ -150,7 +149,7 @@ angular.module('nasaraCandyBasketApp')
 
       var candyModalDismissedCallback = function () {        
         /* jshint ignore:start */
-        stateTracker.state.timelineValues['modal_open'] = false;
+        stateTracker.state.timelineValues.modal_open = false;
         /* jshint ignore:end */
         $log.info('Modal dismissed at: ' + new Date());
       };
@@ -170,6 +169,9 @@ angular.module('nasaraCandyBasketApp')
           }
         };
         modalInstance = $modal.open(modalOptions);
+        /* jshint ignore:start */
+        stateTracker.state.timelineValues.modal_open = true;
+        /* jshint ignore:end */       
         modalInstance.result.then(function (modalCandy) {
           modalCandy.$create(candyModalOperationCallback);
         }, candyModalDismissedCallback);
@@ -185,6 +187,9 @@ angular.module('nasaraCandyBasketApp')
           }
         };
         modalInstance = $modal.open(modalOptions);
+        /* jshint ignore:start */
+        stateTracker.state.timelineValues.modal_open = true;
+        /* jshint ignore:end */
         modalInstance.result.then(function (modalCandy) {
           modalCandy.$update(candyModalOperationCallback);
         }, candyModalDismissedCallback);
@@ -200,6 +205,9 @@ angular.module('nasaraCandyBasketApp')
           }
         };
         modalInstance = $modal.open(modalOptions);
+        /* jshint ignore:start */
+        stateTracker.state.timelineValues.modal_open = true;
+        /* jshint ignore:end */
         modalInstance.result.then(function (modalCandy) {
           modalCandy.$remove(candyModalOperationCallback);
           stateTracker.state.timelineValues.index =
