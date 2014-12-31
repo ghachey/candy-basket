@@ -67,19 +67,19 @@
 \contentsline {subsection}{\numberline {3.7.1}Authentication}{37}{subsection.3.7.1}
 \contentsline {subsection}{\numberline {3.7.2}SSL/TLS Encryption}{37}{subsection.3.7.2}
 \contentsline {subsubsection}{ownCloud}{37}{subsubsection*.9}
-\contentsline {subsubsection}{Nasara backend}{37}{subsubsection*.10}
+\contentsline {subsubsection}{Nasara backend}{38}{subsubsection*.10}
 \contentsline {subsubsection}{Nasara frontend}{38}{subsubsection*.11}
 \contentsline {subsection}{\numberline {3.7.3}Latest Top 10 Security Risks}{38}{subsection.3.7.3}
 \contentsline {subsubsection}{Injection}{38}{subsubsection*.12}
 \contentsline {subsubsection}{Broken Authentication and Session Management}{38}{subsubsection*.13}
 \contentsline {subsubsection}{XSS}{38}{subsubsection*.14}
-\contentsline {subsubsection}{Security Misconfiguration}{38}{subsubsection*.15}
+\contentsline {subsubsection}{Security Misconfiguration}{39}{subsubsection*.15}
 \contentsline {subsubsection}{Sensitive Data Exposure}{39}{subsubsection*.16}
 \contentsline {subsubsection}{Missing Function Level Access Control}{39}{subsubsection*.17}
 \contentsline {subsubsection}{Cross-Site Request Forgery (CSRF aka. XSRF)}{39}{subsubsection*.18}
-\contentsline {subsubsection}{Using Components with Known Vulnerabilities}{40}{subsubsection*.19}
+\contentsline {subsubsection}{Using Components with Known Vulnerabilities}{41}{subsubsection*.19}
 \contentsline {subsubsection}{Unvalidated Redirects and Forwards}{41}{subsubsection*.20}
 \contentsline {subsubsection}{Miscellaneous and Application Specific}{41}{subsubsection*.21}
-\contentsline {subsection}{\numberline {3.7.4}Integrated Penetration Testing}{41}{subsection.3.7.4}
+\contentsline {subsection}{\numberline {3.7.4}Integrated Penetration Testing}{42}{subsection.3.7.4}
 \contentsline {chapter}{\numberline {4}Indices and tables}{43}{chapter.4}
 \contentsline {chapter}{Bibliography}{45}{chapter*.23}

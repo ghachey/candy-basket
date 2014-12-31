@@ -15,19 +15,31 @@ module.exports = function(grunt) {
       }
     },
 
-    ngdocs: {
-      options: {
-        dest: 'frontend/app/docs',
-        //scripts: ['frontend/bower_components/angular/angular.js'],
-        html5Mode: true,
-        startPage: '/api',
-        title: 'Candy Basket Source Code Documentation'
-      },
-      api: {
-        src: ['frontend/app/**/*.js'],
-        title: 'Frontend API Documentation'
-      }
-    },
+    // Those docs generators are essentially useful for now.
+
+    // jsdoc : {
+    //   dist : {
+    //     src: ['backend/app/**/*.js', 'backend/test/specs/**/*.js', 
+    //           'frontend/app/**/*.js', 'frontend/test/spec/**/*.js'], 
+    //     options: {
+    //       destination: 'jsdoc-output'
+    //     }
+    //   }
+    // },
+
+    // ngdocs: {
+    //   options: {
+    //     dest: 'frontend/app/docs',
+    //     //scripts: ['frontend/bower_components/angular/angular.js'],
+    //     html5Mode: true,
+    //     startPage: '/api',
+    //     title: 'Candy Basket Source Code Documentation'
+    //   },
+    //   api: {
+    //     src: ['frontend/app/**/*.js'],
+    //     title: 'Frontend API Documentation'
+    //   }
+    // },
 
     connect: {
       options: {
@@ -65,21 +77,44 @@ module.exports = function(grunt) {
         //   passwordVar: 'GITHUB_PASSWORD'
         // }
       }
+    },
+
+    shell: {
+      buildhtmldocs: {
+        command: 'make html',
+        options: {
+          stderr: false,
+          execOptions: {
+            cwd: 'docs'
+          }
+        }
+      },
+      buildpdfdocs: {
+        command: 'make latexpdf',
+        options: {
+          stderr: false,
+          execOptions: {
+            cwd: 'docs'
+          }
+        }
+      }
     }
 
   });
 
   // These plugins provide necessary tasks.
   grunt.loadNpmTasks('grunt-conventional-changelog');
-  grunt.loadNpmTasks('grunt-ngdocs');
+  //grunt.loadNpmTasks('grunt-ngdocs');
   grunt.loadNpmTasks('grunt-release');
   grunt.loadNpmTasks('grunt-contrib-clean');
   grunt.loadNpmTasks('grunt-contrib-connect');
+  grunt.loadNpmTasks('grunt-shell');
 
   // Tasks.
-  grunt.registerTask('docs', ['clean:ngdocs', 'ngdocs']);
-  grunt.registerTask('serve-docs', ['clean:ngdocs', 'ngdocs', 'connect']);
+  //grunt.registerTask('docs', ['clean:ngdocs', 'ngdocs']);
+  //grunt.registerTask('serve-docs', ['clean:ngdocs', 'ngdocs', 'connect']);
   grunt.registerTask('history', ['changelog']);
+  grunt.registerTask('docs', ['shell']);
   
   // Other tasks used from grunt-release (https://github.com/geddski/grunt-release)
   // grunt release:patch
