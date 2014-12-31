@@ -394,6 +394,12 @@ module.exports = function (grunt) {
             cwd: 'bower_components/TimelineJS/build/css',
             src: '*.{gif,png}',
             dest: '<%= yeoman.dist %>/styles'
+          },
+          { 
+            expand: true,
+            cwd: 'bower_components/TimelineJS/build/css',
+            src: '*.{gif,png}',
+            dest: '<%= yeoman.dist %>/styles'
           }
         ]
       },

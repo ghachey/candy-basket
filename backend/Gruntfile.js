@@ -40,6 +40,37 @@ module.exports = function (grunt) {
       // }
     },
 
+    clean: {
+      dist: ['dist']
+    },
+
+    copy: {
+      dist: {
+        files: [
+          {
+            expand: true, 
+            src: ['app/**'], 
+            dest: 'dist/'
+          },
+          {
+            expand: true, 
+            src: ['certificates//**'], 
+            dest: 'dist/'
+          },
+          {
+            expand: true, 
+            src: ['node_modules/**'], 
+            dest: 'dist/'
+          },
+          {
+            expand: true, 
+            src: ['config.js'], 
+            dest: 'dist/'
+          }
+        ]
+      }
+    },
+
     // Make sure code styles are up to par and there are no obvious mistakes
     jshint: {
       options: {
@@ -68,11 +99,6 @@ module.exports = function (grunt) {
       ],
       test: [ // Not yet used
         'copy:styles'
-      ],
-      dist: [
-        'imagemin',
-        'svgmin',
-        'cssmin'
       ]
     },
 
@@ -121,17 +147,18 @@ module.exports = function (grunt) {
   ]);
 
   // No build task yet
-  // grunt.registerTask('build', [
-  //   'clean:dist',
-  //   'concurrent:dist',
-  //   'copy:dist',
-  //   'copy:base'
-  // ]);
+  grunt.registerTask('build', [
+    'clean:dist',
+    'copy:dist'
+  ]);
 
   grunt.registerTask('default', [
-    'newer:jshint',
-    'test',
-    //'build'
+    // Not currently including tests in build process due to the added
+    //complexity of integration test on a real test database and
+    //settings environment variables. Will address this in time.
+    //'newer:jshint', 
+    //'test',
+    'build'
   ]);
 
 };
