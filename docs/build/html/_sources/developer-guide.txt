@@ -549,6 +549,11 @@ your work and do a pull request::
 
   [user]$ git push
 
+Although if you were working entirely on a detached local branch like
+I do you would need to push like this instead::
+
+  [user]$ git push --set-upstream origin replace-this-with-branch-name
+
 Do the pull request from github and use the last commit as the message.
 
 High Level Architecture
@@ -782,7 +787,11 @@ programming interfaces, small gotchas and all other nitty-gritty
 details about the source code is written directly inside the source
 code. It can be extracted and exported to hard copy formats such as
 HTML or PDF and eventually may be integrated with this documentation
-also.
+also. But currently the place to access it is directly inside the
+source code for two main reasons: the JSDoc generators by default
+generate incomplete mostly useless and ugly HTML output and since this
+is not intended to be used by others as a public API it's not worth
+the effort of extracting these lower level docs.  
 
 Documentation
 =============

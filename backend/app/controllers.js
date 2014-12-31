@@ -1,6 +1,10 @@
 'use strict';
 
 /**
+ * @fileOverview
+ * @author Ghislain Hachey
+ * @version 0.3
+ * @description
  * This contains the controller logic for the website RESTful API.
  * The API is consumed *only* by the website application frontend. The
  * backend implementation is actually quite simple and most of the
@@ -44,6 +48,8 @@ var ownCloudPassword = conf.webdavServer.password;
 var ownCloudCA = conf.webdavServer.ca;
 
 /**
+ * @name nasaraCandyBasketBackend.controllers:downloadFile
+ * @private
  * @description
  * 
  * Private function to validate candies before attempting to save them
@@ -103,10 +109,25 @@ var validateCandy = function(candy) {
   return {'status': true, 'msg': 'Data Valid', 'description': cleaned}; 
 };
 
+/**
+ * @name nasaraCandyBasketBackend.controllers:getMeta
+ * @description
+ * 
+ * Simple public function to return meta data about this service
+ *
+ */
 var getMeta = function(req, res) {
   res.send({'name': 'Candy Basket', 'version': 0.3});
 };
 
+/**
+ * @name nasaraCandyBasketBackend.controllers:createCandy
+ * @description
+ * 
+ * Simple public function create a new Candy. It directly talks to the
+ * CouchDB RESTful API through a thin Javascript wrapper called nano.
+ *
+ */
 var createCandy = function(req, res) {
   console.log('Body: ', req.body);
 
@@ -132,6 +153,14 @@ var createCandy = function(req, res) {
   }
 };
 
+/**
+ * @name nasaraCandyBasketBackend.controllers:getCandy
+ * @description
+ * 
+ * Simple public function retrieve a new Candy. It directly talks to the
+ * CouchDB RESTful API through a thin Javascript wrapper called nano.
+ *
+ */
 var getCandy = function(req, res) {
   var uuid = req.params.uuid;
 
@@ -149,6 +178,8 @@ var getCandy = function(req, res) {
 };
 
 /**
+ * @name nasaraCandyBasketBackend.controllers:updateCandy
+ * @description
  * Updating CouchDB document correctly should following the following algortihm:
  *
  *   (1) Get document
@@ -218,6 +249,14 @@ var updateCandy = function(req, res) {
   }
 };
 
+/**
+ * @name nasaraCandyBasketBackend.controllers:deleteCandy
+ * @description
+ * 
+ * Simple public function delete a Candy. It directly talks to the
+ * CouchDB RESTful API through a thin Javascript wrapper called nano.
+ *
+ */
 var deleteCandy = function(req, res) {
   var uuid = req.params.uuid;
   var rev;
@@ -261,6 +300,7 @@ var deleteCandy = function(req, res) {
 };
 
 /**
+ * @name nasaraCandyBasketBackend.controllers:getCandies
  * @description
  * 
  * Gets JSON view from CouchDB, mash it up and return it as
@@ -306,6 +346,8 @@ var getCandies = function(req, res) {
 };
 
 /**
+ * @name nasaraCandyBasketBackend.controllers:getTags
+ * @description
  * Gets a list of tags (with their counts) for use in the frontend
  * autocomplete and tag cloud features. Returns it in a convenient way
  * for use in Angular. This is a reduced version of getTagsByCandies
@@ -337,6 +379,8 @@ var getTags = function(req, res) {
 };
 
 /** 
+ * @name nasaraCandyBasketBackend.controllers:getTagsByCandies
+ * @description
  * Gets a list of candies and their tags for use in the frontend
  * autocomplete and tag cloud features. Getting an unreduce version will
  * make it easier to have dynamic computation on the frontend
@@ -370,8 +414,8 @@ var getTagsByCandies = function(req, res) {
 
 /**
  * @name nasaraCandyBasketBackend.controllers:_ownCloudRequestCallback
- * @description
  * @private
+ * @description
  *
  * Callback handler for requests to ownCloud WebDAV server used by
  * private multimethod {@link
@@ -391,8 +435,8 @@ var _ownCloudRequestCallback = function(ownCloudErr, ownCloudRes) {
 
 /**
  * @name nasaraCandyBasketBackend.controllers:_sendToOwnCloud
- * @description
  * @private
+ * @description
  *
  * A private function to handle sending files to ownCloud. It is
  * abstracted here because of the intricacies I faced when dealing
@@ -483,8 +527,8 @@ var uploadFile = function(req, res) {
 
 /**
  * @name nasaraCandyBasketBackend.controllers:_binaryParser
- * @description
  * @private
+ * @description
  * 
  * A private binary parser to get files from ownCloud. Currently, only used by
  * {@link nasaraCandyBasketBackend.controllers:downloadFile}.

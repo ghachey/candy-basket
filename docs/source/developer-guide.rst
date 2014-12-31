@@ -787,18 +787,17 @@ programming interfaces, small gotchas and all other nitty-gritty
 details about the source code is written directly inside the source
 code. It can be extracted and exported to hard copy formats such as
 HTML or PDF and eventually may be integrated with this documentation
-also.
+also. But currently the place to access it is directly inside the
+source code for two main reasons: the JSDoc generators by default
+generate incomplete mostly useless and ugly HTML output and since this
+is not intended to be used by others as a public API it's not worth
+the effort of extracting these lower level docs.  
 
 Documentation
 =============
 
-Documentation is currently prepared using two different tools which is
-not ideal but powerful and convenient for the time being. As this
-project progresses we'll look into more cleanly unify this if possible
-without too much investment. 
-
-Most documentation is prepared using an excellent tool developed in
-the Python world called Sphinx `http://sphinx-doc.org
+Higher level documentation is prepared using an excellent tool
+developed in the Python world called Sphinx `http://sphinx-doc.org
 <http://sphinx-doc.org>`_ which uses the reStructuredText markup
 language `http://sphinx-doc.org/rest.html
 <http://sphinx-doc.org/rest.html>`_. Sphinx outputs to HTML and PDF
@@ -830,21 +829,25 @@ depend on your OS. There is usually a very large all in one package
 available for popular OSes either packaged as binary or directly
 available through the OS' package manager.
 
-All source code including the application programming interface is
-documented in a modern Javascript fashion using a jsdoc style with
-AngularJS additional conventions. This has a number of advantages
-including keeping the documentation directly with the code and more in
-sync, preparation of AngularJS style documentation with the ability to
-add example usage, online discussions and a number of others things
-not readibly available when simply using Sphinx. When writting source
-code simply document it following `AngularJS
-<https://github.com/angular/angular.js>`_ and `jsdoc
-<http://usejsdoc.org/>`_ styles and the production of the online
-documentation is easy with grunt. From with the candy-basket directory
-simply run::
+However, if you have Sphinx installed there is no longer any need to
+manually build the docs. You can simply use Grunt from the
+candy-basket root directory like this::
 
   [user]$ grunt docs
 
+All source code including the application programming interface is
+documented in a modern Javascript fashion using a jsdoc style with
+AngularJS additional conventions on the frontend. This has a number of
+advantages including keeping the documentation directly with the code
+and more in sync, preparation of AngularJS style documentation with
+the ability to add example usage, online discussions and a number of
+others things not readibly available when simply using Sphinx. When
+writting source code simply document it following `AngularJS
+<https://github.com/angular/angular.js>`_ and `jsdoc
+<http://usejsdoc.org/>`_ styles and the production of the online
+documentation is currently not being done as it provides little added
+value. If you're interested in lower level development details the
+place to look at now is the source.
 
 .. _security:
 Security Considerations
