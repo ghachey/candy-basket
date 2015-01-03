@@ -1,3 +1,20 @@
+<a name="0.4.0"></a>
+## 0.4.0 (2015-01-03)
+
+
+#### Bug Fixes
+
+* **candy-modal:** fix sliding when modal open ([f254070e](https://github.com/ghachey/candy-basket/commit/f254070e417d7c5f819be0227132d7e35a802965), closes [#30](https://github.com/ghachey/candy-basket/issues/30))
+* **frontend:** fix modal backdrop not showing ([d45a8791](https://github.com/ghachey/candy-basket/commit/d45a879193c8f48d38ca322a059e05c2ad1e0108))
+
+
+#### Features
+
+* **Gruntfile:** support for automated build of docs ([68619fff](https://github.com/ghachey/candy-basket/commit/68619fff9747db990bd8fa65ff1e7e48e3eb59f3), closes [#29](https://github.com/ghachey/candy-basket/issues/29))
+* **candy-basket:** support for full candy basket deployment ([92d37590](https://github.com/ghachey/candy-basket/commit/92d37590ff66fbf62370064cecee16e7a559abaf))
+* **candy-modal:** support for removing previously uploaded files ([2ec38443](https://github.com/ghachey/candy-basket/commit/2ec38443f9fa0260e6c2864833fd8a1374a4a70d), closes [#31](https://github.com/ghachey/candy-basket/issues/31))
+
+
 <a name="0.3.2"></a>
 ### 0.3.2 (2014-12-29)
 
