@@ -556,6 +556,61 @@ I do you would need to push like this instead::
 
 Do the pull request from github and use the last commit as the message.
 
+Application Deployment
+----------------------
+
+Automation for optimized deployment is currently in the works and
+nearly working. The `backend` can be grunt deployed. The `frontend`
+can be grunt deployed in a highly optimized fashion following Google's
+best practice for making the web faster. The optimized frontend
+deployment works *almost*. There remains a couple of tricky bits to
+address but it is mostly working except a couple of noticeable things:
+keystrokes with the Timeline are not working, angular-bootstrap
+templates are not accessible and so the modal and slider are not
+working as expected.
+
+The only requirements for Candy Basket to work in production are the
+`NodeJS <http://nodejs.org/>`_ platform, `grunt-cli
+<https://github.com/gruntjs/grunt-cli>`_ Grunt's command line
+interface, `forever <https://github.com/foreverjs/forever>`_ to run
+node applications reliably and `http-server
+<https://www.npmjs.com/package/http-server>`_ small light weight and
+fast HTTP server::
+
+  [user]$ npm install -g grunt-cli
+  [user]$ npm install -g forever
+  [user]$ npm install -g http-server
+
+The process to build the backend can be done individually (not yet
+executing tests first)::
+
+  [user]$ cd candy-basket/backend/ 
+  [user]$ grunt
+
+The process to build the frontend can be done individually also:: 
+
+  [user]$ cd candy-basket/frontend/ 
+  [user]$ grunt
+
+And the whole Candy Basket application can be deployed including
+executing test, building docs, building backend, building frontend and
+copying all files to `candy-basket/dist`::
+
+  [user]$ cd candy-basket/
+  [user]$ sudo su
+  [root]# grunt deploy
+
+Currently, the application must be started as user root. The next step
+would be either to use iptables to redirect 80 to 8080 and start user
+as non-privileged one or use authbind. Optionally, another tasks could
+be added to move it to the desired location on the server.
+
+Services are started on port 4443 (backend) and 443 (frontend) so
+those port must not be taken. The application only functions on https
+with currently no redirect from http.
+
+
+
 High Level Architecture
 =======================
 

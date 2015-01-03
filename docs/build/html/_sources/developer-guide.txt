@@ -556,6 +556,61 @@ I do you would need to push like this instead::
 
 Do the pull request from github and use the last commit as the message.
 
+Application Deployment
+----------------------
+
+Automation for optimized deployment is currently in the works and
+nearly working. The `backend` can be grunt deployed. The `frontend`
+can be grunt deployed in a highly optimized fashion following Google's
+best practice for making the web faster. The optimized frontend
+deployment works *almost*. There remains a couple of tricky bits to
+address but it is mostly working except a couple of noticeable things:
+keystrokes with the Timeline are not working, angular-bootstrap
+templates are not accessible and so the modal and slider are not
+working as expected.
+
+The only requirements for Candy Basket to work in production are the
+`NodeJS <http://nodejs.org/>`_ platform, `grunt-cli
+<https://github.com/gruntjs/grunt-cli>`_ Grunt's command line
+interface, `forever <https://github.com/foreverjs/forever>`_ to run
+node applications reliably and `http-server
+<https://www.npmjs.com/package/http-server>`_ small light weight and
+fast HTTP server::
+
+  [user]$ npm install -g grunt-cli
+  [user]$ npm install -g forever
+  [user]$ npm install -g http-server
+
+The process to build the backend can be done individually (not yet
+executing tests first)::
+
+  [user]$ cd candy-basket/backend/ 
+  [user]$ grunt
+
+The process to build the frontend can be done individually also:: 
+
+  [user]$ cd candy-basket/frontend/ 
+  [user]$ grunt
+
+And the whole Candy Basket application can be deployed including
+executing test, building docs, building backend, building frontend and
+copying all files to `candy-basket/dist`. Another tasks should be
+added to move it to the desired location on the server::
+
+  [user]$ cd candy-basket/
+  [user]$ sudo su
+  [root]# grunt deploy
+
+Currently, the application must be started as user root. The next step
+would be either to use iptables to redirect 80 to 8080 and start
+user as non-privileged one or use authbind.
+
+Services are started on port 4443 (backend) and 443 (frontend) so
+those port must not be taken. The application only functions on https
+with currently no redirect from http.
+
+
+
 High Level Architecture
 =======================
 
@@ -796,13 +851,8 @@ the effort of extracting these lower level docs.
 Documentation
 =============
 
-Documentation is currently prepared using two different tools which is
-not ideal but powerful and convenient for the time being. As this
-project progresses we'll look into more cleanly unify this if possible
-without too much investment. 
-
-Most documentation is prepared using an excellent tool developed in
-the Python world called Sphinx `http://sphinx-doc.org
+Higher level documentation is prepared using an excellent tool
+developed in the Python world called Sphinx `http://sphinx-doc.org
 <http://sphinx-doc.org>`_ which uses the reStructuredText markup
 language `http://sphinx-doc.org/rest.html
 <http://sphinx-doc.org/rest.html>`_. Sphinx outputs to HTML and PDF
@@ -834,21 +884,25 @@ depend on your OS. There is usually a very large all in one package
 available for popular OSes either packaged as binary or directly
 available through the OS' package manager.
 
-All source code including the application programming interface is
-documented in a modern Javascript fashion using a jsdoc style with
-AngularJS additional conventions. This has a number of advantages
-including keeping the documentation directly with the code and more in
-sync, preparation of AngularJS style documentation with the ability to
-add example usage, online discussions and a number of others things
-not readibly available when simply using Sphinx. When writting source
-code simply document it following `AngularJS
-<https://github.com/angular/angular.js>`_ and `jsdoc
-<http://usejsdoc.org/>`_ styles and the production of the online
-documentation is easy with grunt. From with the candy-basket directory
-simply run::
+However, if you have Sphinx installed there is no longer any need to
+manually build the docs. You can simply use Grunt from the
+candy-basket root directory like this::
 
   [user]$ grunt docs
 
+All source code including the application programming interface is
+documented in a modern Javascript fashion using a jsdoc style with
+AngularJS additional conventions on the frontend. This has a number of
+advantages including keeping the documentation directly with the code
+and more in sync, preparation of AngularJS style documentation with
+the ability to add example usage, online discussions and a number of
+others things not readibly available when simply using Sphinx. When
+writting source code simply document it following `AngularJS
+<https://github.com/angular/angular.js>`_ and `jsdoc
+<http://usejsdoc.org/>`_ styles and the production of the online
+documentation is currently not being done as it provides little added
+value. If you're interested in lower level development details the
+place to look at now is the source.
 
 .. _security:
 Security Considerations

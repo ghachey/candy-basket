@@ -50,7 +50,8 @@ module.exports = function(grunt) {
 
     clean: {
       ngdocs: ['frontend/app/docs'],
-      changelog: ['CHANGELOG.md']
+      changelog: ['CHANGELOG.md'],
+      dist: ['dist']
     },
 
     release: {
@@ -97,6 +98,69 @@ module.exports = function(grunt) {
             cwd: 'docs'
           }
         }
+      },
+      buildbackend: {
+        command: 'grunt',
+        options: {
+          execOptions: {
+            cwd: 'backend'
+          }
+        }
+      },
+      buildfrontend: {
+        command: 'grunt',
+        options: {
+          execOptions: {
+            cwd: 'frontend'
+          }
+        }
+      },
+      mkdirs: {
+        command: [
+          'mkdir dist/',
+          'mkdir dist/backend',
+          'mkdir dist/frontend',
+          'mkdir dist/frontend/help',
+          'mkdir dist/frontend/certificates'
+        ].join('&&')
+      },
+      copyapps: {
+        command: [
+          'cp -rf backend/dist/* dist/backend/',
+          'cp -rf frontend/dist/* dist/frontend/'
+        ].join('&')
+      },
+      copyotherfiles: {
+        command: [
+          'cp -rf frontend/certificates/* dist/frontend/certificates/',
+          'cp -rf docs/build/html/* dist/frontend/help/',
+          'cp docs/build/latex/CandyBasket.pdf dist/frontend/help/'
+        ].join('&')
+      },
+      startbackend: { // don't forget to check out backend/config.js
+        command: 'forever start app/app.js',
+        options: {
+          execOptions: {
+            async: true,
+            detached: true,
+            env: {PATH: '/usr/local/bin/', NODE_ENV: 'production', 
+                  USER: 'root', USERNAME: 'root', HOME: '/var/root',
+                  LOGNAME: 'root'},
+            cwd: 'dist/backend'
+          }
+        }
+      },
+      startfrontend: { // change to production certs
+        command: 'forever start --sourceDir=/usr/local/bin/ --workingDir=dist/frontend/ http-server . --ssl -p 443 --cert certificates/hacksparrow-cert.pem --key certificates/hacksparrow-key.pem',
+        options: {
+          execOptions: {
+            async: true,
+            detached: true,
+            env: {PATH: '/usr/local/bin/',  
+                  USER: 'root', USERNAME: 'root', HOME: '/var/root',
+                  LOGNAME: 'root'}
+          }
+        }
       }
     }
 
@@ -108,13 +172,30 @@ module.exports = function(grunt) {
   grunt.loadNpmTasks('grunt-release');
   grunt.loadNpmTasks('grunt-contrib-clean');
   grunt.loadNpmTasks('grunt-contrib-connect');
-  grunt.loadNpmTasks('grunt-shell');
+  grunt.loadNpmTasks('grunt-shell-spawn');
+  grunt.loadNpmTasks('grunt-contrib-copy');
 
   // Tasks.
   //grunt.registerTask('docs', ['clean:ngdocs', 'ngdocs']);
   //grunt.registerTask('serve-docs', ['clean:ngdocs', 'ngdocs', 'connect']);
   grunt.registerTask('history', ['changelog']);
-  grunt.registerTask('docs', ['shell']);
+  grunt.registerTask('docs', ['shell:buildhtmldocs', 'shell:buildpdfdocs']);
+
+  grunt.registerTask('start', [
+    'shell:startbackend',
+    'shell:startfrontend'
+  ]);
+
+  grunt.registerTask('deploy', [
+    'clean:dist',
+    'docs', 
+    'shell:buildbackend', 
+    'shell:buildfrontend', 
+    'shell:mkdirs', 
+    'shell:copyapps',
+    'shell:copyotherfiles',
+    'start'
+  ]);
   
   // Other tasks used from grunt-release (https://github.com/geddski/grunt-release)
   // grunt release:patch
