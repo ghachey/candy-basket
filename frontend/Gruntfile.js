@@ -43,7 +43,7 @@ module.exports = function (grunt) {
         constants: {
           ENV: {
             name: 'development',
-            backendUrl: 'https://localhost:3003'
+            backendUrl: 'https://localhost:4441'
           }
         }
       },
@@ -99,10 +99,10 @@ module.exports = function (grunt) {
     // The actual grunt server settings
     connect: {
       options: {
-        port: 9003,
+        port: 9000,
         // Change this to '0.0.0.0' to access the server from outside.
         hostname: 'localhost',
-        livereload: 35734
+        livereload: 35729
       },
       livereload: {
         options: {
@@ -227,6 +227,18 @@ module.exports = function (grunt) {
               css: ['cssmin']
             },
             post: {}
+            // post: {
+            //   js:[{
+            //     name: 'uglifyjs',
+            //     createConfig: function (context, block) {
+            //       if (block.dest === 'scripts/vendor.js'){
+            //         block.options = {
+            //           mangle: false
+            //         };
+            //       }
+            //     }
+            //   }]
+            // }
           }
         }
       }

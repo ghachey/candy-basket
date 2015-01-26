@@ -34,11 +34,12 @@ var multimethod = require('multimethod');
 var mmm = require('mmmagic');
 
 var conf = require('../config');
+var logger = require('./logging');
 
 var Magic = mmm.Magic;
 
-var dbName = conf.dbName;
-var couchServer = nano(conf.dbUrl); //nano
+var dbName = conf.couchdb.name;
+var couchServer = nano(conf.couchdb.url); //nano
 var couchdb = couchServer.db.use(dbName);
 
 var ownCloudServer = conf.webdavServer.protocol + '://' + conf.webdavServer.host;
@@ -129,7 +130,7 @@ var getMeta = function(req, res) {
  *
  */
 var createCandy = function(req, res) {
-  console.log('Body: ', req.body);
+  logger.info('Body: ', req.body);
 
   if (validateCandy(req.body).status) {
     req.body.description = validateCandy(req.body).description;
@@ -140,15 +141,15 @@ var createCandy = function(req, res) {
       if (!err) {
         res.set('Location', body.id); // Set Location header to resource ID (couch ID)
         res.status(201).end();
-        console.log('Insert success response: ', body);
+        logger.info('Insert success response: ', body);
       } else {
-        console.log('Error inserting document: ', err);
+        logger.error('Error inserting document: ', err);
         res.status(500).send(err);
       }
     });
 
   } else {
-    console.error('Validation error: ', validateCandy(req.body).msg);
+    logger.error('Validation error: ', validateCandy(req.body).msg);
     res.status(400).send(validateCandy(req.body).msg);
   }
 };
@@ -229,13 +230,13 @@ var updateCandy = function(req, res) {
             // Set Location header to resource ID (couch ID)
             res.set('Location', body.id); 
             res.status(200).end();
-            console.log('Insert success response: ', body);
+            logger.info('Insert success response: ', body);
             callback(null);
           } else if (err.status === 409) { // Update conflict, try again
             // Try again, not yet implemented, will be important when many users
             // using service in higher latency context
           } else  {
-            console.log('Error inserting document: ', err);
+            logger.error('Error inserting document: ', err);
             res.status(500).send(err);
             callback(err);
           }
@@ -244,7 +245,7 @@ var updateCandy = function(req, res) {
     ]);
 
   } else {
-    console.error('Validation error: ', validateCandy(req.body).msg);
+    logger.error('Validation error: ', validateCandy(req.body).msg);
     res.status(400).send(validateCandy(req.body).msg);
   }
 };
@@ -286,10 +287,10 @@ var deleteCandy = function(req, res) {
         if (!err) {
           // Do I need to call callback(null);
           res.status(200).end();
-          console.log('Delete success response: ', body);
+          logger.info('Delete success response: ', body);
           callback(null);
         } else  {
-          console.log('Error deleting document: ', err);
+          logger.error('Error deleting document: ', err);
           res.status(500).send(err);
           callback(err);
         }
@@ -336,7 +337,7 @@ var getCandies = function(req, res) {
       });
       res.status(200).send({'candiesById' : docs});
     } else {
-      console.error('Error getting view: ', err);
+      logger.error('Error getting view: ', err);
       /* jshint ignore:start */
       res.status(err.status_code).send(err);
       /* jshint ignore:end */
@@ -369,7 +370,7 @@ var getTags = function(req, res) {
       /* jshint ignore:end */
       res.status(200).send(viewData);
     } else {
-      console.error('Error getting view: ', err);
+      logger.error('Error getting view: ', err);
       /* jshint ignore:start */
       res.status(err.status_code).send(err);
       /* jshint ignore:end */
@@ -403,7 +404,7 @@ var getTagsByCandies = function(req, res) {
       viewData = {'tagsByCandies' : {'tagsByCandies': tags}};
       res.status(200).send(viewData);
     } else {
-      console.error('Error getting view: ', err);
+      logger.error('Error getting view: ', err);
       /* jshint ignore:start */
       res.status(err.status_code).send(err);
       /* jshint ignore:end */
@@ -424,10 +425,10 @@ var getTagsByCandies = function(req, res) {
 /* jshint ignore:start */
 var _ownCloudRequestCallback = function(ownCloudErr, ownCloudRes) {
   if (ownCloudErr) {
-    console.error('Error uploading to ownCloud: ', ownCloudErr);
+    logger.error('Error uploading to ownCloud: ', ownCloudErr);
     return {'status': 503, 'body': ownCloudErr};
   } else {
-    console.log('Successful upload to ownCloud: ', ownCloudRes.status);
+    logger.info('Successful upload to ownCloud: ', ownCloudRes.status);
     return {'status': 200, 'body': ownCloudRes};
   }
 };
@@ -514,7 +515,7 @@ var uploadFile = function(req, res) {
 
   magic.detectFile(req.files.file.path, function(err, result) {
     if (err) {throw err;}
-    console.log('File type: ', result);
+    logger.info('File type: ', result);
     fileMime = result;
     fileType = result.split('/')[0];
     /* jshint ignore:start */
@@ -569,20 +570,20 @@ var downloadFile = function(req, res) {
     .buffer()
     .end(function(ownCloudErr, ownCloudRes) {
       if (ownCloudErr) {
-        console.error('Error retrieving file from ownCloud: ', ownCloudErr);
+        logger.error('Error retrieving file from ownCloud: ', ownCloudErr);
         res.status(503).send(ownCloudErr);
       } else {
-        console.log('Retrieved file from ownCloud: ', ownCloudRes.status);
+        logger.info('Retrieved file from ownCloud: ', ownCloudRes.status);
         fs.writeFile(fileNameAndPath, ownCloudRes.body, function (fsErr) {
-          if (fsErr) {console.error('Filesystem error: ', fsErr);}
+          if (fsErr) {logger.error('Filesystem error: ', fsErr);}
           // Send file to frontend here
           res.download(fileNameAndPath, function (err) {
             if (err) {
-              console.error('Sending to frontend error: ', err);
+              logger.error('Sending to frontend error: ', err);
               res.status(err.status).end();
             }
             else {
-              console.log('Sent to frontent: ', fileName);
+              logger.info('Sent to frontent: ', fileName);
             }
           });
         });

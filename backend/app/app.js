@@ -4,7 +4,7 @@ var express = require('express');
 var https = require('https');
 var path = require('path');
 var favicon = require('serve-favicon');
-var logger = require('morgan');
+var morganLogger = require('morgan');
 var bodyParser = require('body-parser');
 var errorHandler = require('errorhandler');
 var cors = require('cors');
@@ -14,6 +14,7 @@ var passport = require('passport');
 var conf = require('../config');
 var middlewares = require('./middlewares');
 var controllers = require('./controllers');
+var logger = require('./logging');
 var auth = require('./auth');
 
 /********************************************/
@@ -25,7 +26,7 @@ var api = express();
 api.use(middlewares.securityHeaders);
 api.use(cors(conf.corsOptions));
 api.use(favicon(path.join(__dirname, '/public/icons/favicon.ico')));
-api.use(logger('dev'));
+api.use(morganLogger('dev'));
 api.use(bodyParser.json());
 api.use(multer({ 
   dest: path.join(__dirname,'/files/') 
@@ -54,4 +55,7 @@ var options = {
   cert: conf.cert
 };
 
-https.createServer(options, api).listen(conf.port);
+https.createServer(options, api).listen(conf.app.port, function(){
+  logger.info('Listening on protocol "https", address "0.0.0.0" and port ' + 
+              conf.app.port);
+});

@@ -32,12 +32,12 @@ module.exports = function (grunt) {
           'app/**/*.js'
         ],
         tasks: ['develop', 'delayed-livereload']
+      },
+      jsTest: {
+        files: ['test/**/*.js'],
+        tasks: ['newer:jshint:test']
+        //tasks: ['newer:jshint:test', 'mochaTest']
       }
-      // jsTest: {
-      //   files: ['test/**/*.js',
-      //           '{!#*.js,!.#*.js,!**#.js,!**.#.js}'], // ignore emacs interlock files
-      //   tasks: ['newer:jshint:test', 'mochaTest']
-      // }
     },
 
     clean: {
@@ -153,11 +153,10 @@ module.exports = function (grunt) {
   ]);
 
   grunt.registerTask('default', [
-    // Not currently including tests in build process due to the added
-    //complexity of integration test on a real test database and
-    //settings environment variables. Will address this in time.
-    //'newer:jshint', 
-    //'test',
+    // In order for grunt test to work grunt serve in "development"
+    // or "test" mode MUST be running
+    'newer:jshint',
+    'test',
     'build'
   ]);
 

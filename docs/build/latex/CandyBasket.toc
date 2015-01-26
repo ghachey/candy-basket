@@ -47,40 +47,40 @@
 \contentsline {subsection}{\numberline {3.2.1}Development Tools}{26}{subsection.3.2.1}
 \contentsline {subsection}{\numberline {3.2.2}NodeJS and NPM}{26}{subsection.3.2.2}
 \contentsline {subsection}{\numberline {3.2.3}CouchDB}{26}{subsection.3.2.3}
-\contentsline {subsection}{\numberline {3.2.4}Grunt}{26}{subsection.3.2.4}
+\contentsline {subsection}{\numberline {3.2.4}Grunt}{27}{subsection.3.2.4}
 \contentsline {subsubsection}{Grunt on the backend}{27}{subsubsection*.3}
 \contentsline {subsubsection}{Grunt on the frontend}{27}{subsubsection*.4}
-\contentsline {subsubsection}{Grunt globally in app root}{27}{subsubsection*.5}
-\contentsline {subsection}{\numberline {3.2.5}Dependencies}{28}{subsection.3.2.5}
-\contentsline {section}{\numberline {3.3}Development Work-flow}{28}{section.3.3}
-\contentsline {subsection}{\numberline {3.3.1}Software Configuration Management}{28}{subsection.3.3.1}
-\contentsline {subsection}{\numberline {3.3.2}On-going Development}{29}{subsection.3.3.2}
-\contentsline {subsection}{\numberline {3.3.3}Application Deployment}{33}{subsection.3.3.3}
-\contentsline {section}{\numberline {3.4}High Level Architecture}{34}{section.3.4}
-\contentsline {subsection}{\numberline {3.4.1}Backend -- The RESTful Service}{34}{subsection.3.4.1}
-\contentsline {subsubsection}{User Account Service}{34}{subsubsection*.6}
-\contentsline {subsubsection}{Source (Candies) Service}{34}{subsubsection*.7}
-\contentsline {subsubsection}{Utilities Service}{35}{subsubsection*.8}
-\contentsline {subsection}{\numberline {3.4.2}Frontend -- Web UI Application}{36}{subsection.3.4.2}
-\contentsline {section}{\numberline {3.5}Low Level Documentation and API}{37}{section.3.5}
-\contentsline {section}{\numberline {3.6}Documentation}{37}{section.3.6}
-\contentsline {section}{\numberline {3.7}Security Considerations}{38}{section.3.7}
-\contentsline {subsection}{\numberline {3.7.1}Authentication}{38}{subsection.3.7.1}
-\contentsline {subsection}{\numberline {3.7.2}SSL/TLS Encryption}{38}{subsection.3.7.2}
-\contentsline {subsubsection}{ownCloud}{38}{subsubsection*.9}
-\contentsline {subsubsection}{Nasara backend}{38}{subsubsection*.10}
-\contentsline {subsubsection}{Nasara frontend}{38}{subsubsection*.11}
-\contentsline {subsection}{\numberline {3.7.3}Latest Top 10 Security Risks}{39}{subsection.3.7.3}
-\contentsline {subsubsection}{Injection}{39}{subsubsection*.12}
-\contentsline {subsubsection}{Broken Authentication and Session Management}{39}{subsubsection*.13}
-\contentsline {subsubsection}{XSS}{39}{subsubsection*.14}
-\contentsline {subsubsection}{Security Misconfiguration}{39}{subsubsection*.15}
-\contentsline {subsubsection}{Sensitive Data Exposure}{40}{subsubsection*.16}
-\contentsline {subsubsection}{Missing Function Level Access Control}{40}{subsubsection*.17}
-\contentsline {subsubsection}{Cross-Site Request Forgery (CSRF aka. XSRF)}{40}{subsubsection*.18}
-\contentsline {subsubsection}{Using Components with Known Vulnerabilities}{41}{subsubsection*.19}
-\contentsline {subsubsection}{Unvalidated Redirects and Forwards}{42}{subsubsection*.20}
-\contentsline {subsubsection}{Miscellaneous and Application Specific}{42}{subsubsection*.21}
-\contentsline {subsection}{\numberline {3.7.4}Integrated Penetration Testing}{42}{subsection.3.7.4}
+\contentsline {subsubsection}{Grunt globally in app root}{28}{subsubsection*.5}
+\contentsline {subsection}{\numberline {3.2.5}Dependencies}{29}{subsection.3.2.5}
+\contentsline {section}{\numberline {3.3}Development Work-flow}{29}{section.3.3}
+\contentsline {subsection}{\numberline {3.3.1}Software Configuration Management}{30}{subsection.3.3.1}
+\contentsline {subsection}{\numberline {3.3.2}On-going Development}{30}{subsection.3.3.2}
+\contentsline {subsection}{\numberline {3.3.3}Application Deployment}{34}{subsection.3.3.3}
+\contentsline {section}{\numberline {3.4}High Level Architecture}{35}{section.3.4}
+\contentsline {subsection}{\numberline {3.4.1}Backend -- The RESTful Service}{35}{subsection.3.4.1}
+\contentsline {subsubsection}{User Account Service}{35}{subsubsection*.6}
+\contentsline {subsubsection}{Source (Candies) Service}{35}{subsubsection*.7}
+\contentsline {subsubsection}{Utilities Service}{36}{subsubsection*.8}
+\contentsline {subsection}{\numberline {3.4.2}Frontend -- Web UI Application}{37}{subsection.3.4.2}
+\contentsline {section}{\numberline {3.5}Low Level Documentation and API}{38}{section.3.5}
+\contentsline {section}{\numberline {3.6}Documentation}{38}{section.3.6}
+\contentsline {section}{\numberline {3.7}Security Considerations}{39}{section.3.7}
+\contentsline {subsection}{\numberline {3.7.1}Authentication}{39}{subsection.3.7.1}
+\contentsline {subsection}{\numberline {3.7.2}SSL/TLS Encryption}{39}{subsection.3.7.2}
+\contentsline {subsubsection}{ownCloud}{39}{subsubsection*.9}
+\contentsline {subsubsection}{Nasara backend}{39}{subsubsection*.10}
+\contentsline {subsubsection}{Nasara frontend}{40}{subsubsection*.11}
+\contentsline {subsection}{\numberline {3.7.3}Latest Top 10 Security Risks}{40}{subsection.3.7.3}
+\contentsline {subsubsection}{Injection}{40}{subsubsection*.12}
+\contentsline {subsubsection}{Broken Authentication and Session Management}{40}{subsubsection*.13}
+\contentsline {subsubsection}{XSS}{40}{subsubsection*.14}
+\contentsline {subsubsection}{Security Misconfiguration}{40}{subsubsection*.15}
+\contentsline {subsubsection}{Sensitive Data Exposure}{41}{subsubsection*.16}
+\contentsline {subsubsection}{Missing Function Level Access Control}{41}{subsubsection*.17}
+\contentsline {subsubsection}{Cross-Site Request Forgery (CSRF aka. XSRF)}{41}{subsubsection*.18}
+\contentsline {subsubsection}{Using Components with Known Vulnerabilities}{42}{subsubsection*.19}
+\contentsline {subsubsection}{Unvalidated Redirects and Forwards}{43}{subsubsection*.20}
+\contentsline {subsubsection}{Miscellaneous and Application Specific}{43}{subsubsection*.21}
+\contentsline {subsection}{\numberline {3.7.4}Integrated Penetration Testing}{43}{subsection.3.7.4}
 \contentsline {chapter}{\numberline {4}Indices and tables}{45}{chapter.4}
 \contentsline {chapter}{Bibliography}{47}{chapter*.23}

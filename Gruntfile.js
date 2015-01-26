@@ -1,6 +1,9 @@
 /*global module:false*/
 module.exports = function(grunt) {
 
+  var user = process.env.USERNAME;
+  var userHome = process.env.HOME;
+
   // Project configuration.
   grunt.initConfig({
 
@@ -15,32 +18,6 @@ module.exports = function(grunt) {
       }
     },
 
-    // Those docs generators are essentially useful for now.
-
-    // jsdoc : {
-    //   dist : {
-    //     src: ['backend/app/**/*.js', 'backend/test/specs/**/*.js', 
-    //           'frontend/app/**/*.js', 'frontend/test/spec/**/*.js'], 
-    //     options: {
-    //       destination: 'jsdoc-output'
-    //     }
-    //   }
-    // },
-
-    // ngdocs: {
-    //   options: {
-    //     dest: 'frontend/app/docs',
-    //     //scripts: ['frontend/bower_components/angular/angular.js'],
-    //     html5Mode: true,
-    //     startPage: '/api',
-    //     title: 'Candy Basket Source Code Documentation'
-    //   },
-    //   api: {
-    //     src: ['frontend/app/**/*.js'],
-    //     title: 'Frontend API Documentation'
-    //   }
-    // },
-
     connect: {
       options: {
         keepalive: true
@@ -49,7 +26,6 @@ module.exports = function(grunt) {
     },
 
     clean: {
-      ngdocs: ['frontend/app/docs'],
       changelog: ['CHANGELOG.md'],
       dist: ['dist']
     },
@@ -103,7 +79,8 @@ module.exports = function(grunt) {
         command: 'grunt',
         options: {
           execOptions: {
-            cwd: 'backend'
+            cwd: 'backend',
+            env: {PATH: '/usr/bin/', NODE_ENV: 'test'}
           }
         }
       },
@@ -138,27 +115,27 @@ module.exports = function(grunt) {
         ].join('&')
       },
       startbackend: { // don't forget to check out backend/config.js
-        command: 'forever start app/app.js',
+        command: 'forever start --uid "candy-basket-backend" -a app/app.js',
         options: {
-          execOptions: {
+          execOptions: { // Use candy user instead of ghachey
             async: true,
             detached: true,
-            env: {PATH: '/usr/local/bin/', NODE_ENV: 'production', 
-                  USER: 'root', USERNAME: 'root', HOME: '/var/root',
-                  LOGNAME: 'root'},
+            env: {PATH: '/usr/bin/', NODE_ENV: 'production', 
+                  USER: user, USERNAME: user, HOME: userHome,
+                  LOGNAME: user},
             cwd: 'dist/backend'
           }
         }
       },
       startfrontend: { // change to production certs
-        command: 'forever start --sourceDir=/usr/local/bin/ --workingDir=dist/frontend/ http-server . --ssl -p 443 --cert certificates/hacksparrow-cert.pem --key certificates/hacksparrow-key.pem',
+        command: 'authbind --deep forever start --uid "candy-basket-frontend" -a --sourceDir=/usr/bin/ --workingDir=dist/frontend/ http-server . --ssl -p 443 --cert certificates/hacksparrow-cert.pem --key certificates/hacksparrow-key.pem',
         options: {
           execOptions: {
             async: true,
             detached: true,
-            env: {PATH: '/usr/local/bin/',  
-                  USER: 'root', USERNAME: 'root', HOME: '/var/root',
-                  LOGNAME: 'root'}
+            env: {PATH: '/usr/bin/',  
+                  USER: user, USERNAME: user, HOME: userHome,
+                  LOGNAME: user}
           }
         }
       }
@@ -176,9 +153,8 @@ module.exports = function(grunt) {
   grunt.loadNpmTasks('grunt-contrib-copy');
 
   // Tasks.
-  //grunt.registerTask('docs', ['clean:ngdocs', 'ngdocs']);
-  //grunt.registerTask('serve-docs', ['clean:ngdocs', 'ngdocs', 'connect']);
   grunt.registerTask('history', ['changelog']);
+
   grunt.registerTask('docs', ['shell:buildhtmldocs', 'shell:buildpdfdocs']);
 
   grunt.registerTask('start', [
@@ -186,16 +162,22 @@ module.exports = function(grunt) {
     'shell:startfrontend'
   ]);
 
-  grunt.registerTask('deploy', [
+  grunt.registerTask('build', [
     'clean:dist',
     'docs', 
     'shell:buildbackend', 
     'shell:buildfrontend', 
     'shell:mkdirs', 
     'shell:copyapps',
-    'shell:copyotherfiles',
+    'shell:copyotherfiles'
+  ]);
+
+  grunt.registerTask('deploy', [
+    'build',
     'start'
   ]);
+
+
   
   // Other tasks used from grunt-release (https://github.com/geddski/grunt-release)
   // grunt release:patch
