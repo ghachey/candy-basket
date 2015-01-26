@@ -26,7 +26,8 @@
     "serve-favicon": "~2.0.1",
     "superagent": "^0.18.2",
     "underscore": "^1.6.0",
-    "validator": "^3.17.0"
+    "validator": "^3.17.0",
+    "winston": "^0.8.3"
   },
   "devDependencies": {
     "chai": "^1.9.1",

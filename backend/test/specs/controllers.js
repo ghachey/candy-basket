@@ -9,33 +9,42 @@ var _ = require('underscore');
 var conf = require('../../config');
 var controllers = require('../../app/controllers');
 
-if (process.env.NODE_ENV === 'development' || 
-    process.env.NODE_ENV === 'test') {
-  console.log('TEST');
+if (process.env.NODE_ENV === 'test') {
   process.env.NODE_TLS_REJECT_UNAUTHORIZED = '0';
+} else {
+  throw new Error('NODE_ENV environment variable should be set to "test" ' + 
+                  'to execute test');
 }
 
-request = request(conf.url+':'+conf.port);
+request = request(conf.app.protocol+'://'+conf.app.address+':'+conf.app.port);
+
+var dbName = conf.couchdb.name;
+var dbUrl = conf.couchdb.url;
+var couchServer = nano(dbUrl);
+/* jshint ignore:start */
+var couchdb = couchServer.db.use(dbName);
+/* jshint ignore:end */
+
+var user = conf.backendUser;
+var pass = conf.backendPassword;
 
 describe('The whole controller API', function(){
 
   // Candy data needed across various test scopes
   var candy1, candy2, candy3, candy4, candy5;
   var candyId1, candyId2, candyId3, candyId4, candyId5;
-  var user = conf.backendUser;
-  var pass = conf.backendPassword;
 
   before(function (next) {
     // The app needs to be started manually at the moment, I currently find
     // it easier to see logging in separate console from tests
 
     // Create test DB to execute tests against
-    controllers.couchServer.db.create(controllers.dbName, function(err, body) {
+    couchServer.db.create(dbName, function(err, body) {
       if (!err) {
-        console.log('Database ' + controllers.dbName + ' created: ' + body);
+        console.log('Database ' + dbName + ' created: ' + body);
         // Create views in test DB
         /* jshint ignore:start */
-        controllers.couchdb.insert({
+        couchdb.insert({
           'views': {
             'candies_by_id': {
               'map': function(doc) {
@@ -74,8 +83,8 @@ describe('The whole controller API', function(){
         });
         /* jshint ignore:end */
       } else {
-        console.error('Error creating ' + controllers.dbName + err);
-        throw new Error('Error creating ' + controllers.dbName + err); // and stop testing
+        console.error('Error creating ' + dbName + err);
+        throw new Error('Error creating ' + dbName + err); // and stop testing
       }
     });
   });
@@ -240,9 +249,9 @@ describe('The whole controller API', function(){
     //       if (err) {
     //         // This test is essentially done, get back our functional couch server
     //         // instance before we move on...
-    //         //controllers.couchdb = controllers.couchServer.db.use(controllers.dbName);
-    //         controllers.couchdb = couchdbUp;
-    //         console.log('Reset working CouchDB: ', controllers.couchdb);
+    //         //couchdb = couchServer.db.use(dbName);
+    //         couchdb = couchdbUp;
+    //         console.log('Reset working CouchDB: ', couchdb);
     //         return done(err);
     //       }
     //       return done();
@@ -889,11 +898,11 @@ describe('The whole controller API', function(){
   after(function () {
     // Destroy test DB
     // to be extra careful make sure we are destroying the test DB
-    if (controllers.dbName === 'candy_basket_test') {
-      controllers.couchServer.db.destroy(controllers.dbName);
-      console.log('Database ' + controllers.dbName + ' destroyed');
+    if (dbName === 'candy_basket_test') {
+      couchServer.db.destroy(dbName);
+      console.log('Database ' + dbName + ' destroyed');
     } else {
-      throw Error('controllers.dbName is an unexpected DB, did not destroy');
+      throw Error('dbName is an unexpected DB, did not destroy');
     }
   });
 

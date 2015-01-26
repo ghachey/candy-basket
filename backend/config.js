@@ -8,22 +8,30 @@ var config = {
   development: {
     root: rootPath,
     app: {
-      name: 'nasaraCandyBasketApi'
+      debugLeve: 'debug',
+      name: 'nasaraCandyBasketApi',
+      protocol: 'https',
+      address: 'localhost',
+      port: 4441,
+      reloadPort: 35733
     },
-    url: 'https://localhost',
-    port: 3003,
     key: fs.readFileSync('certificates/nasara-backend-development.key'),
     cert: fs.readFileSync('certificates/nasara-backend-development.crt'),
     backendUser: 'candy',
     backendPassword: 'P@55word',
-    reloadPort: 35733,
-    dbUrl: 'http://localhost:5984/',
-    dbName: 'candy_basket_development',
+    couchdb: {
+      url: 'http://localhost:5984/',
+      name: 'candy_basket_development'
+    },
     // Configure which host is allowed cross origin access to the backend
     // Can take exact strings and regexes
     // DO NOT INCLUDE TRAILING SLASH
     corsOptions: {
-      origin: 'http://localhost:9003' //'http://localhost:9003' // frontend
+      origin: function(origin, callback){
+        var whiteListed = ['http://localhost:9000',
+                           'https://localhost:9000'].indexOf(origin) !== -1;
+        callback(null, whiteListed);
+      }
     },
     webdavServer : { // ownCloud test instance
         'host' : 'arc.ghachey.info',
@@ -39,17 +47,31 @@ var config = {
   test: {
     root: rootPath,
     app: {
-      name: 'nasaraCandyBasketApi'
+      debugLevel: 'debug',
+      name: 'nasaraCandyBasketApi',
+      protocol: 'https',
+      address: 'localhost',
+      port: 4442,
+      reloadPort: 35734  
     },
-    url: 'https://localhost',
-    port: 3003,
     key: fs.readFileSync('certificates/nasara-backend-development.key'),
     cert: fs.readFileSync('certificates/nasara-backend-development.crt'),
     backendUser: 'candy',
     backendPassword: 'P@55word',
-    reloadPort: 35733,
-    dbUrl: 'http://localhost:5984/',
-    dbName: 'candy_basket_test',
+    couchdb: {
+      url: 'http://localhost:5984/',
+      name: 'candy_basket_test'
+    },
+    // Configure which host is allowed cross origin access to the backend
+    // Can take exact strings and regexes
+    // DO NOT INCLUDE TRAILING SLASH
+    corsOptions: {
+      origin: function(origin, callback){
+        var whiteListed = ['http://localhost:9000',
+                           'https://localhost:9000'].indexOf(origin) !== -1;
+        callback(null, whiteListed);
+      }
+    },
     webdavServer : { // ownCloud test instance
         'host' : 'arc.ghachey.info',
         'username' : 'candy',
@@ -64,21 +86,31 @@ var config = {
   production: {
     root: rootPath,
     app: {
-      name: 'nasaraCandyBasketApi'
+      debugLevel: 'warn',
+      name: 'nasaraCandyBasketApi',
+      protocol: 'https',
+      address: 'localhost',  
+      port: 4443,
+      reloadPort: 35735
     },
-    url: 'https://localhost',
-    port: 4443,
     key: fs.readFileSync('certificates/nasara-backend-development.key'), // change
     cert: fs.readFileSync('certificates/nasara-backend-development.crt'), // change
     backendUser: 'candy',
     backendPassword: 'P@55word',
-    dbUrl: 'http://localhost:5984/',
-    dbName: 'candy_basket',
+    couchdb: {
+      url: 'http://localhost:5984/',
+      name: 'candy_basket'
+    },
     // Configure which host is allowed cross origin access to the backend
     // Can take exact strings and regexes
     // DO NOT INCLUDE TRAILING SLASH
     corsOptions: {
-      'origin': 'https://candy.pacificpolicy.org.ph' // production frontend
+      origin: function(origin, callback){
+        var whiteListed = ['https://localhost',
+                           'https://candy.pacificpolicy.org.ph',
+                           'https://candy.pacificpolicy.org'].indexOf(origin) !== -1;
+        callback(null, whiteListed);
+      }
     },
     webdavServer : { // ownCloud test instance
         'host' : 'arc.ghachey.info',

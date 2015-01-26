@@ -3,12 +3,15 @@
 =================
 
 .. _intro:
+
 Introduction
 ============
 
 This guide documents high level development standards, policies and
 procedures without going into lower level details of the source code
 and APIs.
+
+.. _prog-lang:
 
 Programming Language
 --------------------
@@ -91,14 +94,30 @@ and not::
 
   [user]$ npm install -g express
 
-There are a couple of exceptions to this. Once you have NodeJS
-installed on your machine you should install bower and grunt-cli
-globally::
+And say you are adding a new dependency to your branch make sure you
+save it to the package.json definition with::
 
-  [user]$ npm install -b bower
-  [user]$ npm install -b grunt-cli
+  [user]$ npm install --save new-dep
 
-This is all that should be needed as a foundation development setup.
+Or if it is a dependency only used during development::
+
+  [user]$ npm install --save-dev new-dep
+
+Some packages are typically better installed globally, however. Once
+you have NodeJS installed on your machine you should install bower and
+grunt-cli globally::
+
+  [user]$ npm install -g bower
+  [user]$ npm install -g grunt-cli
+
+This is all that should be needed as a foundation development
+setup. However, if you plan to test the production deploy on your
+development machine---and you probably should before doing any pull
+request---you will also need a few more global packages.
+
+  [user]$ npm install -g forever 
+  [user]$ npm install -g http-server
+
 
 .. _couchdb:
 CouchDB
@@ -109,9 +128,11 @@ install CouchDB is to use the OS' package manager (Debian's apt-get,
 Mac OS X's brew, Red Hat's yum). CB makes use of three databases:
 `candy_basket_test`, `candy_basket_development`, `candy_basket` (for
 production). On the development machine only the
-candy_basket_development must be created in advanced. The tests will
-create and destroy the `candy_basket_test` database automatically, in
-fact, tests will fail if this database is already present.
+candy_basket_development must be created in advanced (and
+`candy_basket` if you plan on testing deploys locally). The
+integration tests will create and destroy the `candy_basket_test`
+database automatically, in fact, tests will fail if this database is
+already present.
 
 Sample data must be added to the development database. This can be
 done in a number of ways, either programmatically importing old
@@ -145,7 +166,7 @@ both terminals you should set the NODE_ENV to 'test' like this::
 
   [user]$ export NODE_ENV=test
 
-In one terminal serve the test backend::
+In one terminal serve the backend in test mode::
 
   [user]$ grunt serve
 
@@ -161,21 +182,28 @@ development wih the following::
 
   [user]$ export NODE_ENV=development
 
-And then you can server the backend for development with this::
+And then you can serve the backend in development mode::
 
   [user]$ grunt serve
+
+The nice thing is that you can do all the above at the same time and it
+want interfere as test, development and production environments all
+use different ports.
+
+Building the backend will clean any previous build, JSHint all the
+code, run the tests and prepare all files for production into
+`backend/dist` and can be done with the following::
+
+  [user]$ grunt
 
 Grunt on the frontend
 ~~~~~~~~~~~~~~~~~~~~~
 
-In the frontend, things are very similar. But currently you can only
-switch from development to production environments (the test
-environment will work equally in both since they are only unit tests
-not dependent on external database and other variants). And not only
-that, the switching between production and development environment is
-automatic whether you tell grunt to test, serve or deploy. So, all you
-reall need in the frontend currently is to run a development web
-server::
+In the frontend, things are very similar, but simpler. There is no
+need to set the environment variable from the command line; this is
+done within the grunt processes. So, all you really need in the
+frontend currently is to run a development web server (this will be in
+development mode automatically)::
 
   [user]$ grunt serve
 
@@ -183,30 +211,98 @@ To run your tests you can::
 
   [user]$ grunt test
 
-To build the frontend for production (this is only currently available
-for frontend where it is more important)::
+The build process will first clean any previous build, make sure all
+the code JSHints, run all tests and then do an impressive number of
+optimisations to the application and its dependencies and package it
+in `frontend/dist`. The build process is done with::
 
   [user]$ grunt
 
-The build will first make sure jshint and tests all pass and then do
-an impressive number of optimisations to the application and package
-it in `frontend/dist`.
 
 Grunt globally in app root
 ~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-Finally, work as also commenced on automating some other tasks in the
-root of the candy-basket application. Currently, it only generates a
-CHANGELOG.md file automatically and build some Angular documents with
-the following commands respectively::
+Finally, work has also commenced on automating some other tasks in the
+root of the candy-basket application. Currently, it can already do
+some really useful things which will be described here.
 
-  [user]$ grunt
+It can automatically create new releases following some modern
+conventions similar to the ones used by the AngularJS team which would
+typically be a repetitive number of boring tasks, but not with the
+following::
+
+  [user]$ grunt release:patch
+  [user]$ grunt release:minor
+  [user]$ grunt release:major
+  [user]$ grunt release:prerelease
+
+Which one to execute will depend on the work on the recent branches
+pulled into master (see :ref:`ongoingdev`). For example, let's
+say you pulled 3 branches that address bugs then you could cut a
+release with::
+
+  [user]$ grunt release:patch
+
+But if you add new features you might want to cut a release with::
+
+  [user]$ grunt release:minor
+
+And for major upgrades such as those containing backward incompatible
+changes::
+
+  [user]$ grunt release:major
+
+For more information on this process you can refer to
+\url{https://github.com/geddski/grunt-release} and
+\url{http://semver.org/}.
+
+It can automatically generate a CHANGELOG.md file. This is a little
+tricky as the `from` and `to` commit hashes must be setup manually in
+the `candy-basket/Grunfile.js`'s changelog property to generate to new
+part of the CHANGELOG.md and automatically append it to
+CHANGELOG.md. The good thing is that if a mistake is done then you can
+simply `git checkout CHANGELOG.md` and try again. You can use `git
+log` to identify the hash of the last CHANGELOG.md commit which will
+be your `from` and the most recent release cut which will be you `to`
+and then::
+
+  [user]$ grunt history
+
+Verify that the CHANGELOG.md looks good, do any manual changes you see
+fit and commit this CHANGELOG.md to master directly.
+
+It can build the docs if you make any amendments to these source
+files::
+
   [user]$ grunt docs
 
-But this grunt section will eventually properly build all
-documentation (frontend, backend, user docs), package them for
-production builds, runs tests, jshints and build both backend and
-frontend in a uniform and fully automated way. 
+It can Bbuild the backend, build the frontend, build the docs and move
+everything into `candy-basket/dist` ready to be deployed on remote
+server::
+
+  [user]$ grunt build
+
+And even do a full deploy of the application which will do a complete
+`grunt build` as above and then start the backend and frontend using
+forever. For this to work there are a couple of things you need to
+have working. First, you will need authbind to enable a non-privileged
+OS user to start network services on ports below 1024 (i.e. 443), you
+must \emph{not} have anything listening on 4443 and 443 and forever
+must be installed. But then it's just a matter of::
+
+  [user]$ grunt deploy
+
+To see services you can::
+
+  [user]$ forever list
+
+And before you try to re-deploy you must stop the services first::
+
+  [user]$ forever stopall
+
+For the installation and configuration of authbind refer to
+\url{http://www.debian-administration.org/article/386/Running_network_services_as_a_non-root_user.}
+or any number of easy tutorials on how to use authbind.
 
 Dependencies
 ------------
@@ -281,6 +377,8 @@ installed on your machine::
 However, never publish work to master (at least as rarely as
 possible). The following section describes the procedures to develop
 on CB.
+
+.. _ongoingdev:
 
 On-going Development
 --------------------
@@ -594,16 +692,16 @@ The process to build the frontend can be done individually also::
 
 And the whole Candy Basket application can be deployed including
 executing test, building docs, building backend, building frontend and
-copying all files to `candy-basket/dist`. Another tasks should be
-added to move it to the desired location on the server::
+copying all files to `candy-basket/dist`::
 
   [user]$ cd candy-basket/
   [user]$ sudo su
   [root]# grunt deploy
 
 Currently, the application must be started as user root. The next step
-would be either to use iptables to redirect 80 to 8080 and start
-user as non-privileged one or use authbind.
+would be either to use iptables to redirect 80 to 8080 and start user
+as non-privileged one or use authbind. Optionally, another tasks could
+be added to move it to the desired location on the server.
 
 Services are started on port 4443 (backend) and 443 (frontend) so
 those port must not be taken. The application only functions on https

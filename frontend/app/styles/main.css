@@ -304,7 +304,7 @@ input.ng-valid.ng-dirty {
 /* jquery-ui slider override */
 .ui-widget-header {
   border: 1px solid #E3A1A1;
-  background: url('images/ui-bg_flat_0_333333_40x100.png') repeat-x scroll 50% 50% #ccc;
+  background: url('../images/ui-bg_flat_0_333333_40x100.png') repeat-x scroll 50% 50% #ccc;
   color: #FFF;
   font-weight: bold;
 }

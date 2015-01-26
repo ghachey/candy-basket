@@ -48,12 +48,12 @@
   <div class="section" id="developer-guide">
 <h1>Developer Guide<a class="headerlink" href="#developer-guide" title="Permalink to this headline">¶</a></h1>
 <div class="section" id="introduction">
-<h2>Introduction<a class="headerlink" href="#introduction" title="Permalink to this headline">¶</a></h2>
+<span id="intro"></span><h2>Introduction<a class="headerlink" href="#introduction" title="Permalink to this headline">¶</a></h2>
 <p>This guide documents high level development standards, policies and
 procedures without going into lower level details of the source code
 and APIs.</p>
 <div class="section" id="programming-language">
-<h3>Programming Language<a class="headerlink" href="#programming-language" title="Permalink to this headline">¶</a></h3>
+<span id="prog-lang"></span><h3>Programming Language<a class="headerlink" href="#programming-language" title="Permalink to this headline">¶</a></h3>
 <p>The chosen programming language is Javascript both on the backend and
 the frontend. Javascript is relatively easy to get started with, it is
 increasingly popular to develop web applications and has a growing
@@ -118,14 +118,29 @@ to globally on your operating system. Therefore, use:</p>
 <div class="highlight-python"><div class="highlight"><pre>[user]$ npm install -g express
 </pre></div>
 </div>
-<p>There are a couple of exceptions to this. Once you have NodeJS
-installed on your machine you should install bower and grunt-cli
-globally:</p>
-<div class="highlight-python"><div class="highlight"><pre>[user]$ npm install -b bower
-[user]$ npm install -b grunt-cli
+<p>And say you are adding a new dependency to your branch make sure you
+save it to the package.json definition with:</p>
+<div class="highlight-python"><div class="highlight"><pre>[user]$ npm install --save new-dep
 </pre></div>
 </div>
-<p>This is all that should be needed as a foundation development setup.</p>
+<p>Or if it is a dependency only used during development:</p>
+<div class="highlight-python"><div class="highlight"><pre>[user]$ npm install --save-dev new-dep
+</pre></div>
+</div>
+<p>Some packages are typically better installed globally, however. Once
+you have NodeJS installed on your machine you should install bower and
+grunt-cli globally:</p>
+<div class="highlight-python"><div class="highlight"><pre>[user]$ npm install -g bower
+[user]$ npm install -g grunt-cli
+</pre></div>
+</div>
+<p>This is all that should be needed as a foundation development
+setup. However, if you plan to test the production deploy on your
+development machine&#8212;and you probably should before doing any pull
+request&#8212;you will also need a few more global packages.</p>
+<blockquote>
+<div>[user]$ npm install -g forever
+[user]$ npm install -g http-server</div></blockquote>
 </div>
 <div class="section" id="id1">
 <h3>CouchDB<a class="headerlink" href="#id1" title="Permalink to this headline">¶</a></h3>
@@ -134,9 +149,11 @@ install CouchDB is to use the OS&#8217; package manager (Debian&#8217;s apt-get,
 Mac OS X&#8217;s brew, Red Hat&#8217;s yum). CB makes use of three databases:
 <cite>candy_basket_test</cite>, <cite>candy_basket_development</cite>, <cite>candy_basket</cite> (for
 production). On the development machine only the
-candy_basket_development must be created in advanced. The tests will
-create and destroy the <cite>candy_basket_test</cite> database automatically, in
-fact, tests will fail if this database is already present.</p>
+candy_basket_development must be created in advanced (and
+<cite>candy_basket</cite> if you plan on testing deploys locally). The
+integration tests will create and destroy the <cite>candy_basket_test</cite>
+database automatically, in fact, tests will fail if this database is
+already present.</p>
 <p>Sample data must be added to the development database. This can be
 done in a number of ways, either programmatically importing old
 candies or manually entering some sample data using the running
@@ -164,7 +181,7 @@ both terminals you should set the NODE_ENV to &#8216;test&#8217; like this:</p>
 <div class="highlight-python"><div class="highlight"><pre>[user]$ export NODE_ENV=test
 </pre></div>
 </div>
-<p>In one terminal serve the test backend:</p>
+<p>In one terminal serve the backend in test mode:</p>
 <div class="highlight-python"><div class="highlight"><pre>[user]$ grunt serve
 </pre></div>
 </div>
@@ -180,21 +197,27 @@ development wih the following:</p>
 <div class="highlight-python"><div class="highlight"><pre>[user]$ export NODE_ENV=development
 </pre></div>
 </div>
-<p>And then you can server the backend for development with this:</p>
+<p>And then you can serve the backend in development mode:</p>
 <div class="highlight-python"><div class="highlight"><pre>[user]$ grunt serve
+</pre></div>
+</div>
+<p>The nice thing is that you can do all the above at the same time and it
+want interfere as test, development and production environments all
+use different ports.</p>
+<p>Building the backend will clean any previous build, JSHint all the
+code, run the tests and prepare all files for production into
+<cite>backend/dist</cite> and can be done with the following:</p>
+<div class="highlight-python"><div class="highlight"><pre>[user]$ grunt
 </pre></div>
 </div>
 </div>
 <div class="section" id="grunt-on-the-frontend">
 <h4>Grunt on the frontend<a class="headerlink" href="#grunt-on-the-frontend" title="Permalink to this headline">¶</a></h4>
-<p>In the frontend, things are very similar. But currently you can only
-switch from development to production environments (the test
-environment will work equally in both since they are only unit tests
-not dependent on external database and other variants). And not only
-that, the switching between production and development environment is
-automatic whether you tell grunt to test, serve or deploy. So, all you
-reall need in the frontend currently is to run a development web
-server:</p>
+<p>In the frontend, things are very similar, but simpler. There is no
+need to set the environment variable from the command line; this is
+done within the grunt processes. So, all you really need in the
+frontend currently is to run a development web server (this will be in
+development mode automatically):</p>
 <div class="highlight-python"><div class="highlight"><pre>[user]$ grunt serve
 </pre></div>
 </div>
@@ -202,29 +225,94 @@ server:</p>
 <div class="highlight-python"><div class="highlight"><pre>[user]$ grunt test
 </pre></div>
 </div>
-<p>To build the frontend for production (this is only currently available
-for frontend where it is more important):</p>
+<p>The build process will first clean any previous build, make sure all
+the code JSHints, run all tests and then do an impressive number of
+optimisations to the application and its dependencies and package it
+in <cite>frontend/dist</cite>. The build process is done with:</p>
 <div class="highlight-python"><div class="highlight"><pre>[user]$ grunt
 </pre></div>
 </div>
-<p>The build will first make sure jshint and tests all pass and then do
-an impressive number of optimisations to the application and package
-it in <cite>frontend/dist</cite>.</p>
 </div>
 <div class="section" id="grunt-globally-in-app-root">
 <h4>Grunt globally in app root<a class="headerlink" href="#grunt-globally-in-app-root" title="Permalink to this headline">¶</a></h4>
-<p>Finally, work as also commenced on automating some other tasks in the
-root of the candy-basket application. Currently, it only generates a
-CHANGELOG.md file automatically and build some Angular documents with
-the following commands respectively:</p>
-<div class="highlight-python"><div class="highlight"><pre>[user]$ grunt
-[user]$ grunt docs
+<p>Finally, work has also commenced on automating some other tasks in the
+root of the candy-basket application. Currently, it can already do
+some really useful things which will be described here.</p>
+<p>It can automatically create new releases following some modern
+conventions similar to the ones used by the AngularJS team which would
+typically be a repetitive number of boring tasks, but not with the
+following:</p>
+<div class="highlight-python"><div class="highlight"><pre>[user]$ grunt release:patch
+[user]$ grunt release:minor
+[user]$ grunt release:major
+[user]$ grunt release:prerelease
 </pre></div>
 </div>
-<p>But this grunt section will eventually properly build all
-documentation (frontend, backend, user docs), package them for
-production builds, runs tests, jshints and build both backend and
-frontend in a uniform and fully automated way.</p>
+<p>Which one to execute will depend on the work on the recent branches
+pulled into master (see <a class="reference internal" href="#ongoingdev"><em>On-going Development</em></a>). For example, let&#8217;s
+say you pulled 3 branches that address bugs then you could cut a
+release with:</p>
+<div class="highlight-python"><div class="highlight"><pre>[user]$ grunt release:patch
+</pre></div>
+</div>
+<p>But if you add new features you might want to cut a release with:</p>
+<div class="highlight-python"><div class="highlight"><pre>[user]$ grunt release:minor
+</pre></div>
+</div>
+<p>And for major upgrades such as those containing backward incompatible
+changes:</p>
+<div class="highlight-python"><div class="highlight"><pre>[user]$ grunt release:major
+</pre></div>
+</div>
+<p>For more information on this process you can refer to
+url{<a class="reference external" href="https://github.com/geddski/grunt-release">https://github.com/geddski/grunt-release</a>} and
+url{<a class="reference external" href="http://semver.org/">http://semver.org/</a>}.</p>
+<p>It can automatically generate a CHANGELOG.md file. This is a little
+tricky as the <cite>from</cite> and <cite>to</cite> commit hashes must be setup manually in
+the <cite>candy-basket/Grunfile.js</cite>&#8216;s changelog property to generate to new
+part of the CHANGELOG.md and automatically append it to
+CHANGELOG.md. The good thing is that if a mistake is done then you can
+simply <cite>git checkout CHANGELOG.md</cite> and try again. You can use <cite>git
+log</cite> to identify the hash of the last CHANGELOG.md commit which will
+be your <cite>from</cite> and the most recent release cut which will be you <cite>to</cite>
+and then:</p>
+<div class="highlight-python"><div class="highlight"><pre>[user]$ grunt history
+</pre></div>
+</div>
+<p>Verify that the CHANGELOG.md looks good, do any manual changes you see
+fit and commit this CHANGELOG.md to master directly.</p>
+<p>It can build the docs if you make any amendments to these source
+files:</p>
+<div class="highlight-python"><div class="highlight"><pre>[user]$ grunt docs
+</pre></div>
+</div>
+<p>It can Bbuild the backend, build the frontend, build the docs and move
+everything into <cite>candy-basket/dist</cite> ready to be deployed on remote
+server:</p>
+<div class="highlight-python"><div class="highlight"><pre>[user]$ grunt build
+</pre></div>
+</div>
+<p>And even do a full deploy of the application which will do a complete
+<cite>grunt build</cite> as above and then start the backend and frontend using
+forever. For this to work there are a couple of things you need to
+have working. First, you will need authbind to enable a non-privileged
+OS user to start network services on ports below 1024 (i.e. 443), you
+must emph{not} have anything listening on 4443 and 443 and forever
+must be installed. But then it&#8217;s just a matter of:</p>
+<div class="highlight-python"><div class="highlight"><pre>[user]$ grunt deploy
+</pre></div>
+</div>
+<p>To see services you can:</p>
+<div class="highlight-python"><div class="highlight"><pre>[user]$ forever list
+</pre></div>
+</div>
+<p>And before you try to re-deploy you must stop the services first:</p>
+<div class="highlight-python"><div class="highlight"><pre>[user]$ forever stopall
+</pre></div>
+</div>
+<p>For the installation and configuration of authbind refer to
+url{<a class="reference external" href="http://www.debian-administration.org/article/386/Running_network_services_as_a_non-root_user">http://www.debian-administration.org/article/386/Running_network_services_as_a_non-root_user</a>.}
+or any number of easy tutorials on how to use authbind.</p>
 </div>
 </div>
 <div class="section" id="dependencies">
@@ -297,7 +385,7 @@ possible). The following section describes the procedures to develop
 on CB.</p>
 </div>
 <div class="section" id="on-going-development">
-<h3>On-going Development<a class="headerlink" href="#on-going-development" title="Permalink to this headline">¶</a></h3>
+<span id="ongoingdev"></span><h3>On-going Development<a class="headerlink" href="#on-going-development" title="Permalink to this headline">¶</a></h3>
 <p>New development work on a software project is either of maintenance
 (fixing bugs, addressing security issues) or construction nature
 (adding new features). Regardless of the type of work, all new work
@@ -589,16 +677,16 @@ executing tests first):</p>
 </div>
 <p>And the whole Candy Basket application can be deployed including
 executing test, building docs, building backend, building frontend and
-copying all files to <cite>candy-basket/dist</cite>. Another tasks should be
-added to move it to the desired location on the server:</p>
+copying all files to <cite>candy-basket/dist</cite>:</p>
 <div class="highlight-python"><div class="highlight"><pre>[user]$ cd candy-basket/
 [user]$ sudo su
 [root]# grunt deploy
 </pre></div>
 </div>
 <p>Currently, the application must be started as user root. The next step
-would be either to use iptables to redirect 80 to 8080 and start
-user as non-privileged one or use authbind.</p>
+would be either to use iptables to redirect 80 to 8080 and start user
+as non-privileged one or use authbind. Optionally, another tasks could
+be added to move it to the desired location on the server.</p>
 <p>Services are started on port 4443 (backend) and 443 (frontend) so
 those port must not be taken. The application only functions on https
 with currently no redirect from http.</p>
@@ -1369,7 +1457,7 @@ tools.</p>
     </div>
     <div class="footer">
         &copy; Copyright 2013, Ghislain Hachey and Dan McGarry.
-      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.2.2.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.2.3.
     </div>
   </body>
 </html>
