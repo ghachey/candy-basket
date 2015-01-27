@@ -13,4 +13,10 @@ angular.module('nasaraCandyBasketApp')
       return viewLocation === $location.path();
     };
 
+    $scope.switcher = 'candy-list-timeline';
+
+    $scope.$watch('switcher', function(newView) {
+      $location.path('/'+newView);
+    });
+
   });
