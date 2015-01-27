@@ -37,11 +37,11 @@
           </button>
           <a class="navbar-brand" href="#/">Candy Basket</a>
         </div>
-        <div class="navbar-collapse collapse">
+        <div class="navbar-collapse collapse" ng-controller="HeaderNavigation">
           <ul class="nav navbar-nav">
-	    <li class="active"><a href="#/">Home</a></li>
-	    <li><a href="#/about">About</a></li>
-	    <li><a href="#/contact">Contact</a></li>
+	    <li ng-class="{ active: isActive('/candy-list-timeline')}"><a href="#/">Home</a></li>
+	    <li ng-class="{ active: isActive('/about')}"><a href="#/about">About</a></li>
+	    <li ng-class="{ active: isActive('/contact')}"><a href="#/contact">Contact</a></li>
             <!-- <li style="margin-top: -5px; margin-left: 10px;"
             ng-include="'views/welcome.html'">Welcome...</li> -->
           </ul>
@@ -94,7 +94,7 @@
     <!-- build:js({.tmp,app}) scripts/scripts.js -->
     <script src="scripts/app.js"></script>
     <script src="scripts/controllers/about.js"></script>
-    <script src="scripts/controllers/main.js"></script>
+    <script src="scripts/controllers/header-navigation.js"></script>
     <script src="scripts/controllers/candy-modal.js"></script>
     <script src="scripts/controllers/candy-list-table.js"></script>
     <script src="scripts/controllers/candy-list-timeline.js"></script>
