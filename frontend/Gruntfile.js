@@ -152,7 +152,8 @@ module.exports = function (grunt) {
       all: {
         src: [
           'Gruntfile.js',
-          '<%= yeoman.app %>/scripts/{,*/}*.js'
+          '<%= yeoman.app %>/scripts/{,*/}*.js',
+          '!<%= yeoman.app %>/scripts/ui-templates.js'
         ]
       },
       test: {
@@ -412,6 +413,18 @@ module.exports = function (grunt) {
             cwd: 'bower_components/TimelineJS/build/css',
             src: '*.{gif,png}',
             dest: '<%= yeoman.dist %>/styles'
+          },
+          { 
+            expand: true,
+            cwd: 'bower_components/tinymce',
+            src: 'themes/**/*',
+            dest: '<%= yeoman.dist %>/scripts'
+          },
+          { 
+            expand: true,
+            cwd: 'bower_components/tinymce',
+            src: 'skins/**/*',
+            dest: '<%= yeoman.dist %>/scripts'
           }
         ]
       },
@@ -420,6 +433,22 @@ module.exports = function (grunt) {
         cwd: '<%= yeoman.app %>/styles',
         dest: '.tmp/styles/',
         src: '{,*/}*.css'
+      }
+    },
+
+    html2js: {
+      options: {
+        base: '.',
+        module: 'ui-templates',
+        rename: function (modulePath) {
+          var moduleName = modulePath.replace('app/views/partials/ui-bootstrap-tpls/', '');
+          return 'template/' + moduleName;
+        }
+      },
+      main: {
+        src: ['app/views/partials/ui-bootstrap-tpls/**/*.html'],
+        //dest: '.tmp/ui-templates.js'
+        dest: '<%= yeoman.app %>/scripts/ui-templates.js'
       }
     },
 
@@ -447,6 +476,7 @@ module.exports = function (grunt) {
     }
   });
 
+  grunt.loadNpmTasks('grunt-html2js');
 
   grunt.registerTask('serve', 'Compile then start a connect web server', function (target) {
     if (target === 'dist') {
@@ -456,6 +486,7 @@ module.exports = function (grunt) {
     grunt.task.run([
       'clean:server',
       'ngconstant:development',
+      'html2js',
       'wiredep',
       'concurrent:server',
       'autoprefixer',
@@ -481,6 +512,7 @@ module.exports = function (grunt) {
   grunt.registerTask('build', [
     'clean:dist',
     'ngconstant:production',
+    'html2js',
     'wiredep',
     'useminPrepare',
     'concurrent:dist',

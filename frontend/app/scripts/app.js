@@ -1,7 +1,5 @@
 'use strict';
 
-// TODO - Change namespacing of modules and properly re-organize
-
 /**
  * @ngdoc overview
  * @name narasaCandyBasketApp
@@ -25,6 +23,7 @@ angular
     'ngTouch',
     /* Third party modules */
     'ui.bootstrap', 
+    'ui-templates',
     'ui.tinymce', 
     'ui.slider',
     'angularFileUpload',
@@ -34,21 +33,14 @@ angular
   ])
   .config(['$routeProvider', '$httpProvider', function ($routeProvider, $httpProvider) {
     $routeProvider
-      .when('/test', {templateUrl: 'views/main.html',
-		      controller: 'MainCtrl'})
-      .when('/about', {templateUrl: 'views/about.html'})
-      .when('/contact', {templateUrl: 'views/contact.html'})
-      .when('/api', {templateUrl: 'docs/index.html'})
       .when('/about-candy-service', {templateUrl: 'views/about-candy-service.html',
 			             controller: 'About'})
       .when('/candy-list-table', {templateUrl: 'views/candy-list-table.html',
 			          controller: 'CandyListTable'})
       .when('/candy-list-timeline', {templateUrl: 'views/candy-list-timeline.html',
 				     controller: 'CandyListTimeline'})
-      .when('/about', {
-        templateUrl: 'views/about.html',
-        controller: 'AboutCtrl'
-      })
+      .when('/about', {templateUrl: 'views/about.html'})
+      .when('/contact', {templateUrl: 'views/contact.html'})
       .otherwise({redirectTo: '/candy-list-timeline'});
 
     // http://stackoverflow.com/questions/17289195/angularjs-post-data-to-external-rest-api
