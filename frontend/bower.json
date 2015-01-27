@@ -34,5 +34,12 @@
     "jquery-ui": "master",
     "es5-shim": ">=3.4.0",
     "angular": "~1.2.16"
+  },
+  "overrides": {
+    "angular-bootstrap": {
+      "main": [
+        "./ui-bootstrap.js"
+      ]
+    }
   }
 }

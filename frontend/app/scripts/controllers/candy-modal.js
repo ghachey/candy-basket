@@ -9,90 +9,92 @@
  * Controller of the nasaraCandyBasketApp controls how a a single instance
  * of a CandyModal works for saving (creating/updating) candies
  */
-var SaveCandyInstanceModal = function ($scope, $modalInstance, operation, candyId,
-                                       CandyResource, tagsViews, FileUploader,
-                                       ENV) {
-  $scope.operation = operation;
-  $scope.tinymceOptions = {
-    menubar : false,
-    toolbar: 'undo redo | styleselect | bold italic | link image'
-  };
+angular.module('nasaraCandyBasketApp')
+  .controller('SaveCandyInstanceModal', function ($scope, $modalInstance, 
+                                                  operation, candyId,
+                                                  CandyResource, tagsViews, 
+                                                  FileUploader, ENV) {
+    $scope.operation = operation;
+    $scope.tinymceOptions = {
+      menubar : false,
+      toolbar: 'undo redo | styleselect | bold italic | link image'
+    };
 
-  $scope.candy = new CandyResource();
+    $scope.candy = new CandyResource();
 
-  if (candyId) { // We updating?
-    $scope.candy.$read({_id: candyId});
-  }
-
-  tagsViews.getTags().then(function(response) {
-    $scope.tagsData = response.data; // all tags
-  }, function(reason){
-    // Use to tell user about error retrieving tags for auto-complete
-    // Not used yet, but can be easily added to form error message
-    // later on
-    $scope.tagsError = reason; 
-  }); 
-
-  ////////////////////////////////////////////////////
-  // Putting all the file upload stuff here for now //
-  ////////////////////////////////////////////////////
-
-  // Private tracking of what has been uploaded to server async'ly
-  var uploadedFiles = []; 
-  // The Actual file upload service
-  var uploader = $scope.uploader = new FileUploader({
-    headers: {
-      'Authorization': 'Basic Y2FuZHk6UEA1NXdvcmQ='
-    },
-    url: ENV.backendUrl + '/files' // Our own NodeJS backend
-  });
-  // Filters can be added on allowed types of files
-  uploader.filters.push({
-    name: 'customFilter',
-    fn: function(item /*{File|FileLikeObject}*/, options) {
-      console.log('item: ', item);
-      console.log('options: ', options);
-      return this.queue.length < 10;
+    if (candyId) { // We updating?
+      $scope.candy.$read({_id: candyId});
     }
-  });
-  // Callbacks (see {@link
-  // https://github.com/nervgh/angular-file-upload/wiki/Module-APIñ}
-  // for a full API)
-  uploader.onCompleteItem = function(fileItem, response, status, headers) {
-    console.info('onCompleteItem', fileItem, response, status, headers);
-    uploadedFiles.push(response);
-  };
 
-  $scope.removeFile = function (filename) {
-    if ($scope.candy.files) {
-      $scope.candy.files = $scope.candy.files.filter(function(fileObject) {
-        return (fileObject.name !== filename);
+    tagsViews.getTags().then(function(response) {
+      $scope.tagsData = response.data; // all tags
+    }, function(reason){
+      // Use to tell user about error retrieving tags for auto-complete
+      // Not used yet, but can be easily added to form error message
+      // later on
+      $scope.tagsError = reason; 
+    }); 
+
+    ////////////////////////////////////////////////////
+    // Putting all the file upload stuff here for now //
+    ////////////////////////////////////////////////////
+
+    // Private tracking of what has been uploaded to server async'ly
+    var uploadedFiles = []; 
+    // The Actual file upload service
+    var uploader = $scope.uploader = new FileUploader({
+      headers: {
+        'Authorization': 'Basic Y2FuZHk6UEA1NXdvcmQ='
+      },
+      url: ENV.backendUrl + '/files' // Our own NodeJS backend
+    });
+    // Filters can be added on allowed types of files
+    uploader.filters.push({
+      name: 'customFilter',
+      fn: function(item /*{File|FileLikeObject}*/, options) {
+        console.log('item: ', item);
+        console.log('options: ', options);
+        return this.queue.length < 10;
+      }
+    });
+    // Callbacks (see {@link
+    // https://github.com/nervgh/angular-file-upload/wiki/Module-APIñ}
+    // for a full API)
+    uploader.onCompleteItem = function(fileItem, response, status, headers) {
+      console.info('onCompleteItem', fileItem, response, status, headers);
+      uploadedFiles.push(response);
+    };
+
+    $scope.removeFile = function (filename) {
+      if ($scope.candy.files) {
+        $scope.candy.files = $scope.candy.files.filter(function(fileObject) {
+          return (fileObject.name !== filename);
+        });
+      }
+    };
+
+    $scope.saveCandy = function () {
+      // Before closing the modal and saving the candy check files still
+      // in the queue (users might have been removing some of them) and
+      // compare with ones pushed into uploadedFiles which contains meta
+      // data about files already asynchronously uploaded to server
+      // successfully. Only keep meta data of files still in the
+      // uploader queue and save *that* into CouchDB with candy data.
+      var queueNames = _.map(uploader.queue, function(fileItem) {
+        return fileItem.file.name;
       });
-    }
-  };
+      var newFiles = _.filter(uploadedFiles, function(fileMeta) {
+        return _.contains(queueNames, fileMeta.originalName); 
+      });
+      $scope.candy.files = ($scope.candy.files) ? 
+        $scope.candy.files.concat(newFiles) : $scope.candy.files = newFiles;
+      $modalInstance.close($scope.candy);
+    };
 
-  $scope.saveCandy = function () {
-    // Before closing the modal and saving the candy check files still
-    // in the queue (users might have been removing some of them) and
-    // compare with ones pushed into uploadedFiles which contains meta
-    // data about files already asynchronously uploaded to server
-    // successfully. Only keep meta data of files still in the
-    // uploader queue and save *that* into CouchDB with candy data.
-    var queueNames = _.map(uploader.queue, function(fileItem) {
-      return fileItem.file.name;
-    });
-    var newFiles = _.filter(uploadedFiles, function(fileMeta) {
-      return _.contains(queueNames, fileMeta.originalName); 
-    });
-    $scope.candy.files = ($scope.candy.files) ? 
-      $scope.candy.files.concat(newFiles) : $scope.candy.files = newFiles;
-    $modalInstance.close($scope.candy);
-  };
-
-  $scope.cancel = function () {
-    $modalInstance.dismiss('cancel');
-  };
-};
+    $scope.cancel = function () {
+      $modalInstance.dismiss('cancel');
+    };
+  });
 
 /**
  * @ngdoc function
@@ -101,21 +103,23 @@ var SaveCandyInstanceModal = function ($scope, $modalInstance, operation, candyI
  * Controller of the nasaraCandyBasketApp controls how a a single instance
  * of a CandyModal works for deleting candies
  */
-var DeleteCandyInstanceModal = function ($scope, $modalInstance, operation, candyId,
-                                         CandyResource) {
+angular.module('nasaraCandyBasketApp')
+  .controller('DeleteCandyInstanceModal', function ($scope, $modalInstance, 
+                                                    operation, candyId,
+                                                    CandyResource) {
 
-  $scope.candy = CandyResource.read({_id: candyId});
-  $scope.operation = operation;
+    $scope.candy = CandyResource.read({_id: candyId});
+    $scope.operation = operation;
 
-  $scope.deleteCandy = function () {
-    $modalInstance.close($scope.candy);
-  };
+    $scope.deleteCandy = function () {
+      $modalInstance.close($scope.candy);
+    };
 
-  $scope.cancel = function () {
-    $modalInstance.dismiss('cancel');
-  };
+    $scope.cancel = function () {
+      $modalInstance.dismiss('cancel');
+    };
 
-};
+  });
 
 /**
  * @ngdoc function
@@ -129,10 +133,10 @@ var DeleteCandyInstanceModal = function ($scope, $modalInstance, operation, cand
  * @see http://angular-ui.github.io/bootstrap/  
  */
 angular.module('nasaraCandyBasketApp')
-  .controller('CandyModal', function ($scope,
+  .controller('CandyModal', function ($scope, 
                                       stateTracker, 
                                       $rootScope, 
-                                      $filter,
+                                      $filter, 
                                       $log, 
                                       $modal) {
 
@@ -174,7 +178,7 @@ angular.module('nasaraCandyBasketApp')
         logMsg = 'Creating new';
         modalOptions = {
           templateUrl: 'candy-save-modal.html',
-          controller: SaveCandyInstanceModal,
+          controller: 'SaveCandyInstanceModal',
           resolve: {
             operation: function() {return logMsg;},
             candyId: function() {return _id ? _id : undefined;}
@@ -192,7 +196,7 @@ angular.module('nasaraCandyBasketApp')
         logMsg = 'Updating existing';
         modalOptions = {
           templateUrl: 'candy-save-modal.html',
-          controller: SaveCandyInstanceModal,
+          controller: 'SaveCandyInstanceModal',
           resolve: {
             operation: function() {return logMsg;},
             candyId: function() {return _id ? _id : undefined;}
@@ -210,7 +214,7 @@ angular.module('nasaraCandyBasketApp')
         logMsg = 'Deleting';
         modalOptions = {
           templateUrl: 'candy-delete-modal.html',
-          controller: DeleteCandyInstanceModal,
+          controller: 'DeleteCandyInstanceModal',
           resolve: {
             operation: function() {return logMsg;},
             candyId: function() {return _id ? _id : undefined;}
