@@ -9,10 +9,10 @@
  * Controller of the nasaraCandyBasketApp logic to retrieve and display
  * candies in list table view mode.
  * 
- * TODO - This controller is very similar to the CandyListTimeline controller
- * and they could both be merged into an Javascript prototype
- * only adding properties as they differ eliminating 
- * much code duplication and future errors.
+ * TODO - This controller is very similar to the CandyListTimeline
+ * controller and they could both be merged into an Javascript
+ * prototype only adding properties as they differ eliminating much
+ * code duplication and future errors.
  */
 angular.module('nasaraCandyBasketApp')
   .controller('CandyListTable', function ($scope, 
@@ -31,7 +31,7 @@ angular.module('nasaraCandyBasketApp')
     // on $scope.candies as it is dynamic and candies are lost on each
     // search. For the same reason we also have a private
     // tagsByCandies handy in the controller
-    var candies;
+    var candies = [];
     var tagsByCandies = [];
     var filterByTags = $filter('candiesByTags');
     var filterByDates = $filter('candiesByDates');
@@ -58,6 +58,9 @@ angular.module('nasaraCandyBasketApp')
           }, function(errorMessage){
             $scope.error = errorMessage;
             callback(errorMessage, null);
+            $scope.candiesLoading = false;
+          }).finally(function() {
+            $scope.candiesLoading = false;
           });
         },
         function(callback){
@@ -67,6 +70,9 @@ angular.module('nasaraCandyBasketApp')
           }, function(errorMessage){
             $scope.error = errorMessage;
             callback(errorMessage, null);
+            $scope.tagsLoading = false;
+          }).finally(function() {
+            $scope.tagsLoading = false;
           });
         }
       ], function(err, results){
@@ -94,7 +100,6 @@ angular.module('nasaraCandyBasketApp')
                                       $scope.dateRange[0], 
                                       $scope.dateRange[1]);
       $scope.candies = filterByTags(tempCandies, $scope.tags);
-      $scope.timelineData = utilities.processTimeline($scope.candies);
     };
 
     ///////////////////////////////////////////////////
@@ -103,8 +108,10 @@ angular.module('nasaraCandyBasketApp')
 
     // Initialize variables on the scope used to power view dynamically
     $scope.candies = [];
+    $scope.candiesLoading = true;
     $scope.tags = [];
     $scope.tagsData = [];
+    $scope.tagsLoading = true;
     $scope.dateRange = [undefined, undefined];
     $scope.slider = {
       'options': {
@@ -128,8 +135,7 @@ angular.module('nasaraCandyBasketApp')
     fetchData(function() {
       $scope.candies = candies;
       $scope.tagsData = utilities.getTagsData(tagsByCandies);
-      $scope.ccsTagStatus = utilities.updateStatusCount(
-        utilities.getTagsData(tagsByCandies));
+      $scope.ccsTagStatus = utilities.updateStatusCount($scope.tagsData);
       // Oldest and newest candies
       var range = utilities.getDateRange(candies);
       $scope.sliderMin = range[0];
@@ -164,8 +170,7 @@ angular.module('nasaraCandyBasketApp')
 
       filterData();
       $scope.tagsData = utilities.getTagsData(newMap);
-      $scope.ccsTagStatus = utilities.updateStatusCount(
-        utilities.getTagsData(newMap));
+      $scope.ccsTagStatus = utilities.updateStatusCount($scope.tagsData);
     });
 
     // UI Methods

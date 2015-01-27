@@ -39,9 +39,9 @@
            ng-model="sliderRange"></div>
     </div>
 
-    <div class="col-md-4 slider-date-range">
-      {{sliderRange|dateRangeFormatter}}
-    </div>
+    <!-- <div class="col-md-4 slider-date-range">
+    {{sliderRange|dateRangeFormatter}}
+    </div> -->
 
   </div>
 
@@ -53,7 +53,12 @@
 
 
   <div class="row">
-    <div id="display-table" class="col-md-12">
+
+    <div class="text-center" ng-show="candiesLoading">
+      <img src="images/loading-128.gif" />
+    </div>
+
+    <div id="display-table" class="col-md-12" ng-hide="candiesLoading">
       <table id="links-table" style="margin: 0 auto;float: none;" class="table table-striped">
         <thead>
 	  <tr>

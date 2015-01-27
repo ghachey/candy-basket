@@ -10,6 +10,11 @@
     </taglist>
   </div>
   <div class="col-md-9 tag-cloud">
+
+    <!-- <div ng-show="tagsLoading">
+    <img src="images/loading-64.gif" />
+    </div> -->
+
     <tagcloud
       id="tagscloud"
       cloud-data="tagsData.tagsCounts"
@@ -64,8 +69,8 @@
          ng-model="sliderRange"></div>
   </div>
 
-  <!--  div class="col-md-3 slider-date-range">
-    {{sliderRange|dateRangeFormatter}}
+  <!-- <div class="col-md-3 slider-date-range">
+  {{sliderRange|dateRangeFormatter}}
   </div -->
 
 </div>
@@ -78,6 +83,11 @@
 
 <div class="row">
   <div class="col-md-12">
+
+    <div class="text-center" ng-show="candiesLoading">
+      <img src="images/loading-128.gif" />
+    </div>
+
     <pipp-timeline-j-s source="timelineData"
 		       height="600"
 		       width="97.5%"
