@@ -47,16 +47,18 @@
           </ul>
 
           <div id="view-switcher" class="pull-right btn-group">
-            <label class="btn btn-primary" ng-model="switcher" btn-radio="'candy-list-timeline'">Timeline View</label>
-            <label class="btn btn-primary" ng-model="switcher" btn-radio="'candy-list-table'">Table View</label>
+            <label class="btn btn-primary" ng-model="switcher.view" btn-radio="'candy-list-timeline'">Timeline View</label>
+            <label class="btn btn-primary" ng-model="switcher.view" btn-radio="'candy-list-table'">Table View</label>
           </div>
-
 
         </div>        
       </nav>
     </div>
 
-    <div class="container" ng-view=""></div>
+    <div class="view-animate-container">
+      <div class="container reveal-animation" ng-view=""></div>
+    </div>
+
 
     <!-- build:js(.) scripts/oldieshim.js -->
     <!--[if lt IE 9]>

@@ -22,7 +22,7 @@
 
 <div ng-controller="CandyModal">
 
-  <div id="candy-list" class="row combined-ops">
+  <div id="candy-list" class="row combined-ops" ng-hide="candiesLoading">
 
     <div class="col-md-2">
       <button class="operations ops-new" ng-click="open('create', candy._id)">
@@ -45,7 +45,7 @@
 
   </div>
 
-  <div class="row">
+  <div class="row" ng-hide="candiesLoading">
     <div class="col-md-12">
       <display-percentages percentages="ccsTagStatus"></display-percentages>
     </div>
