@@ -359,7 +359,7 @@ var getTags = function(req, res) {
   var tagsCounts = [];
   var viewData;
 
-  couchdb.view('docs', 'tags_with_counts?group=True', function(err, body) {
+  couchdb.view('docs', 'tags_with_counts', {'group': true}, function(err, body) {
     if (!err) {
       body.rows.forEach(function(doc) {
         tags.push(doc.key);

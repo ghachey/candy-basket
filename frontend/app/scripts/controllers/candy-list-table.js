@@ -20,7 +20,8 @@ angular.module('nasaraCandyBasketApp')
                                           $filter,
                                           CandyResource, 
                                           tagsViews, 
-                                          utilities) {
+                                          utilities,
+                                          $timeout) {
 
     /////////////////////////////////////////////////
     // Controller private variables and functions  //
@@ -58,9 +59,6 @@ angular.module('nasaraCandyBasketApp')
           }, function(errorMessage){
             $scope.error = errorMessage;
             callback(errorMessage, null);
-            $scope.candiesLoading = false;
-          }).finally(function() {
-            $scope.candiesLoading = false;
           });
         },
         function(callback){
@@ -70,9 +68,6 @@ angular.module('nasaraCandyBasketApp')
           }, function(errorMessage){
             $scope.error = errorMessage;
             callback(errorMessage, null);
-            $scope.tagsLoading = false;
-          }).finally(function() {
-            $scope.tagsLoading = false;
           });
         }
       ], function(err, results){
@@ -133,15 +128,19 @@ angular.module('nasaraCandyBasketApp')
 
     // Fetch data on controller instantiation, and then assign data on scope 
     fetchData(function() {
-      $scope.candies = candies;
-      $scope.tagsData = utilities.getTagsData(tagsByCandies);
-      $scope.ccsTagStatus = utilities.updateStatusCount($scope.tagsData);
-      // Oldest and newest candies
-      var range = utilities.getDateRange(candies);
-      $scope.sliderMin = range[0];
-      $scope.sliderMax = range[1];
-      $scope.sliderStep = 24 * 3600 * 1000; // a day in milliseconds
-      $scope.sliderRange = range;
+      $timeout(function() {
+        $scope.candiesLoading = false;
+        $scope.tagsLoading = false;
+        $scope.candies = candies;
+        $scope.tagsData = utilities.getTagsData(tagsByCandies);
+        $scope.ccsTagStatus = utilities.updateStatusCount($scope.tagsData);
+        // Oldest and newest candies
+        var range = utilities.getDateRange(candies);
+        $scope.sliderMin = range[0];
+        $scope.sliderMax = range[1];
+        $scope.sliderStep = 24 * 3600 * 1000; // a day in milliseconds
+        $scope.sliderRange = range;
+      }, 3000);
     });
 
     // Listeners

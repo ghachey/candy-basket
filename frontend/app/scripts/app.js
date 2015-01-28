@@ -39,9 +39,10 @@ angular
 			          controller: 'CandyListTable'})
       .when('/candy-list-timeline', {templateUrl: 'views/candy-list-timeline.html',
 				     controller: 'CandyListTimeline'})
+      .when('/', {controller: 'HeaderNavigation'})
       .when('/about', {templateUrl: 'views/about.html'})
       .when('/contact', {templateUrl: 'views/contact.html'})
-      .otherwise({redirectTo: '/candy-list-timeline'});
+      .otherwise({redirectTo: '/'});
 
     // http://stackoverflow.com/questions/17289195/angularjs-post-data-to-external-rest-api
     $httpProvider.defaults.useXDomain = true;

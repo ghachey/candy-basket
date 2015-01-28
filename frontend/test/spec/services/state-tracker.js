@@ -12,15 +12,15 @@ describe('Service: stateTracker', function () {
   }));
 
   it('should return known default values', function () {
-    expect(stateTracker.state.timelineValues.index).toBe(0);
-    expect(stateTracker.state.timelineValues.modal_open).toBe(false);
+    expect(stateTracker.timelineValues.index).toBe(0);
+    expect(stateTracker.timelineValues.modal_open).toBe(false);
   });
 
-  it('should mutate in prediactable way', function () {
-    stateTracker.state.timelineValues.index =  10;
-    stateTracker.state.timelineValues.modal_open = true;
-    expect(stateTracker.state.timelineValues.index).toBe(10);
-    expect(stateTracker.state.timelineValues.modal_open).toBe(true);
+  it('should mutate in predictablet way', function () {
+    stateTracker.timelineValues.index =  10;
+    stateTracker.timelineValues.modal_open = true;
+    expect(stateTracker.timelineValues.index).toBe(10);
+    expect(stateTracker.timelineValues.modal_open).toBe(true);
   });
 
 });

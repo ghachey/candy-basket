@@ -11,10 +11,6 @@
   </div>
   <div class="col-md-9 tag-cloud">
 
-    <!-- <div ng-show="tagsLoading">
-    <img src="images/loading-64.gif" />
-    </div> -->
-
     <tagcloud
       id="tagscloud"
       cloud-data="tagsData.tagsCounts"
@@ -25,7 +21,7 @@
   </div>
 </div>
 
-<div class="row combined-ops" ng-controller="CandyModal">  
+<div class="row combined-ops" ng-controller="CandyModal" ng-hide="candiesLoading">  
 
   <div class="col-md-3">
     <button class="operations" ng-click="open('edit')"
@@ -57,7 +53,6 @@
     </button>
   </div>
 
-
   <div class="col-md-6">
     <div class="slider" 
 	 tooltip-html-unsafe="{{sliderRange|dateRangeFormatter}}"
@@ -75,7 +70,7 @@
 
 </div>
 
-<div class="row">
+<div class="row" ng-hide="candiesLoading">
   <div class="col-md-12">
     <display-percentages percentages="ccsTagStatus"></display-percentages>
   </div>
