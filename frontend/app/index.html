@@ -25,7 +25,7 @@
     <![endif]-->
 
     <!-- Add your site or application content here -->
-    <div class="container">
+    <div class="container-fluid">
       <nav class="navbar navbar-inverse navbar-static-top"
 	   role="navigation">
         <div class="navbar-header">
@@ -39,7 +39,7 @@
         </div>
         <div class="navbar-collapse collapse" ng-controller="HeaderNavigation">
           <ul class="nav navbar-nav">
-	    <li ng-class="{ active: isActive('/candy-list-timeline')}"><a href="#/">Home</a></li>
+	    <li ng-class="{ active: isActive('/candy-list-*')}"><a href="#/">Home</a></li>
 	    <li ng-class="{ active: isActive('/about')}"><a href="#/about">About</a></li>
 	    <li ng-class="{ active: isActive('/contact')}"><a href="#/contact">Contact</a></li>
             <!-- <li style="margin-top: -5px; margin-left: 10px;"
@@ -55,8 +55,8 @@
       </nav>
     </div>
 
-    <div class="view-animate-container">
-      <div class="container reveal-animation" ng-view=""></div>
+    <div class="container-fluid view-animate-container">
+      <div class="reveal-animation" ng-view=""></div>
     </div>
 
 

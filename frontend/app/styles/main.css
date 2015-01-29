@@ -131,6 +131,12 @@ table td {
   border-right: 1px dotted #c0c0c0;
 }
 
+#links-table {
+  margin: 0 auto;
+  float: none;
+  width: 100%;
+}
+
 /*
 #clear {
     vertical-align: top;

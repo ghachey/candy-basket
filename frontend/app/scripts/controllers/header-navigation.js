@@ -30,6 +30,10 @@ angular.module('nasaraCandyBasketApp')
 
     // to set active class on <li>elements</li>
     $scope.isActive = function (viewLocation) { 
+      if (viewLocation === '/candy-list-*') { // bit of a hack!
+        return '/candy-list-timeline' === $location.path() || 
+          '/candy-list-table' === $location.path();
+      } 
       return viewLocation === $location.path();
     };
 
