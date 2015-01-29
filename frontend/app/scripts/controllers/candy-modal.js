@@ -146,7 +146,7 @@ angular.module('nasaraCandyBasketApp')
       // we're dealing with
       if (_id === undefined && operation !== 'create') {
         var candies = [];
-        var index = stateTracker.state.timelineValues.index;
+        var index = stateTracker.timelineValues.index;
         var candyIndex = index >= 1 ? index - 1 : 0;
         candies = $filter('candiesByTags')($scope.candies, $scope.tags);
         candies = $filter('orderBy')(candies, 'date', false);
@@ -157,7 +157,7 @@ angular.module('nasaraCandyBasketApp')
       
       var candyModalOperationCallback = function () {
         /* jshint ignore:start */
-        stateTracker.state.timelineValues.modal_open = false;
+        stateTracker.timelineValues.modal_open = false;
         /* jshint ignore:end */
         $log.info(logMsg + ' candy: ' + new Date());
         $rootScope.$broadcast('model-update');
@@ -165,7 +165,7 @@ angular.module('nasaraCandyBasketApp')
 
       var candyModalDismissedCallback = function () {        
         /* jshint ignore:start */
-        stateTracker.state.timelineValues.modal_open = false;
+        stateTracker.timelineValues.modal_open = false;
         /* jshint ignore:end */
         $log.info('Modal dismissed at: ' + new Date());
       };
@@ -186,7 +186,7 @@ angular.module('nasaraCandyBasketApp')
         };
         modalInstance = $modal.open(modalOptions);
         /* jshint ignore:start */
-        stateTracker.state.timelineValues.modal_open = true;
+        stateTracker.timelineValues.modal_open = true;
         /* jshint ignore:end */       
         modalInstance.result.then(function (modalCandy) {
           modalCandy.$create(candyModalOperationCallback);
@@ -204,7 +204,7 @@ angular.module('nasaraCandyBasketApp')
         };
         modalInstance = $modal.open(modalOptions);
         /* jshint ignore:start */
-        stateTracker.state.timelineValues.modal_open = true;
+        stateTracker.timelineValues.modal_open = true;
         /* jshint ignore:end */
         modalInstance.result.then(function (modalCandy) {
           modalCandy.$update(candyModalOperationCallback);
@@ -222,12 +222,12 @@ angular.module('nasaraCandyBasketApp')
         };
         modalInstance = $modal.open(modalOptions);
         /* jshint ignore:start */
-        stateTracker.state.timelineValues.modal_open = true;
+        stateTracker.timelineValues.modal_open = true;
         /* jshint ignore:end */
         modalInstance.result.then(function (modalCandy) {
           modalCandy.$remove(candyModalOperationCallback);
-          stateTracker.state.timelineValues.index =
-            stateTracker.state.timelineValues.index - 1;
+          stateTracker.timelineValues.index =
+            stateTracker.timelineValues.index - 1;
         }, candyModalDismissedCallback);
         break;
       default:

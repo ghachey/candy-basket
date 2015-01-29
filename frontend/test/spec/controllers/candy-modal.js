@@ -89,11 +89,9 @@ describe('Controller: CandyModal', function () {
   beforeEach(function() {
 
     stateTrackerMock = {
-      state: {
-        timelineValues: {
-          index: 0,
-          modal_open: false
-        }
+      timelineValues: {
+        index: 0,
+        modal_open: false
       }
     };
 
@@ -129,7 +127,7 @@ describe('Controller: CandyModal', function () {
 
   it('should be able to call the open function', function () {
     spyOn($scope, 'open').and.callThrough();
-    expect(stateTrackerMock.state).toBeDefined();
+    expect(stateTrackerMock.timelineValues).toBeDefined();
     $scope.open('create');
     expect($scope.open).toHaveBeenCalled();
   });
@@ -137,15 +135,15 @@ describe('Controller: CandyModal', function () {
   it('should be able to create new candy', function () {
     spyOn($scope, 'open').and.callThrough();
     expect($scope.open).not.toHaveBeenCalled();
-    expect(stateTrackerMock.state.timelineValues.modal_open).toBe(false); 
+    expect(stateTrackerMock.timelineValues.modal_open).toBe(false); 
     $scope.open('create');
-    expect(stateTrackerMock.state.timelineValues.modal_open).toBe(true); 
+    expect(stateTrackerMock.timelineValues.modal_open).toBe(true); 
   });
 
   it('should be able to update a candy in table view mode', function () {
-    expect(stateTrackerMock.state.timelineValues.modal_open).toBe(false); 
+    expect(stateTrackerMock.timelineValues.modal_open).toBe(false); 
     $scope.open('edit', '03c0b670e5c56bfb461a76dcf70091c7');
-    expect(stateTrackerMock.state.timelineValues.modal_open).toBe(true); 
+    expect(stateTrackerMock.timelineValues.modal_open).toBe(true); 
   });
 
   // it('should be able to update a candy in timeline view mode', function () {
@@ -156,16 +154,16 @@ describe('Controller: CandyModal', function () {
   // });
 
   it('should be able to delete a candy in table view mode', function () {
-    expect(stateTrackerMock.state.timelineValues.modal_open).toBe(false); 
+    expect(stateTrackerMock.timelineValues.modal_open).toBe(false); 
     $scope.open('delete', '03c0b670e5c56bfb461a76dcf70091c7');
-    expect(stateTrackerMock.state.timelineValues.modal_open).toBe(true); 
+    expect(stateTrackerMock.timelineValues.modal_open).toBe(true); 
   });
 
   // it('should be able to delete a candy in timeline view mode', function () {
-  //   expect(stateTrackerMock.state.timelineValues.index).toBe(0); 
-  //   expect(stateTrackerMock.state.timelineValues.modal_open).toBe(false); 
+  //   expect(stateTrackerMock.timelineValues.index).toBe(0); 
+  //   expect(stateTrackerMock.timelineValues.modal_open).toBe(false); 
   //   $scope.open('delete');
-  //   expect(stateTrackerMock.state.timelineValues.modal_open).toBe(true); 
+  //   expect(stateTrackerMock.timelineValues.modal_open).toBe(true); 
   // });
 
 });

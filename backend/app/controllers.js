@@ -24,7 +24,7 @@
 var async = require('async');
 var nano = require('nano');
 var validator = require('validator');
-var sanitizer = require('sanitizer');
+var sanitizeHtml = require('sanitize-html');
 var request = require('superagent');
 var path = require('path');
 var fs = require('fs');
@@ -104,8 +104,17 @@ var validateCandy = function(candy) {
   }
 
   // Sanitize user submitted HTML to your taste here, 
-  // see https://www.npmjs.org/package/sanitizer
-  var cleaned = sanitizer.sanitize(candy.description);
+  // see https://www.npmjs.com/package/sanitize-html
+  var cleaned = sanitizeHtml(candy.description, {
+    allowedTags: [ 'h3', 'h4', 'h5', 'h6', 'blockquote', 'p', 'a', 'ul', 'ol', 
+                   'nl', 'li', 'b', 'i', 'strong', 'em', 'strike', 'code', 
+                   'hr', 'br', 'div', 'table', 'thead', 'caption', 'tbody', 
+                   'tr', 'th', 'td', 'pre', 'img' ],
+    allowedAttributes: {
+      a: [ 'href', 'name', 'target' ],
+      img: [ 'src', 'width', 'height' ]
+    }
+  });
 
   return {'status': true, 'msg': 'Data Valid', 'description': cleaned}; 
 };
