@@ -101,7 +101,7 @@ var config = {
       debugLevel: 'warn',
       name: 'nasaraCandyBasketApi',
       protocol: 'https',
-      address: 'localhost',  
+      address: 'localhost', // not used; listening on 0.0.0.0
       port: 4443,
       reloadPort: 35735
     },

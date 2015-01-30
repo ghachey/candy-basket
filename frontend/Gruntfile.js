@@ -27,6 +27,7 @@ module.exports = function (grunt) {
     // Project settings
     yeoman: appConfig,
 
+    // Frontend Configuration
     // Used to define environment variables in test, development and production
     ngconstant: {
       // Options for all targets
@@ -54,7 +55,7 @@ module.exports = function (grunt) {
         constants: {
           ENV: {
             name: 'production',
-            backendUrl: 'https://localhost:4443'
+            backendUrl: 'https://api.pacificpolicy.org.vu:4443'
           }
         }
       }
