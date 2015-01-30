@@ -12,7 +12,7 @@ describe('Filter: dateRangeFormatter', function () {
   }));
 
   it('should return a nicely formatted date range', function () {
-    var mockedInput = [1384773417,1386860422];
+    var mockedInput = [1384773417,1386849600];
     var formattedRange =  'From 18th November 2013<br /> to <br />12th December 2013';
     expect(dateRangeFormatter(mockedInput)).toBe(formattedRange);
   });
