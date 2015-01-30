@@ -11,7 +11,7 @@ if (env === 'test' || env === 'development') {
 } else if (env === 'production') {
   var prodKey = fs.readFileSync('../../certificates/candy-basket-backend-key.pem');
   var prodCert = fs.readFileSync('../../certificates/candy-basket-backend-cert.pem');
-  var prodDAVCert = fs.readFileSync('../../certificates/arc.ghachey.info.pem');
+  var prodDAVCert = fs.readFileSync('../../certificates/cloud.pacificpolicy.org.pem');
 } else {
   throw Error('Environment unknown');
 }
@@ -125,8 +125,8 @@ var config = {
         callback(null, whiteListed);
       }
     },
-    webdavServer : { // ownCloud test instance
-        'host' : 'arc.ghachey.info',
+    webdavServer : {
+        'host' : 'cloud.pacificpolicy.org',
         'username' : 'candy',
         'password' : 'P@55word',
         'protocol' : 'https',
