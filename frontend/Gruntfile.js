@@ -419,13 +419,13 @@ module.exports = function (grunt) {
             expand: true,
             cwd: 'bower_components/tinymce',
             src: 'themes/**/*',
-            dest: '<%= yeoman.dist %>/scripts'
+            dest: '<%= yeoman.dist %>/'
           },
           { 
             expand: true,
             cwd: 'bower_components/tinymce',
             src: 'skins/**/*',
-            dest: '<%= yeoman.dist %>/scripts'
+            dest: '<%= yeoman.dist %>/'
           }
         ]
       },
