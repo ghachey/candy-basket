@@ -1,3 +1,23 @@
+<a name="0.5.0"></a>
+## 0.5.0 (2015-01-30)
+
+
+#### Bug Fixes
+
+* **candy-basket:** support for full deploy work-flow ([37a1a923](https://github.com/ghachey/candy-basket/commit/37a1a923acc902e9c204dd2443962f444d4e4802), closes [#36](https://github.com/ghachey/candy-basket/issues/36))
+* **frontend:** several frontend build fixes ([1c5b202a](https://github.com/ghachey/candy-basket/commit/1c5b202aba2a8c643b8709412d69dbdee4001bb7))
+
+
+#### Features
+
+* **backend:** new configurable HTML sanitizer ([3dfae1fc](https://github.com/ghachey/candy-basket/commit/3dfae1fc254fb1730a43318852ec6e75c455d9ea), closes [#47](https://github.com/ghachey/candy-basket/issues/47))
+* **frontend:**
+  * animations and other visuals improvements ([0d267b0c](https://github.com/ghachey/candy-basket/commit/0d267b0c748d58d1a241bd08c40f19ba48570952))
+  * support timeline and table view switching ([2214e928](https://github.com/ghachey/candy-basket/commit/2214e928267fff0166f703efaaf9ddfcfcb19b8e), closes [#41](https://github.com/ghachey/candy-basket/issues/41))
+  * add loading spinning gif ([0a0e8d14](https://github.com/ghachey/candy-basket/commit/0a0e8d14cc6d6c552cec709d21b41cf6ffc90d96), closes [#42](https://github.com/ghachey/candy-basket/issues/42))
+* **frontend-controllers:** support dynamic change of navigation active class ([d42dbc85](https://github.com/ghachey/candy-basket/commit/d42dbc85acc94adb68fec580951b0ac77a6d62f6))
+
+
 <a name="0.4.0"></a>
 ## 0.4.0 (2015-01-03)
 

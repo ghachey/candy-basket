@@ -12,9 +12,9 @@ module.exports = function(grunt) {
         repository: 'https://github.com/ghachey/candy-basket',
         //grep: '^feat|^fix|^docs|^style|^refactor|^test|^chore|BREAKING', // not supported
         // Change from to previous tag (not the last release but the one before)
-        from: 'ba478d735df2d071cc293a92c7e85a0499a97337',
+        from: '3b2e22517c182958001bb20d4eae37848f230dcf',
         // Keep this to HEAD or change as needed
-        to: 'bd7e3ac5e2875c29039b9d5f18b09377783d5184'
+        to: 'HEAD'
       }
     },
 
