@@ -109,7 +109,6 @@ module.exports = function(grunt) {
       },
       copyotherfiles: {
         command: [
-          'cp -rf frontend/certificates/* dist/frontend/certificates/',
           'cp -rf docs/build/html/* dist/frontend/help/',
           'cp docs/build/latex/CandyBasket.pdf dist/frontend/help/'
         ].join('&')
@@ -128,7 +127,7 @@ module.exports = function(grunt) {
         }
       },
       startfrontend: { // change to production certs
-        command: 'authbind --deep forever start --uid "candy-basket-frontend" -a --sourceDir=/usr/bin/ --workingDir=dist/frontend/ http-server . --ssl -p 443 --cert certificates/hacksparrow-cert.pem --key certificates/hacksparrow-key.pem',
+        command: 'authbind --deep forever start --uid "candy-basket-frontend" -a --sourceDir=/usr/bin/ --workingDir=dist/frontend/ http-server . --ssl -p 443 --cert ../../certificates/candy-basket-frontend-cert.pem --key ../../certificates/candy-basket-frontend-key.pem',
         options: {
           execOptions: {
             async: true,

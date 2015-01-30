@@ -4,6 +4,18 @@ var fs = require('fs');
 var rootPath = path.normalize(__dirname + '/.');
 var env = process.env.NODE_ENV || 'development';
 
+if (env === 'test' || env === 'development') {
+  var devKey = fs.readFileSync('certificates/nasara-backend-development.key');
+  var devCert = fs.readFileSync('certificates/nasara-backend-development.crt');
+  var devDAVCert = fs.readFileSync('certificates/arc.ghachey.info.pem');
+} else if (env === 'production') {
+  var prodKey = fs.readFileSync('../../certificates/candy-basket-backend-key.pem');
+  var prodCert = fs.readFileSync('../../certificates/candy-basket-backend-cert.pem');
+  var prodDAVCert = fs.readFileSync('../../certificates/arc.ghachey.info.pem');
+} else {
+  throw Error('Environment unknown');
+}
+
 var config = {
   development: {
     root: rootPath,
@@ -15,8 +27,8 @@ var config = {
       port: 4441,
       reloadPort: 35733
     },
-    key: fs.readFileSync('certificates/nasara-backend-development.key'),
-    cert: fs.readFileSync('certificates/nasara-backend-development.crt'),
+    key: devKey,
+    cert: devCert,
     backendUser: 'candy',
     backendPassword: 'P@55word',
     couchdb: {
@@ -39,7 +51,7 @@ var config = {
         'password' : 'P@55word',
         'protocol' : 'https',
         'port' : 443,
-        'ca' : fs.readFileSync('certificates/arc.ghachey.info.pem')
+        'ca' : devDAVCert
     },
     'webdavFileLocation' : '/owncloud/remote.php/webdav/documents/development/'
   },
@@ -54,8 +66,8 @@ var config = {
       port: 4442,
       reloadPort: 35734  
     },
-    key: fs.readFileSync('certificates/nasara-backend-development.key'),
-    cert: fs.readFileSync('certificates/nasara-backend-development.crt'),
+    key: devKey,
+    cert: devCert,
     backendUser: 'candy',
     backendPassword: 'P@55word',
     couchdb: {
@@ -78,7 +90,7 @@ var config = {
         'password' : 'P@55word',
         'protocol' : 'https',
         'port' : 443,
-        'ca' : fs.readFileSync('certificates/arc.ghachey.info.pem')
+        'ca' : devDAVCert
     },
     'webdavFileLocation' : '/owncloud/remote.php/webdav/documents/test/'
   },
@@ -93,8 +105,8 @@ var config = {
       port: 4443,
       reloadPort: 35735
     },
-    key: fs.readFileSync('certificates/nasara-backend-development.key'), // change
-    cert: fs.readFileSync('certificates/nasara-backend-development.crt'), // change
+    key: prodKey,
+    cert: prodCert,
     backendUser: 'candy',
     backendPassword: 'P@55word',
     couchdb: {
@@ -108,7 +120,8 @@ var config = {
       origin: function(origin, callback){
         var whiteListed = ['https://localhost',
                            'https://candy.pacificpolicy.org.ph',
-                           'https://candy.pacificpolicy.org'].indexOf(origin) !== -1;
+                           'https://candy.pacificpolicy.org',
+                           'https://cb.pacificpolicy.org.vu'].indexOf(origin) !== -1;
         callback(null, whiteListed);
       }
     },
@@ -118,7 +131,7 @@ var config = {
         'password' : 'P@55word',
         'protocol' : 'https',
         'port' : 443,
-        'ca' : fs.readFileSync('certificates/arc.ghachey.info.pem')
+        'ca' : prodDAVCert
     },
     'webdavFileLocation' : '/owncloud/remote.php/webdav/documents/'
   }
