@@ -1,7 +1,7 @@
 /*global module:false*/
 module.exports = function(grunt) {
 
-  var user = process.env.USERNAME;
+  var user = process.env.USER;
   var userHome = process.env.HOME;
 
   // Project configuration.
