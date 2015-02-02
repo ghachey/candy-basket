@@ -121,7 +121,7 @@ var config = {
         var whiteListed = ['https://localhost',
                            'https://candy.pacificpolicy.org.ph',
                            'https://candy.pacificpolicy.org',
-                           'https://candy.pacificpolicy.org:4444', // ext. tests
+                           'https://candy.pacificpolicy.org.vu:4444', // ext. tests
                            'https://cb.pacificpolicy.org.vu'].indexOf(origin) !== -1;
         callback(null, whiteListed);
       }
