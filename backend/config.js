@@ -133,7 +133,7 @@ var config = {
         'port' : 443,
         'ca' : prodDAVCert
     },
-    'webdavFileLocation' : '/owncloud/remote.php/webdav/documents/'
+    'webdavFileLocation' : '/remote.php/webdav/documents/'
   }
 };
 
