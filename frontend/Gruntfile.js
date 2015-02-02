@@ -415,12 +415,12 @@ module.exports = function (grunt) {
             src: '*.{gif,png}',
             dest: '<%= yeoman.dist %>/styles'
           },
-          { 
-            expand: true,
-            cwd: 'bower_components/tinymce',
-            src: 'themes/**/*',
-            dest: '<%= yeoman.dist %>/'
-          },
+          // { 
+          //   expand: true,
+          //   cwd: 'bower_components/tinymce',
+          //   src: 'themes/**/*',
+          //   dest: '<%= yeoman.dist %>/'
+          // },
           { 
             expand: true,
             cwd: 'bower_components/tinymce',
