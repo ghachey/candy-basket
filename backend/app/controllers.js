@@ -569,7 +569,9 @@ var _binaryParser = function(res, callback) {
  */
 var downloadFile = function(req, res) {
   var fileName = req.params.id;
-  var fileNameAndPath = path.join(__dirname, '/files/tmp/', fileName);
+  var filePath = path.join(__dirname, '/files/tmp/');
+  if (!fs.existsSync(filePath)) { fs.mkdirSync(filePath); }
+  var fileFullName = path.join(filePath, fileName);
 
   request
     .get(ownCloudServer + ownCloudShare + fileName)
@@ -583,10 +585,10 @@ var downloadFile = function(req, res) {
         res.status(503).send(ownCloudErr);
       } else {
         logger.info('Retrieved file from ownCloud: ', ownCloudRes.status);
-        fs.writeFile(fileNameAndPath, ownCloudRes.body, function (fsErr) {
+        fs.writeFile(fileFullName, ownCloudRes.body, function (fsErr) {
           if (fsErr) {logger.error('Filesystem error: ', fsErr);}
           // Send file to frontend here
-          res.download(fileNameAndPath, function (err) {
+          res.download(fileFullName, function (err) {
             if (err) {
               logger.error('Sending to frontend error: ', err);
               res.status(err.status).end();
