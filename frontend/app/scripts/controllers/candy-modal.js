@@ -20,6 +20,11 @@ angular.module('nasaraCandyBasketApp')
       toolbar: 'undo redo | styleselect | bold italic | link image'
     };
 
+    var backend = ENV.backendUrl.split('://'); // Hurried hack
+    $scope.fileUploadPath = backend[0]+'://'+ENV.backendUser+':'+
+      ENV.backendPassword+'@'+backend[1]+'/files/';
+    console.log('TEST: ', $scope.fileUploadPath);
+    
     $scope.candy = new CandyResource();
 
     if (candyId) { // We updating?

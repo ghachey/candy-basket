@@ -44,7 +44,9 @@ module.exports = function (grunt) {
         constants: {
           ENV: {
             name: 'development',
-            backendUrl: 'https://localhost:4441'
+            backendUrl: 'https://localhost:4441',
+            backendUser: 'candy',
+            backendPassword: 'P@55word'
           }
         }
       },
@@ -55,7 +57,9 @@ module.exports = function (grunt) {
         constants: {
           ENV: {
             name: 'production',
-            backendUrl: 'https://api.pacificpolicy.org.vu:4443'
+            backendUrl: 'https://api.pacificpolicy.org.vu:4443',
+            backendUser: 'candy',
+            backendPassword: 'P@55word'
           }
         }
       }

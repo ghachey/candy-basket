@@ -115,7 +115,7 @@
                     
                     <li ng-repeat="file in candy.files">
 
-                      <a class="btn btn-primary btn-xs" href="https://candy:P@55word@localhost:3003/files/{{file.name}}" tooltip="Download file" tooltip-placement="bottom"><span class="glyphicon glyphicon-cloud-download ops-nav"></span></a>
+                      <a class="btn btn-primary btn-xs" href="{{fileUploadPath}}{{file.name}}" tooltip="Download file" tooltip-placement="bottom"><span class="glyphicon glyphicon-cloud-download ops-nav"></span></a>
 
                       <button class="btn btn-danger btn-xs" 
                               ng-click="removeFile(file.name)"
