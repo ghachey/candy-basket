@@ -24,7 +24,7 @@ angular.module('nasaraCandyBasketApp')
       link: function postLink(scope, element, attrs, ctrl) {
         var valid;
         var candy = scope.$parent.candy;
-
+        
         // Listen for changes on tagData model
         scope.$on('tagDataChanged', function () {
           if (candy.tags.length === 0) {ctrl.$setValidity('hasTags', false);}
@@ -50,13 +50,12 @@ angular.module('nasaraCandyBasketApp')
             ctrl.$setValidity('hasTags', false);
           }
 
-          // Timeout here to wait for candy data to arrive. Hum, I
-          // wish I could have done this nicer but it will do for now
-          $timeout(function(){
-            valid = (candy.tags === undefined) ? false : candy.tags.length !== 0;
-            ctrl.$setValidity('hasTags', valid);
-          }, 1000);
-
+          scope.$parent.$watchCollection('candy.tags', function(olds, news) {
+            if (candy.tags) {
+              ctrl.$setValidity('hasTags', candy.tags.length);
+            }
+          });
+          
           // return the value or nothing will be written to the DOM.
           return value;
         });
