@@ -17,7 +17,7 @@
  * emptied by the user).
  */
 angular.module('nasaraCandyBasketApp')
-  .directive('hasTags', function($timeout) {
+  .directive('hasTags', function() {
     return {
       restrict: 'A',
       require: 'ngModel',
