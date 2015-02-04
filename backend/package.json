@@ -1,7 +1,7 @@
 {
   "name": "nasara-candy-basket-backend",
   "description": "Nasara's Candy Basket RESTful API",
-  "version": "0.5.0",
+  "version": "0.5.1",
   "private": true,
   "scripts": {
     "start": "node app.js"
