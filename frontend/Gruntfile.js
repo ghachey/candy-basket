@@ -27,6 +27,7 @@ module.exports = function (grunt) {
     // Project settings
     yeoman: appConfig,
 
+    // Frontend Configuration
     // Used to define environment variables in test, development and production
     ngconstant: {
       // Options for all targets
@@ -43,7 +44,9 @@ module.exports = function (grunt) {
         constants: {
           ENV: {
             name: 'development',
-            backendUrl: 'https://localhost:4441'
+            backendUrl: 'https://localhost:4441',
+            backendUser: 'candy',
+            backendPassword: 'P@55word'
           }
         }
       },
@@ -54,7 +57,9 @@ module.exports = function (grunt) {
         constants: {
           ENV: {
             name: 'production',
-            backendUrl: 'https://localhost:4443'
+            backendUrl: 'https://api.pacificpolicy.org.vu:4443',
+            backendUser: 'candy',
+            backendPassword: 'P@55word'
           }
         }
       }
@@ -414,17 +419,17 @@ module.exports = function (grunt) {
             src: '*.{gif,png}',
             dest: '<%= yeoman.dist %>/styles'
           },
-          { 
-            expand: true,
-            cwd: 'bower_components/tinymce',
-            src: 'themes/**/*',
-            dest: '<%= yeoman.dist %>/scripts'
-          },
+          // { 
+          //   expand: true,
+          //   cwd: 'bower_components/tinymce',
+          //   src: 'themes/**/*',
+          //   dest: '<%= yeoman.dist %>/'
+          // },
           { 
             expand: true,
             cwd: 'bower_components/tinymce',
             src: 'skins/**/*',
-            dest: '<%= yeoman.dist %>/scripts'
+            dest: '<%= yeoman.dist %>/'
           }
         ]
       },

@@ -54,11 +54,6 @@ module.exports = function (grunt) {
           },
           {
             expand: true, 
-            src: ['certificates//**'], 
-            dest: 'dist/'
-          },
-          {
-            expand: true, 
             src: ['node_modules/**'], 
             dest: 'dist/'
           },
@@ -146,7 +141,6 @@ module.exports = function (grunt) {
     'mochaTest'
   ]);
 
-  // No build task yet
   grunt.registerTask('build', [
     'clean:dist',
     'copy:dist'
