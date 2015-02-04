@@ -1,3 +1,12 @@
+<a name="0.5.1"></a>
+### 0.5.1 (2015-02-04)
+
+
+#### Bug Fixes
+
+* **candy-basket:** various production adjustments and fixes ([e46954f7](https://github.com/ghachey/candy-basket/commit/e46954f7be010bde1116589a1df4844927b49d63))
+
+
 <a name="0.5.0"></a>
 ## 0.5.0 (2015-01-30)
 
