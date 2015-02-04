@@ -22,7 +22,6 @@ angular.module('nasaraCandyBasketApp')
       restrict: 'A',
       require: 'ngModel',
       link: function postLink(scope, element, attrs, ctrl) {
-        var valid;
         var candy = scope.$parent.candy;
         
         // Listen for changes on tagData model
@@ -50,7 +49,7 @@ angular.module('nasaraCandyBasketApp')
             ctrl.$setValidity('hasTags', false);
           }
 
-          scope.$parent.$watchCollection('candy.tags', function(olds, news) {
+          scope.$parent.$watchCollection('candy.tags', function() {
             if (candy.tags) {
               ctrl.$setValidity('hasTags', candy.tags.length);
             }
